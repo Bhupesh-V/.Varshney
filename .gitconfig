@@ -1,0 +1,9 @@
+[user]
+	email = varshneybhupesh@gmail.com
+	name = Bhupesh-V
+[commit]
+	template = /home/bhupesh/.gitmessage
+[core]
+	editor = nano
+[credential]
+	helper = store
