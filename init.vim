@@ -8,13 +8,15 @@ Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'gilgigilgil/anderson.vim'
 Plug 'jacoborus/tender.vim'
 Plug 'kyoz/purify', { 'rtp': 'vim' }
+Plug 'arcticicestudio/nord-vim'
+Plug 'jaredgorski/spacecamp'
 call plug#end()
 
 vnoremap <C-c> "+y
 map <C-v> "+p
 nmap <F6> :NERDTreeToggle<CR>
 
-colorscheme tender
+colorscheme purify
 
 set nu
 set ai
