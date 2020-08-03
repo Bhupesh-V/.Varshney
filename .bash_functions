@@ -1,19 +1,17 @@
-#!/usr/bin/env bash
-
-# Smart cd
+# smart cd
 scd() {
     if [[ $1 != "" ]]; then
-        while read -r value; do
-            paths+=($value)
-        done < <( locate -r "/$1$" | grep "$HOME" )
-
-        for result in "${paths[@]}"
-        do
-            if [[ -d $result ]]; then
-                printf "%s\n" "Hit: $result"
-                cd "$result" || exit
-            fi
-        done
+        case $1 in
+            [".."]* ) cd .. ;;
+            ["-"]* ) cd - ;;
+            ["/"]* ) cd / ;;
+            * ) while read -r value; do
+                    if [[ -d $value ]]; then
+                        printf "%s\n" "Hit 🎯: $value"
+                        cd "$value"
+                    fi
+                done < <( locate -e -r "/$1$" | grep "$HOME" ) ;;
+        esac
     else
         cd "$HOME" || exit
     fi
