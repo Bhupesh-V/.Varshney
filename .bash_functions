@@ -1,5 +1,6 @@
-# smart cd
 scd() {
+    # [s]mart cd : find absolute paths & automatically switch to them
+
     if [[ $1 != "" ]]; then
         case $1 in
             [".."]* ) cd .. ;;
@@ -17,8 +18,9 @@ scd() {
     fi
 }
 
-# Encode string to URL
 urlencode() {
+    # Encode string to URL safe version
+
     local string="${1}"
     local encoded=""
     local pos c o
@@ -42,6 +44,8 @@ urlencode() {
 }
 
 search() {
+    # Invoke browser directly with search strings
+    #
     # Browsers :
     # chromium-browser <url>
     # firefox --new-tab <url>
@@ -78,3 +82,4 @@ netu() {
     printf "%s\n" "$(tput bold)🔼 TRANSMITTED $(tput sgr0): $TRANSMITTED"
     printf "%s\n" "$(tput bold)🔽 RECEIVED    $(tput sgr0): $RECEIVED"
 }
+

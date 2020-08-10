@@ -109,8 +109,9 @@ if [ -f ~/.bash_functions ]; then
 fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 export TERM=xterm-256color
 export DOT_REPO=https://github.com/Bhupesh-V/.Varshney
 export DOT_DEST=Documents
+export CDPATH=".:/home/bhupesh"
