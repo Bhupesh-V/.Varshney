@@ -3,15 +3,24 @@ scd() {
 
     if [[ $1 != "" ]]; then
         case $1 in
-            [".."]* ) cd .. ;;
-            ["-"]* ) cd - ;;
-            ["/"]* ) cd / ;;
+            [".."]* ) cd .. || exit;;
+            ["-"]* ) cd -  || exit;;
+            ["/"]* ) cd /  || exit;;
             * ) while read -r value; do
-                    if [[ -d $value ]]; then
-                        printf "%s\n" "Hit 🎯: $value"
-                        cd "$value"
-                    fi
-                done < <( locate -e -r "/$1$" | grep "$HOME" ) ;;
+					files+=($value)
+                done < <( locate -e -r "/$1$" | grep "$HOME" )
+                if [[ ${#files} == 0 ]]; then
+                	# do loose search
+                	while read -r value; do
+						files+=($value)
+                	done < <( locate -e -r "$1" | grep "$HOME" )
+	            fi
+                for file_match in "${files[@]}"; do
+           			if [[ -d $file_match ]]; then
+           				printf "%s\n" "Hit 🎯: $file_match"
+                		cd "$file_match" || exit
+           			fi
+           		done ;;
         esac
     else
         cd "$HOME" || exit
