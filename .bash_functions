@@ -13,14 +13,15 @@ scd() {
                 	# do loose search
                 	while read -r value; do
 						files+=($value)
-                	done < <( locate -e -r "$1" | grep "$HOME" )
+                	done < <( locate -e -b -r "$1" | grep "$HOME" )
 	            fi
                 for file_match in "${files[@]}"; do
            			if [[ -d $file_match ]]; then
            				printf "%s\n" "Hit 🎯: $file_match"
                 		cd "$file_match" || exit
            			fi
-           		done ;;
+           		done 
+           		unset files ;;
         esac
     else
         cd "$HOME" || exit
