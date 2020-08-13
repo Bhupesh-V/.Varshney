@@ -30,8 +30,8 @@ My config &amp; .dotfiles managed by [dotman](https://github.com/Bhupesh-V/dotma
 <table>
 	<tr>
 		<th>Function Name</th>
-		<th>Description</th>
-		<th>Demo</th>
+		<th width="30%">Description</th>
+		<th width="60%">Demo</th>
 	</tr>
 	<tr>
 		<td><code>netu</code></td>
