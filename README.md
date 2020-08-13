@@ -31,17 +31,21 @@ My config &amp; .dotfiles managed by [dotman](https://github.com/Bhupesh-V/dotma
 	<tr>
 		<th>Function Name</th>
 		<th>Description</th>
+		<th>Demo</th>
 	</tr>
 	<tr>
 		<td><code>netu</code></td>
-		<td>Analyze network data usage </td>
+		<td>Analyze network data usage</td>
+		<td><img alt="demo of netu" src="https://user-images.githubusercontent.com/34342551/90170484-c280cd80-ddbd-11ea-9d38-71821250989c.png"></td>
 	</tr>
 	<tr>
 		<td><code>search</code></td>
 		<td>Invoke browser directly with search results</td>
 	</tr>
 	<tr>
-		<td><code>urlencode</code>dependency of search(), converts strings to URL safe version.</td>
+		<td><code>urlencode</code></td>
+		<td>Dependency of search(), converts strings to URL safe version.</td>
+		<td><img alt="demo of urlencode" src="https://user-images.githubusercontent.com/34342551/90170221-54d4a180-ddbd-11ea-9c76-029a70f5dc37.png"></td>
 	</tr>
 	<tr>
 		<td><code>scd</code></td>
