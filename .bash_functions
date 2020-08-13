@@ -1,3 +1,15 @@
+xd () {
+	# xd : switch directories powered by tab auto-suggestions
+	# See xd-completions.bash for more info.
+	if [ -z "$1" ]; then
+		echo "No directory path provided"
+		exit 2
+	else
+		echo "$1"
+		cd "$1" || exit
+	fi
+}
+
 scd() {
     # [s]mart cd : find absolute paths & automatically switch to them
 
