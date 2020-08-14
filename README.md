@@ -1,18 +1,16 @@
 # .Varshney
 
-My config &amp; .dotfiles managed by [dotman](https://github.com/Bhupesh-V/dotman)
+My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/dotman)
 
-<p align="center">
-  <a href="https://github.com/Bhupesh-V/.Varshney/blob/master/LICENSE">
-    <img alt="License: MIT" src="https://img.shields.io/github/license/Bhupesh-V/.Varshney" />
-  </a>
-  <a href="https://github.com/ellerbrock/open-source-badges">
-    <img alt="bashit" src="https://badges.frapsoft.com/bash/v1/bash.png?v=103">
-  </a>
-  <a href="https://twitter.com/bhupeshimself">
-    <img alt="Twitter: bhupeshimself" src="https://img.shields.io/twitter/follow/bhupeshimself.svg?style=social" target="_blank" />
-  </a>
-</p>
+<a href="https://github.com/Bhupesh-V/.Varshney/blob/master/LICENSE">
+	<img alt="License: MIT" src="https://img.shields.io/github/license/Bhupesh-V/.Varshney" />
+</a>
+<a href="https://github.com/ellerbrock/open-source-badges">
+	<img alt="bashit" src="https://badges.frapsoft.com/bash/v1/bash.png?v=103">
+</a>
+<a href="https://twitter.com/bhupeshimself">
+	<img alt="Twitter: bhupeshimself" src="https://img.shields.io/twitter/follow/bhupeshimself.svg?style=social" target="_blank" />
+</a>
 
 
 ## My setup 🖥
@@ -23,9 +21,13 @@ My config &amp; .dotfiles managed by [dotman](https://github.com/Bhupesh-V/dotma
 - **Editor**: NeoVim
 - **TERM**: xterm-256color
 
+
 ## What's Inside 👀
 
-#### `.bash_functions`
+> I am pretty new to this stuff, so you wouldn't find any scripts that hack NASA. Anyways hope you find something useful, Good luck 👍
+
+
+#### [`.bash_functions`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bash_functions)
 
 <table>
 	<tr>
@@ -34,25 +36,34 @@ My config &amp; .dotfiles managed by [dotman](https://github.com/Bhupesh-V/dotma
 		<th width="60%">Demo</th>
 	</tr>
 	<tr>
-		<td><code>netu</code></td>
+		<td><code>netu</code>🌐</td>
 		<td>Analyze network data usage</td>
 		<td><img alt="demo of netu" src="https://user-images.githubusercontent.com/34342551/90170484-c280cd80-ddbd-11ea-9d38-71821250989c.png"></td>
 	</tr>
 	<tr>
-		<td><code>search</code></td>
+		<td><code>search</code>🔍</td>
 		<td>Invoke browser directly with search results</td>
 	</tr>
 	<tr>
-		<td><code>urlencode</code></td>
+		<td><code>urlencode</code>🔗</td>
 		<td>Dependency of search(), converts strings to URL safe version.</td>
 		<td><img alt="demo of urlencode" src="https://user-images.githubusercontent.com/34342551/90170221-54d4a180-ddbd-11ea-9c76-029a70f5dc37.png"></td>
 	</tr>
 	<tr>
-		<td><code>scd</code></td>
-		<td>[s]mart cd searches absolute path names of directories inside your system & switches to them automatically. No need to remember any locations !!.<a href="https://bhupesh-v.github.io/creating-a-smart-alternative-to-cd/">Read More</a></td>
+		<td><code>scd</code>💡</td>
+		<td>[s]mart cd searches absolute path names of directories inside your system & switches to them automatically. No need to remember any locations !!.
+		<a href="https://bhupesh-v.github.io/creating-a-smart-alternative-to-cd/">Read More</a></td>
 	</tr>
 </table>
 
+#### [`init.vim or .vimrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/init.vim)
+
+- Some of my fav themes :
+  - [anderson](https://github.com/tlhr/anderson.vim)
+  - [nord-vim](https://github.com/arcticicestudio/nord-vim)
+  - [purify](https://github.com/kyoz/purify)
+  - [spacecamp](https://github.com/jaredgorski/SpaceCamp)
+  - [tender.vim](https://github.com/jacoborus/tender.vim)
 
 ## Author
 

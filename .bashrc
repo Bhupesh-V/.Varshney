@@ -61,10 +61,14 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
+random_emoji() {
+	# add a random emoticon (mostly face emojis)
+	printf "%b\n" "\U1F$(shuf -i600-640 -n1)"
+}
+
 if [ "$color_prompt" = yes ]; then
     #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-    random_emoji=$(printf "%b\n" "\U1F$(shuf -i600-640 -n1)")
-    PS1='\033[01;34m\t\033[0m $random_emoji [\033[1m\u@\h\033[0m]\033[1;32m \w\033[0m\n⮚⮚ '
+    PS1='\033[01;34m\t\033[0m $(random_emoji) [\033[1m\u@\h\033[0m]\033[1;32m \w\033[0m\n⮚⮚ '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi

@@ -14,3 +14,5 @@ alias p='python3'
 alias dotman='$HOME/dotman/dotman.sh'
 alias update='sudo apt-get update'
 alias upgrade='sudo apt-get upgrade'
+alias z=zsh
+alias b=bash
