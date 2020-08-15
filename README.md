@@ -27,18 +27,18 @@ My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/
 > I am pretty new to this stuff, so you wouldn't find any scripts that hack NASA. Anyways hope you find something useful, Good luck 👍
 
 
-#### [`.bash_functions`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bash_functions)
+### [`.bash_functions`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bash_functions)
 
 <table>
 	<tr>
 		<th>Function Name</th>
-		<th width="30%">Description</th>
+		<th width="25%">Description</th>
 		<th width="60%">Demo</th>
 	</tr>
 	<tr>
 		<td><code>netu</code>🌐</td>
 		<td>Analyze network data usage</td>
-		<td><img alt="demo of netu" src="https://user-images.githubusercontent.com/34342551/90170484-c280cd80-ddbd-11ea-9d38-71821250989c.png"></td>
+		<td><img title="netu: check network usage stats" alt="demo of netu gif" src="https://user-images.githubusercontent.com/34342551/90170484-c280cd80-ddbd-11ea-9d38-71821250989c.png"></td>
 	</tr>
 	<tr>
 		<td><code>search</code>🔍</td>
@@ -47,16 +47,20 @@ My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/
 	<tr>
 		<td><code>urlencode</code>🔗</td>
 		<td>Dependency of search(), converts strings to URL safe version.</td>
-		<td><img alt="demo of urlencode" src="https://user-images.githubusercontent.com/34342551/90170221-54d4a180-ddbd-11ea-9c76-029a70f5dc37.png"></td>
+		<td><img title="urlencode: encode strings to URL safe version" alt="demo of urlencode" src="https://user-images.githubusercontent.com/34342551/90170221-54d4a180-ddbd-11ea-9c76-029a70f5dc37.png"></td>
 	</tr>
 	<tr>
 		<td><code>scd</code>💡</td>
-		<td>[s]mart cd searches absolute path names of directories inside your system & switches to them automatically. No need to remember any locations !!.
-		<a href="https://bhupesh-v.github.io/creating-a-smart-alternative-to-cd/">Read More</a></td>
+		<td><p>[s]mart cd searches absolute path names of directories inside your system and switches to them automatically. No need to remember any locations !!. 
+		<a href="https://bhupesh-v.github.io/creating-a-smart-alternative-to-cd/">Read More</a></p><br><br>
+		Also see <a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scd-completions.bash"><samp>scd-completions.bash</samp></a> for automatic tab suggestions.
+		</td>
+		<td><img title="scd : switch directories from anywhere to anywhere" alt="scd demo gif" src="https://user-images.githubusercontent.com/34342551/90309212-1eee0500-df04-11ea-9695-490103823164.gif"></td>
 	</tr>
 </table>
 
-#### [`init.vim or .vimrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/init.vim)
+
+### [`init.vim` or `.vimrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/init.vim)
 
 - Some of my fav themes :
   - [anderson](https://github.com/tlhr/anderson.vim)
