@@ -66,9 +66,23 @@ random_emoji() {
 	printf "%b\n" "\U1F$(shuf -i600-640 -n1)"
 }
 
+get_git_branch() {
+    curr_branch=$(git branch 2> /dev/null | awk '/*/ {print $2}')
+    [ "$curr_branch" ] && printf "%s" "($(tput setaf 208)$curr_branch$(tput sgr0))"
+}
+
+pc_uptime() {
+    uptime -p | awk '{for (i=2; i<NF; i++) printf $i " "; if (NF >= 1) print $NF; }'
+}
+
+rightprompt() {
+    # display stuff on rightmost side of prompt
+    printf "%*s" $COLUMNS "$(pc_uptime) | $(free -h | awk '/^Mem:/ {print $3 "/" $2}')"
+}
+
 if [ "$color_prompt" = yes ]; then
     #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-    PS1=' $(random_emoji) [\033[1m\u@\h\033[0m]\033[1;32m \w\033[0m\n🠶 '
+    PS1='\[$(tput sc; rightprompt; tput rc)\]$(random_emoji) [\033[1m\u@\h\033[0m]\033[1;32m \w\033[0m $(get_git_branch)\n🠶 '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi

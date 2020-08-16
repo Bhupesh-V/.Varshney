@@ -1,0 +1,6 @@
+set show-all-if-ambiguous on
+set completion-ignore-case on
+set completion-map-case on
+set show-all-if-unmodified on
+set menu-complete-display-prefix on
+"\t": menu-complete
