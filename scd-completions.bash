@@ -1,25 +1,18 @@
 #!/usr/bin/env bash
 
 _scd_completions(){
-    if [ "${#COMP_WORDS[@]}" != "2" ]; then
-      	return
-	fi
 	local cur=${COMP_WORDS[COMP_CWORD]}
 	local IFS=$'\n'
 	# handle space separated dir names
 	dqc='"'
 	while read -r file_path; do
-		if [[ -d $file_path ]]; then
-			search_results+=( "$dqc$file_path$dqc" )
-		fi
-    done < <( locate -e -r "/$cur$" )
+    [[ -d $file_path ]] && search_results+=( "$dqc$file_path$dqc" )
+    done < <( locate -er "/$cur$" )
     if [[ ${#search_results} == 0 ]]; then
-    	# do loose search
     	while read -r file_path; do
-        	if [[ -d $file_path ]]; then
-        		search_results+=( "$dqc$file_path$dqc" )
-        	fi
-    	done < <( locate -e -b -r "$cur" )
+            [[ -d $file_path ]] && search_results+=( "$dqc$file_path$dqc" )
+        # do loose search
+    	done < <( locate -ebr "$cur" )
     fi
 
     COMPREPLY=("${search_results[@]}")
