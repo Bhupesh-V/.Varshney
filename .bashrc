@@ -62,11 +62,13 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 # color definitions
-NONE=$'\033[m'
+BOLD=$(tput bold)
+RESET=$(tput sgr0)
+GREEN=$(tput setaf 10)
 
 random_emoji() {
 	# add a random emoticon (mostly face emojis)
-	printf "%b\n" "\U1F$(shuf -i600-640 -n1)"
+	printf "%b" "\001\U1F$(shuf -i600-640 -n1)\002"
 }
 
 get_git_branch() {
@@ -78,27 +80,38 @@ pc_uptime() {
     uptime -p | awk '{for (i=2; i<NF; i++) printf $i " "; if (NF >= 1) print $NF; }'
 }
 
+virtualenv_ps1() {
+    basename "$VIRTUAL_ENV"
+}
+
 rightprompt() {
-    # display stuff on rightmost side of prompt
-    printf "%*s" $COLUMNS "$(pc_uptime) | $(free -h | awk '/^Mem:/ {print $3 "/" $2}')"
+    # display stuff on right side of prompt
+    printf '%*s' $COLUMNS "$(virtualenv_ps1) $(pc_uptime) | $(free -h | awk '/^Mem:/ {print $3 "/" $2}')"
+}
+
+# disable the default virtualenv prompt change
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+bprompt() {
+    PS1='\[$(tput sc; rightprompt; tput rc)\]$(random_emoji) \[$BOLD\]\[$GREEN\]\w\[$RESET\] \[$(get_git_branch)\]\r\n '
 }
 
 if [ "$color_prompt" = yes ]; then
     #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-    PS1='\[$(tput sc; rightprompt; tput rc)\]$(random_emoji) [\e[1m\u@\e[1m\h${NONE}]\033[1;32m \w${NONE} $(get_git_branch)\n🠶 '
+    PROMPT_COMMAND=bprompt
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
+# case "$TERM" in
+# xterm*|rxvt*)
+#     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+#     ;;
+# *)
+#     ;;
+# esac
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
