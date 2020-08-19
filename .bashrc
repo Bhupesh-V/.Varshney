@@ -8,18 +8,20 @@ case $- in
       *) return;;
 esac
 
+# Gib me all the colors 
+export TERM=xterm-256color
+
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
-
-# append to the history file, don't overwrite it
-shopt -s histappend
-
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
 
 shopt -s autocd
+
+# append to the history file, don't overwrite it
+shopt -s histappend
 
 # Correct dir spellings
 shopt -s cdspell
@@ -61,6 +63,9 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
+# disable the default virtualenv prompt change
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
 # color definitions
 BOLD="\[$(tput bold)\]"
 RESET="\[$(tput sgr0)\]"
@@ -71,6 +76,7 @@ ORANGE_FG="\[$(tput setaf 214)\]"
 ORANGE_BG="\[$(tput setab 214)\]"
 GRAY_BG="\[$(tput setab 234)\]"
 GRAY_FG="\[$(tput setaf 234)\]"
+RED_FG="$(tput setaf 9)"
 
 random_emoji() {
 	# add a random emoticon (mostly face emojis)
@@ -79,7 +85,7 @@ random_emoji() {
 
 get_git_branch() {
     curr_branch=$(git branch 2> /dev/null | awk '/*/ {print $2}')
-    [ "$curr_branch" ] && printf "%s" "($(tput setaf 208)$curr_branch$(tput sgr0))"
+    [ "$curr_branch" ] && printf "%s" "($(tput bold)$(tput setaf 208)$curr_branch$(tput sgr0))"
 }
 
 pc_uptime() {
@@ -92,15 +98,17 @@ virtualenv_ps1() {
 
 rightprompt() {
     # display stuff on right side of prompt
-    printf '%*s' $COLUMNS "$(virtualenv_ps1) $(pc_uptime) | $(free -h | awk '/^Mem:/ {print $3 "/" $2}')"
+    printf '%*s' $COLUMNS "$(virtualenv_ps1) $(pc_uptime)"
 }
 
-# disable the default virtualenv prompt change
-export VIRTUAL_ENV_DISABLE_PROMPT=1
+# handles cursor position
+RIGHT_PROMPT="\[\$(tput sc; rightprompt; tput rc)\]"
 
 bprompt() {
-    arrp="${GRAY_BG} $(random_emoji) ${GRAY_FG}${ORANGE_BG}${ORANGE_BG}${BLACK_FG} ${RESET}${ORANGE_FG}${RESET}"
-    PS1="${L_YELLOW}${BOLD}\[$(tput sc; rightprompt; tput rc)\]${RESET}${BOLD}${GREEN}\w${RESET} \[$(get_git_branch)\]\n${arrp} "
+	EXIT="$?"
+	last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "${RED_FG}${BOLD}✘${RESET}")
+    arrp="${GRAY_BG} ${last_command_status} $(random_emoji) ${GRAY_FG}${ORANGE_BG}${ORANGE_BG}${BLACK_FG} ${RESET}${ORANGE_FG}${RESET}"
+    PS1="${L_YELLOW}${BOLD}${RIGHT_PROMPT}${RESET}${BOLD}${GREEN}\w${RESET} \[$(get_git_branch)\]\n${arrp} "
 }
 
 if [ "$color_prompt" = yes ]; then
@@ -170,3 +178,9 @@ fi
 
 # Load custom bash completions
 source ~/scd-completions.bash
+
+eval $(thefuck --alias fuck)
+
+export DOT_REPO=https://github.com/Bhupesh-V/.Varshney
+export DOT_DEST=Documents
+export CDPATH=".:/home/bhupesh"
