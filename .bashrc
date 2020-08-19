@@ -62,9 +62,15 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 # color definitions
-BOLD=$(tput bold)
-RESET=$(tput sgr0)
-GREEN=$(tput setaf 10)
+BOLD="\[$(tput bold)\]"
+RESET="\[$(tput sgr0)\]"
+GREEN="\[$(tput setaf 10)\]"
+L_YELLOW="\[$(tput setaf 11)\]"
+BLACK_FG="\[$(tput setaf 0)\]"
+ORANGE_FG="\[$(tput setaf 214)\]"
+ORANGE_BG="\[$(tput setab 214)\]"
+GRAY_BG="\[$(tput setab 234)\]"
+GRAY_FG="\[$(tput setaf 234)\]"
 
 random_emoji() {
 	# add a random emoticon (mostly face emojis)
@@ -93,7 +99,8 @@ rightprompt() {
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 bprompt() {
-    PS1='\[$(tput sc; rightprompt; tput rc)\]$(random_emoji) \[$BOLD\]\[$GREEN\]\w\[$RESET\] \[$(get_git_branch)\]\r\n '
+    arrp="${GRAY_BG} $(random_emoji) ${GRAY_FG}${ORANGE_BG}${ORANGE_BG}${BLACK_FG} ${RESET}${ORANGE_FG}${RESET}"
+    PS1="${L_YELLOW}${BOLD}\[$(tput sc; rightprompt; tput rc)\]${RESET}${BOLD}${GREEN}\w${RESET} \[$(get_git_branch)\]\n${arrp} "
 }
 
 if [ "$color_prompt" = yes ]; then
