@@ -67,20 +67,19 @@ fi
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 # color definitions
-BOLD="\[$(tput bold)\]"
-RESET="\[$(tput sgr0)\]"
-GREEN="\[$(tput setaf 10)\]"
-L_YELLOW="\[$(tput setaf 11)\]"
-BLACK_FG="\[$(tput setaf 0)\]"
-ORANGE_FG="\[$(tput setaf 214)\]"
-ORANGE_BG="\[$(tput setab 214)\]"
-GRAY_BG="\[$(tput setab 234)\]"
-GRAY_FG="\[$(tput setaf 234)\]"
-RED_FG="$(tput setaf 9)"
+RESET="\[\e[0m\]"
+BOLD_BLACK_FG="\[\e[1;30m\]"
+ORANGE_FG="\[\e[38;5;214m\]"
+ORANGE_BG="\[\e[48;5;214m\]"
+GRAY_BG="\[\e[48;5;234m\]"
+GRAY_FG="\[\e[38;5;234m\]"
+BOLD_L_YELLOW=$'\[\e[1;38;5;11m\]'
+BOLD_RED_FG=$'\[\e[1;38;5;9m\]'
+BOLD_GREEN_FG=$'\[\e[1;32m\]'
 
 random_emoji() {
 	# add a random emoticon (mostly face emojis)
-	printf "%b" "\001\U1F$(shuf -i600-640 -n1)\002"
+	printf "%b" "\U1F$(shuf -i600-640 -n1)"
 }
 
 get_git_branch() {
@@ -93,27 +92,27 @@ pc_uptime() {
 }
 
 virtualenv_ps1() {
-    basename "$VIRTUAL_ENV"
+    [ "$VIRTUAL_ENV" ] && printf "%s" " $(basename "$VIRTUAL_ENV")"
 }
 
 rightprompt() {
     # display stuff on right side of prompt
-    printf '%*s' $COLUMNS "$(virtualenv_ps1) $(pc_uptime)"
+    printf '%*s' $COLUMNS "$(pc_uptime)"
 }
 
 # handles cursor position
 RIGHT_PROMPT="\[\$(tput sc; rightprompt; tput rc)\]"
 
-bprompt() {
+custom_prompt() {
 	EXIT="$?"
-	last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "${RED_FG}${BOLD}✘${RESET}")
-    arrp="${GRAY_BG} ${last_command_status} $(random_emoji) ${GRAY_FG}${ORANGE_BG}${ORANGE_BG}${BLACK_FG} ${RESET}${ORANGE_FG}${RESET}"
-    PS1="${L_YELLOW}${BOLD}${RIGHT_PROMPT}${RESET}${BOLD}${GREEN}\w${RESET} \[$(get_git_branch)\]\n${arrp} "
+	last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "${BOLD_RED_FG}✘")
+    arrp="${GRAY_BG} ${last_command_status} $(random_emoji) ${GRAY_FG}${ORANGE_BG}${ORANGE_BG}${BOLD_BLACK_FG} \[$(virtualenv_ps1)\] ${RESET}${ORANGE_FG}${RESET}"
+    PS1="${BOLD_L_YELLOW}${RIGHT_PROMPT}${RESET}${BOLD_GREEN_FG}\w${RESET} \[$(get_git_branch)\]\n${arrp} "
 }
 
 if [ "$color_prompt" = yes ]; then
     #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-    PROMPT_COMMAND=bprompt
+    PROMPT_COMMAND=custom_prompt
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
