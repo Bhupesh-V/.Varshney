@@ -1,5 +1,14 @@
 vcd() {
     # automatically activate python virtual environments on cd
+    #
+    # WARNING: vcd right now only works for following python project setup
+    #
+    # virtual-env-folder
+    # ├── bin
+    # ├── include
+    # ├── lib
+    # └── your-project-folder-or-repo
+
     userpath=$1
     if [[ $userpath != "" ]]; then
         cd "$userpath" || exit
@@ -62,18 +71,18 @@ urlencode() {
     local pos c o
 
     for (( pos=0 ; pos<${#string} ; pos++ )); do
-     c=${string:$pos:1}
-     case "$c" in
-        [-_.~a-zA-Z0-9] )
-                # these characters are url safe (permitted)
-                o="${c}" ;;
-        * )     
-            # Encode special characters
-            # Assign output to o, instead of printing to console
-            # %02x converts the character into hexadecimal notation.
-            printf -v o '%%%02x' "'$c"
-     esac
-     encoded+="${o}"
+        c=${string:$pos:1}
+        case "$c" in
+            [-_.~a-zA-Z0-9] )
+                    # these characters are url safe (permitted)
+                    o="${c}" ;;
+            * )     
+                # Encode special characters
+                # Assign output to o, instead of printing to console
+                # %02x converts the character into hexadecimal notation.
+                printf -v o '%%%02x' "'$c"
+        esac
+        encoded+="${o}"
     done
     # return "encoded"
     echo "${encoded}" 
