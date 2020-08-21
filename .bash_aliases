@@ -16,3 +16,4 @@ alias update='sudo apt-get update'
 alias upgrade='sudo apt-get upgrade'
 alias z=zsh
 alias b=bash
+alias cd="vcd"

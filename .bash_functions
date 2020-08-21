@@ -11,10 +11,15 @@ vcd() {
 
     userpath=$1
     if [[ $userpath != "" ]]; then
-        cd "$userpath" || exit
+        case $1 in
+            ".." ) cd .. && return;;
+            "-" )  cd -  && return;;
+            "/" )  cd /  && return;;
+            * )    cd "$userpath" || exit;;
+        esac
         current_dir=$(pwd)
         while [[ "$current_dir" != "$HOME" ]]; do
-            # check if current dir has activate script
+            # check if current dir contains an activate script
             if [[ -f "$current_dir/bin/activate" ]]; then
                 source "$current_dir/bin/activate"
             fi
