@@ -1,3 +1,21 @@
+vcd() {
+    # automatically activate python virtual environments on cd
+    userpath=$1
+    if [[ $userpath != "" ]]; then
+        cd "$userpath" || exit
+        current_dir=$(pwd)
+        while [[ "$current_dir" != "$HOME" ]]; do
+            # check if current dir has activate script
+            if [[ -f "$current_dir/bin/activate" ]]; then
+                source "$current_dir/bin/activate"
+            fi
+            # remove base directory name
+            current_dir="${current_dir%/*}"
+        done
+    fi
+
+}
+
 scd() {
     # [s]mart cd : find absolute paths & automatically switch to them
     # Also see scd-completions.bash for automatic tab suggestions
@@ -30,6 +48,7 @@ scd() {
                     unset files
                 fi;;
         esac
+        vcd "$1"
     else
         cd "$HOME" || exit
     fi

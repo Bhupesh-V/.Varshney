@@ -3,7 +3,7 @@
 My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/dotman)
 
 <a href="https://github.com/Bhupesh-V/.Varshney/blob/master/LICENSE">
-	<img alt="License: MIT" src="https://img.shields.io/github/license/Bhupesh-V/.Varshney" />
+	<img alt="License: GPLv3" src="https://img.shields.io/github/license/Bhupesh-V/.Varshney" />
 </a>
 <a href="https://github.com/ellerbrock/open-source-badges">
 	<img alt="bashit" src="https://badges.frapsoft.com/bash/v1/bash.png?v=103">
@@ -43,6 +43,10 @@ My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/
 	<tr>
 		<td><code>search</code>🔍</td>
 		<td>Invoke browser directly with search results</td>
+	</tr>
+	<tr>
+		<td><code>vcd</code>🔍</td>
+		<td>Automatically activate python virtual environments on cd</td>
 	</tr>
 	<tr>
 		<td><code>urlencode</code>🔗</td>
@@ -93,4 +97,4 @@ Support me by giving a ⭐️ if this project helped you! or just [![Twitter URL
 ## 📝 License
 
 Copyright © 2020 [Bhupesh Varshney](https://github.com/Bhupesh-V).<br />
-This project is [MIT](https://github.com/Bhupesh-V/.Varshney/blob/master/LICENSE) licensed.
+This project is [GPLv3](https://github.com/Bhupesh-V/.Varshney/blob/master/LICENSE) licensed.
