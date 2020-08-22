@@ -26,6 +26,9 @@ My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/
 
 > I am pretty new to this stuff, so you wouldn't find any scripts that hack NASA. Anyways hope you find something useful, Good luck 👍
 
+- [`bash_functions`](#bash_functions)
+- [`bashrc`](#bashrc)
+- [`init.vim` or `.vimrc`](#initvim-or-vimrc)
 
 ### [`.bash_functions`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bash_functions)
 
@@ -45,7 +48,7 @@ My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/
 		<td>Invoke browser directly with search results</td>
 	</tr>
 	<tr>
-		<td><code>vcd</code>🔍</td>
+		<td><code>vcd</code></td>
 		<td>Automatically activate python virtual environments on cd</td>
 	</tr>
 	<tr>
@@ -64,6 +67,75 @@ My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/
 </table>
 
 
+### [`.bashrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bashrc)
+
+My `PS1` is highly customized.
+
+<img align="center" title="My PS1" alt="PS1 prompt demo" src="https://user-images.githubusercontent.com/34342551/90950968-29fce400-e474-11ea-8f11-c375383e4606.png">
+
+Here is how its done
+
+```bash
+# Gib me all the colors 
+export TERM=xterm-256color
+# disable the default virtualenv prompt change
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+# color definitions
+RESET="\[\e[0m\]"
+BOLD_BLACK_FG="\[\e[1;30m\]"
+ORANGE_FG="\[\e[38;5;214m\]"
+ORANGE_BG="\[\e[48;5;214m\]"
+GRAY_BG="\[\e[48;5;234m\]"
+GRAY_FG="\[\e[38;5;234m\]"
+BOLD_L_YELLOW=$'\[\e[1;38;5;11m\]'
+BOLD_RED_FG=$'\[\e[1;38;5;9m\]'
+BOLD_GREEN_FG=$'\[\e[1;32m\]'
+
+random_emoji() {
+	# add a random emoticon (mostly face emojis)
+	printf "%b" "\U1F$(shuf -i600-640 -n1)"
+}
+
+get_git_branch() {
+    curr_branch=$(git branch 2> /dev/null | awk '/*/ {print $2}')
+    [ "$curr_branch" ] && printf "%s" "($(tput bold)$(tput setaf 208)$curr_branch$(tput sgr0))"
+}
+
+pc_uptime() {
+    uptime -p | awk '{for (i=2; i<NF; i++) printf $i " "; if (NF >= 1) print $NF; }'
+}
+
+# custom virtual env prompt
+virtualenv_ps1() {
+    [ "$VIRTUAL_ENV" ] && printf "%s" " $(basename "$VIRTUAL_ENV")"
+}
+
+rightprompt() {
+    # display stuff on right side of prompt
+    printf '%*s' $COLUMNS "$(pc_uptime)"
+}
+
+# handles cursor position
+RIGHT_PROMPT="\[\$(tput sc; rightprompt; tput rc)\]"
+
+custom_prompt() {
+	EXIT="$?"
+	last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "${BOLD_RED_FG}✘")
+    arrp="${GRAY_BG} ${last_command_status} $(random_emoji) ${GRAY_FG}${ORANGE_BG}${ORANGE_BG}${BOLD_BLACK_FG} \[$(virtualenv_ps1)\] ${RESET}${ORANGE_FG}${RESET}"
+    PS1="${BOLD_L_YELLOW}${RIGHT_PROMPT}${RESET}${BOLD_GREEN_FG}\w${RESET} \[$(get_git_branch)\]\n${arrp} "
+}
+
+if [ "$color_prompt" = yes ]; then
+    #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PROMPT_COMMAND=custom_prompt
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+unset color_prompt force_color_prompt
+```
+
+
 ### [`init.vim` or `.vimrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/init.vim)
 
 - Some of my fav themes :
@@ -72,6 +144,7 @@ My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/
   - [purify](https://github.com/kyoz/purify)
   - [spacecamp](https://github.com/jaredgorski/SpaceCamp)
   - [tender.vim](https://github.com/jacoborus/tender.vim)
+
 
 ## Author
 

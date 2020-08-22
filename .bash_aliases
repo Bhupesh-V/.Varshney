@@ -17,3 +17,4 @@ alias upgrade='sudo apt-get upgrade'
 alias z=zsh
 alias b=bash
 alias cd="vcd"
+alias venv="python3 -m venv"
