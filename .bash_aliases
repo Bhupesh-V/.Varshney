@@ -18,3 +18,4 @@ alias z=zsh
 alias b=bash
 alias cd="vcd"
 alias venv="python3 -m venv"
+alias sys="watch -ct -n0 $HOME/Documents/.Varshney/scripts/sys.sh"

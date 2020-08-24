@@ -1,5 +1,5 @@
 vcd() {
-    # automatically activate python virtual environments on cd
+    # Automatically activate python virtual environments on cd
     #
     # WARNING: vcd right now only works for following python project setup
     #
@@ -8,6 +8,8 @@ vcd() {
     # ├── include
     # ├── lib
     # └── your-project-folder-or-repo
+    #     ├── .git
+    #     └── .. other files/folders ..
 
     userpath=$1
     if [[ $userpath != "" ]]; then
