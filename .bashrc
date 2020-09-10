@@ -101,7 +101,7 @@ rightprompt() {
 }
 
 # handles cursor position
-RIGHT_PROMPT="\[\$(tput sc; rightprompt; tput rc)\]"
+RIGHT_PROMPT="\[\n\$(tput sc; rightprompt; tput rc)\]"
 
 custom_prompt() {
 	EXIT="$?"

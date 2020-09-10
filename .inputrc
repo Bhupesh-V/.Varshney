@@ -3,4 +3,8 @@ set completion-ignore-case on
 set completion-map-case on
 set show-all-if-unmodified on
 set menu-complete-display-prefix on
+set colored-stats on
+set colored-completion-prefix on
+set menu-complete-display-prefix on
+set print-completions-horizontally on
 "\t": menu-complete
