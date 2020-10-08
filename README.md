@@ -27,6 +27,7 @@ My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/
 > I am pretty new to this stuff, so you wouldn't find any scripts that hack NASA. Anyways hope you find something useful, Good luck 👍
 
 - [`bash_functions`](#bash_functions)
+- [`bash_aliases`](#bash_aliases)
 - [`bashrc`](#bashrc)
 - [`init.vim` or `.vimrc`](#initvim-or-vimrc)
 
@@ -66,6 +67,39 @@ My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/
 	</tr>
 </table>
 
+### [`.bash_aliases`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bash_aliases)
+
+Some handy aliases under different categories.
+
+1. Git
+```bash
+alias scommit='git commit -m'
+alias commit='git commit'
+alias clone='git clone'
+alias log='git log --graph --decorate --pretty=oneline --abbrev-commit'
+alias gdiff='git diff'
+```
+
+2. Go
+```bash
+alias gb="go build"
+alias gr="go run"
+alias gd="go doc"
+alias gg="go get"
+alias gt="go test"
+```
+
+3. Miscellaneous
+```bash
+# create python virtualenv
+alias venv="python3 -m venv"
+# watch realtime system info
+alias sys="watch -ct -n0 $HOME/Documents/.Varshney/scripts/sys.sh"
+# python http server
+alias serve="python3 -m http.server"
+# grep pattern inside files
+alias lk="grep -nir --exclude-dir=.git"
+```
 
 ### [`.bashrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bashrc)
 
