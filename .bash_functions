@@ -12,12 +12,16 @@ vcd() {
     #     └── .. other files/folders ..
 
     userpath=$1
+
+    # deactivate any existing virtual env
+    [[ $VIRTUAL_ENV ]] && deactivate
+
     if [[ $userpath != "" ]]; then
         case $1 in
             ".." ) cd .. && return;;
             "-" )  cd -  && return;;
             "/" )  cd /  && return;;
-            * )    cd "$userpath" || exit;;
+            * )    cd "$userpath" || return;;
         esac
         current_dir=$(pwd)
         while [[ "$current_dir" != "$HOME" ]]; do
@@ -38,12 +42,12 @@ scd() {
 
     if [[ $1 != "" ]]; then
         case $1 in
-            ".." ) cd .. || exit;;
-            "-" ) cd -  || exit;;
-            "/" ) cd /  || exit;;
+            ".." ) cd .. || return;;
+            "-" ) cd -  || return;;
+            "/" ) cd /  || return;;
             * ) if [[ $1 = /* ]]; then
                     # match absolute path
-                    cd "$1" || exit
+                    cd "$1" || return
                 else
                     # redo work if tab suggestions are not used
                     while read -r value; do
@@ -58,7 +62,7 @@ scd() {
                     for file_match in "${files[@]}"; do
                         if [[ -d $file_match ]]; then
                             printf "%s\n" "Hit 🎯: $file_match"
-                            cd "$file_match" || exit
+                            cd "$file_match" || return
                         fi
                     done 
                     unset files
@@ -66,7 +70,7 @@ scd() {
         esac
         vcd "$1"
     else
-        cd "$HOME" || exit
+        cd "$HOME" || return
     fi
 }
 
