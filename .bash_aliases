@@ -27,3 +27,10 @@ alias gg="go get"
 alias gt="go test"
 alias lk="grep -nir --exclude-dir=.git"
 alias hg="history | grep"
+alias bb="jekyll serve --watch --incremental"
+# run this inside the "_site" directory only
+wib() {
+	printf "Total Blogs: %s" "$(ls "$HOME"/Desktop/Bhupesh-V.github.io/_posts/ | wc -l)"
+	printf "\n%s" "Total Words: "
+	grep -nir -o -P '.{0,5} totalwords' --exclude-dir=tag --exclude "feed.xml" | awk '{print $2}' | awk '{s+=$0} END {print s}'
+}
