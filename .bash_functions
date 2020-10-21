@@ -139,3 +139,26 @@ netu() {
     printf "%s\n" "$(tput bold)🔽 RECEIVED    $(tput sgr0): $RECEIVED"
 }
 
+extract() {
+    # Extract different archives
+    # FROM: https://tldp.org/LDP/abs/html/sample-bashrc.html
+    
+    if [ -f "$1" ] ; then
+        [[ "$2" ]] && target_dir="$2" || target_dir=""
+        case "$1" in
+            *.tar.bz2)   tar xvjf "$1" -C $target_dir    ;;
+            *.tar.gz)    tar xvzf "$1" -C $target_dir    ;;
+            # *.gz)        gunzip "$1" -C target_dir      ;;
+            *.tar)       tar xvf "$1" -C $target_dir     ;;
+            *.zip)       unzip "$1" -d $target_dir       ;;
+            *)           echo "'$1' cannot be extracted via >extract<" ;;
+        esac
+    else
+        echo "'$1' is not a valid file!"
+    fi
+}
+
+myip() {
+    # Show my IP
+    echo -e "$(ip route | awk '/via/ {print $3}')"
+}
