@@ -116,15 +116,15 @@ export TERM=xterm-256color
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 # color definitions
-RESET="\[\e[0m\]"
-BOLD_BLACK_FG="\[\e[1;30m\]"
-ORANGE_FG="\[\e[38;5;214m\]"
-ORANGE_BG="\[\e[48;5;214m\]"
-GRAY_BG="\[\e[48;5;234m\]"
-GRAY_FG="\[\e[38;5;234m\]"
-BOLD_L_YELLOW=$'\[\e[1;38;5;11m\]'
-BOLD_RED_FG=$'\[\e[1;38;5;9m\]'
-BOLD_GREEN_FG=$'\[\e[1;32m\]'
+RESET="\e[0m"
+BOLD_BLACK_FG="\e[1;30m"
+ORANGE_FG="\e[38;5;214m"
+ORANGE_BG="\e[48;5;214m"
+GRAY_BG="\e[48;5;234m"
+GRAY_FG="\e[38;5;234m"
+BOLD_L_YELLOW=$'\e[1;38;5;11m'
+BOLD_RED_FG=$'\e[1;38;5;9m'
+BOLD_GREEN_FG=$'\e[1;32m'
 
 random_emoji() {
 	# add a random emoticon (mostly face emojis)
@@ -140,7 +140,6 @@ pc_uptime() {
     uptime -p | awk '{for (i=2; i<NF; i++) printf $i " "; if (NF >= 1) print $NF; }'
 }
 
-# custom virtual env prompt
 virtualenv_ps1() {
     [ "$VIRTUAL_ENV" ] && printf "%s" " $(basename "$VIRTUAL_ENV")"
 }
@@ -151,13 +150,13 @@ rightprompt() {
 }
 
 # handles cursor position
-RIGHT_PROMPT="\[\$(tput sc; rightprompt; tput rc)\]"
+RIGHT_PROMPT="\n\$(tput sc; rightprompt; tput rc)"
 
 custom_prompt() {
 	EXIT="$?"
-	last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "${BOLD_RED_FG}✘")
-    arrp="${GRAY_BG} ${last_command_status} $(random_emoji) ${GRAY_FG}${ORANGE_BG}${ORANGE_BG}${BOLD_BLACK_FG} \[$(virtualenv_ps1)\] ${RESET}${ORANGE_FG}${RESET}"
-    PS1="${BOLD_L_YELLOW}${RIGHT_PROMPT}${RESET}${BOLD_GREEN_FG}\w${RESET} \[$(get_git_branch)\]\n${arrp} "
+	last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "\[$BOLD_RED_FG\]✘")
+    arrp="\[$GRAY_BG\] $last_command_status $(random_emoji) \[$GRAY_FG\]\[$ORANGE_BG\]\[$ORANGE_BG\]\[$BOLD_BLACK_FG\] $(virtualenv_ps1) \[$RESET\]\[$ORANGE_FG\]\[$RESET\]"
+    PS1="\[$BOLD_L_YELLOW\]\[$RIGHT_PROMPT\]\[$RESET\]\[$BOLD_GREEN_FG\]\w\[$RESET\] $(get_git_branch)\n$arrp "
 }
 
 if [ "$color_prompt" = yes ]; then
