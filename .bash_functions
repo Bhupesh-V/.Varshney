@@ -1,3 +1,29 @@
+wib() {
+    # determine total words in my blog
+    blog_dir="$HOME"/Desktop/Bhupesh-V.github.io/
+    printf "Total Blogs: %s" "$(ls "$blog_dir"/_posts/ | wc -l)"
+    printf "\n%s" "Total Words: "
+    grep -nir -o -P '.{0,5} totalwords' --exclude-dir=tag --exclude "feed.xml" "$blog_dir/"_site | awk '{print $2}' | awk '{s+=$0} END {print s}'
+}
+
+gdl() {
+    # Get actual drive public link
+    # Read More: bhupesh-v.github.io/extract-file-id-from-drive-shareable-link/
+    str="$1"
+    # remove everything after the last /
+    remove_last=${str%/*}
+    # get everything after the last /
+    get_last=${remove_last##*/}
+    echo "https://drive.google.com/uc?export=view&id=$get_last"
+}
+
+alarm () {
+    # Set an alarm
+    #
+    # Usage: alarm 10 drink-water
+    ( sleep "$1"; notify-send -u critical -i time "$2" ) &
+}
+
 vcd() {
     # Automatically activate python virtual environments on cd
     #
