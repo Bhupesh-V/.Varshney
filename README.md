@@ -1,6 +1,6 @@
 # .Varshney
 
-My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/dotman)
+My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & easy to use dotfiles manager" href="https://github.com/Bhupesh-V/dotman"><b>dotman 🖖</b></a>
 
 <a href="https://github.com/Bhupesh-V/.Varshney/blob/master/LICENSE">
 	<img alt="License: GPLv3" src="https://img.shields.io/github/license/Bhupesh-V/.Varshney" />
@@ -17,8 +17,8 @@ My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/
 
 - **OS**: Ubuntu 18.04
 - **DE**: Mate
-- **SHELL**: zsh/bash (i switch a lot b/w them)
-- **Editor**: NeoVim
+- **SHELL**: bash
+- **Editor**: NeoVim/Sublime
 - **TERM**: xterm-256color
 
 
@@ -49,7 +49,7 @@ My config &amp; .dotfiles managed by [dotman 🖖](https://github.com/Bhupesh-V/
 		<td>Invoke browser directly with search results</td>
 	</tr>
 	<tr>
-		<td><code>vcd</code></td>
+		<td><code>vcd</code>🐍</td>
 		<td>Automatically activate python virtual environments on cd</td>
 	</tr>
 	<tr>
@@ -99,6 +99,8 @@ alias sys="watch -ct -n0 $HOME/Documents/.Varshney/scripts/sys.sh"
 alias serve="python3 -m http.server"
 # grep pattern inside files
 alias lk="grep -nir --exclude-dir=.git"
+# search history for commands
+alias hg="history | grep"
 ```
 
 ### [`.bashrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bashrc)
