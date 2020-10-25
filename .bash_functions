@@ -21,11 +21,11 @@ alarm () {
     # Set an alarm
     #
     # Usage: alarm 10 drink-water
-    ( sleep "$1"; notify-send -u critical -i time "$2" ) &
+    ( sleep "$1"; notify-send -a "CLI Alarm" -u critical -i time "$2" "Alarm Notification Alert" ) &
 }
 
 vcd() {
-    # Automatically activate python virtual environments on cd
+    # Automatically activate/deactivate python virtual environments on cd
     #
     # WARNING: vcd right now only works for following python project setup
     #
@@ -51,9 +51,9 @@ vcd() {
         esac
         current_dir=$(pwd)
         while [[ "$current_dir" != "$HOME" ]]; do
-            # check if current dir contains an activate script
+            # check if current dir contains an activate script (the venv folder)
             if [[ -f "$current_dir/bin/activate" ]]; then
-                source "$current_dir/bin/activate"
+                source "$current_dir/bin/activate"; break;
             fi
             # remove base directory name
             current_dir="${current_dir%/*}"
@@ -96,7 +96,7 @@ scd() {
         esac
         vcd "$1"
     else
-        cd "$HOME" || return
+        vcd "$HOME" || return
     fi
 }
 
@@ -155,7 +155,7 @@ search() {
 netu() {
     # [net]work [u]sage: check network usage stats
 
-    net_device=$(route | awk '/default/ {print $8}')
+    net_device=$(ip route | awk '/via/ {print $5}')
     TRANSMITTED=$(ifconfig "$net_device" | awk '/TX packets/ {print $6$7}')
     RECEIVED=$(ifconfig "$net_device" | awk '/RX packets/ {print $6$7}')
 
@@ -177,7 +177,7 @@ extract() {
             # *.gz)        gunzip "$1" -C target_dir      ;;
             *.tar)       tar xvf "$1" -C $target_dir     ;;
             *.zip)       unzip "$1" -d $target_dir       ;;
-            *)           echo "'$1' cannot be extracted via >extract<" ;;
+            *)           echo "'$1' cannot be extracted via extract" ;;
         esac
     else
         echo "'$1' is not a valid file!"
@@ -187,4 +187,9 @@ extract() {
 myip() {
     # Show my IP
     echo -e "$(ip route | awk '/via/ {print $3}')"
+}
+
+perm() {
+    # Show file permissions
+    ls -l "$1" | awk '{ print $1}'
 }
