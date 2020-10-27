@@ -1,6 +1,6 @@
 # .Varshney
 
-My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & easy to use dotfiles manager" href="https://github.com/Bhupesh-V/dotman"><b>dotman 🖖</b></a>
+My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & easy to use 	dotfiles manager" href="https://github.com/Bhupesh-V/dotman"><b>dotman 🖖</b></a>
 
 <a href="https://github.com/Bhupesh-V/.Varshney/blob/master/LICENSE">
 	<img alt="License: GPLv3" src="https://img.shields.io/github/license/Bhupesh-V/.Varshney" />
@@ -24,48 +24,92 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 
 ## What's Inside 👀
 
-> I am pretty new to this stuff, so you wouldn't find any scripts that hack NASA. Anyways hope you find something useful, Good luck 👍
+> ~I am pretty new to this stuff~ (not anymore), so you won't find any scripts that hack NASA. Anyways hope you find something useful, Good luck 👍
 
+- [`scripts`](#scripts)
 - [`bash_functions`](#bash_functions)
 - [`bash_aliases`](#bash_aliases)
 - [`bashrc`](#bashrc)
 - [`init.vim` or `.vimrc`](#initvim-or-vimrc)
+
 
 ### [`.bash_functions`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bash_functions)
 
 <table>
 	<tr>
 		<th>Function Name</th>
-		<th width="25%">Description</th>
-		<th width="60%">Demo</th>
+		<th width="70%">Description & Demo</th>
 	</tr>
 	<tr>
-		<td><code>netu</code>🌐</td>
-		<td>Analyze network data usage</td>
-		<td><img title="netu: check network usage stats" alt="demo of netu gif" src="https://user-images.githubusercontent.com/34342551/90170484-c280cd80-ddbd-11ea-9d38-71821250989c.png"></td>
+		<td rowspan="2" align="center"><code><b>netu</b></code>🌐</td>
+		<td align="center">Analyze network data usage</td>
+	</tr>
+	<tr><td><details><summary>Demo</summary>
+			<img title="netu: check network usage stats" alt="demo of netu gif" src="https://user-images.githubusercontent.com/34342551/90170484-c280cd80-ddbd-11ea-9d38-71821250989c.png">
+		</details>
+	</td>
 	</tr>
 	<tr>
-		<td><code>search</code>🔍</td>
-		<td>Invoke browser directly with search results</td>
+		<td align="center"><code><b>search</b></code>🔍</td>
+		<td align="center">Invoke browser directly with search results</td>
 	</tr>
 	<tr>
-		<td><code>vcd</code>🐍</td>
-		<td>Automatically activate python virtual environments on cd</td>
+		<td align="center"><code><b>vcd</b></code>🐍</td>
+		<td align="center">Automatically activate python virtual environments on cd</td>
 	</tr>
 	<tr>
-		<td><code>urlencode</code>🔗</td>
-		<td>Dependency of search(), converts strings to URL safe version.</td>
-		<td><img title="urlencode: encode strings to URL safe version" alt="demo of urlencode" src="https://user-images.githubusercontent.com/34342551/90170221-54d4a180-ddbd-11ea-9c76-029a70f5dc37.png"></td>
+		<td rowspan="2" align="center"><code><b>urlencode</b></code>🔗</td>
+		<td align="center">Dependency of search(), converts strings to URL safe version.</td>
+	</tr>
+	<tr><td><details><summary>Demo</summary>
+		<img title="urlencode: encode strings to URL safe version" alt="demo of urlencode" src="https://user-images.githubusercontent.com/34342551/90170221-54d4a180-ddbd-11ea-9c76-029a70f5dc37.png">
+	</details>
+	</td>
 	</tr>
 	<tr>
-		<td><code>scd</code>💡</td>
-		<td><p>[s]mart cd searches absolute path names of directories inside your system and switches to them automatically. No need to remember any locations !!. 
-		<a href="https://bhupesh-v.github.io/creating-a-smart-alternative-to-cd/">Read More</a></p><br><br>
+		<td rowspan="2" align="center"><code><b>scd</b></code>💡</td>
+		<td align="center"><p>[s]mart cd searches absolute path names of directories inside your system and switches to them automatically. No need to remember any locations !!. 
+		<a href="https://bhupesh-v.github.io/creating-a-smart-alternative-to-cd/">Read More</a></p>
 		Also see <a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scd-completions.bash"><samp>scd-completions.bash</samp></a> for automatic tab suggestions.
 		</td>
-		<td><img title="scd : switch directories from anywhere to anywhere" alt="scd demo gif" src="https://user-images.githubusercontent.com/34342551/90309212-1eee0500-df04-11ea-9695-490103823164.gif"></td>
+	</tr>
+	<tr><td><details><summary>Demo</summary>
+		<img title="scd : switch directories from anywhere to anywhere" alt="scd demo gif" src="https://user-images.githubusercontent.com/34342551/90309212-1eee0500-df04-11ea-9695-490103823164.gif">
+	</details>
+	</td>
+	</tr>
+	<tr>
+		<td align="center"><code><b>alarm</b></code>⏰</td>
+		<td align="center">A single line utility for a timer/alarm</td>
+	</tr>
+	<tr>
+		<td align="center"><code><b>myip</b></code>🌐</td>
+		<td align="center">A single line utility for showing my IP address</td>
+	</tr>
+	<tr>
+		<td align="center"><code><b>extract</b></code>📦</td>
+		<td align="center">A utility for extracting different archives in an easy way</td>
 	</tr>
 </table>
+
+
+### [`scripts`](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/)
+
+<table>
+	<tr>
+		<th>Name</th>
+		<th width="70%">Description & Demo</th>
+	</tr>
+	<tr>
+		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/sys.sh">sys.sh</a></b></td>
+		<td align="center">A realtime update of your system using common shell commands</td>
+	</tr>
+	<tr><td align="center"><details><summary>Demo</summary>
+		<img title="sys.sh: get realtime update of your linux system" alt="sys.sh demo gif" src="https://user-images.githubusercontent.com/34342551/96346219-5cb00b00-10b8-11eb-90fb-d21f6ffa7c12.gif">
+	</details></td>
+	</tr>
+</table>
+
 
 ### [`.bash_aliases`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bash_aliases)
 
@@ -102,6 +146,7 @@ alias lk="grep -nir --exclude-dir=.git"
 # search history for commands
 alias hg="history | grep"
 ```
+
 
 ### [`.bashrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bashrc)
 
