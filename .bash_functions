@@ -193,3 +193,12 @@ perm() {
     # Show file permissions
     ls -l "$1" | awk '{ print $1}'
 }
+
+hg() {
+	# search history for patterns (unique commands)
+    if [[ "$1" ]]; then
+        history | grep "$1" | awk '{ $1=""; print $0 }' | sort -u
+    else
+        echo -e "hg needs a pattern to look for"
+    fi
+}
