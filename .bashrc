@@ -183,6 +183,7 @@ eval "$(thefuck --alias fuck)"
 
 export CDPATH=".:/home/bhupesh"
 export DOT_REPO=https://github.com/Bhupesh-V/.Varshney DOT_DEST=Documents
+
 # set options for less
 export LESS='--ignore-case --status-column --LONG-PROMPT --RAW-CONTROL-CHARS --HILITE-UNREAD --tabs=4 --no-init --window=-4'
 # or the short version

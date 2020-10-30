@@ -1,4 +1,5 @@
 wib() {
+    # words in blog
     # determine total words in my blog
     blog_dir="$HOME"/Desktop/Bhupesh-V.github.io/
     printf "Total Blogs: %s" "$(ls "$blog_dir"/_posts/ | wc -l)"
@@ -20,12 +21,17 @@ gdl() {
 alarm () {
     # Set an alarm
     #
-    # Usage: alarm 10 drink-water
+    # Usage: alarm 10 drink-water (for minutes use 'm' e.g alarm 15m "go piss")
+    #
+    # set +m disables monitor mode for bg jobs. Another way to deactivate it: set +o monitor
+    # Use 'help set' to see more options
+
+    set +m
     ( sleep "$1"; notify-send -a "CLI Alarm" -u critical -i time "$2" "Alarm Notification Alert" ) &
 }
 
 vcd() {
-    # Automatically activate/deactivate python virtual environments on cd
+    # [v]irtual [cd] automatically activates/deactivates python virtual environments on cd
     #
     # WARNING: vcd right now only works for following python project setup
     #
@@ -63,41 +69,38 @@ vcd() {
 }
 
 scd() {
-    # [s]mart cd : find absolute paths & automatically switch to them
+    # [s]mart [cd] : find absolute paths & automatically switch to them
     # Also see scd-completions.bash for automatic tab suggestions
 
-    if [[ $1 != "" ]]; then
-        case $1 in
-            ".." ) cd .. || return;;
-            "-" ) cd -  || return;;
-            "/" ) cd /  || return;;
-            * ) if [[ $1 = /* ]]; then
-                    # match absolute path
-                    cd "$1" || return
-                else
-                    # redo work if tab suggestions are not used
+    [[ "$1" == "" ]] && cd "$HOME" || return;
+    case $1 in
+        ".." ) cd .. || return;;
+        "-" ) cd -  || return;;
+        "/" ) cd /  || return;;
+        * ) if [[ $1 = /* ]]; then
+                # match absolute path
+                cd "$1" || return
+            else
+                # redo work if tab suggestions are not used
+                while read -r value; do
+                    files+=($value)
+                done < <( locate -e -r "/$1$" | grep "$HOME" )
+                if [[ ${#files} == 0 ]]; then
+                    # do loose search
                     while read -r value; do
                         files+=($value)
-                    done < <( locate -e -r "/$1$" | grep "$HOME" )
-                    if [[ ${#files} == 0 ]]; then
-                        # do loose search
-                        while read -r value; do
-                            files+=($value)
-                        done < <( locate -e -b -r "$1" | grep "$HOME" )
+                    done < <( locate -e -b -r "$1" | grep "$HOME" )
+                fi
+                for file_match in "${files[@]}"; do
+                    if [[ -d $file_match ]]; then
+                        printf "%s\n" "Hit 🎯: $file_match"
+                        cd "$file_match" || return
                     fi
-                    for file_match in "${files[@]}"; do
-                        if [[ -d $file_match ]]; then
-                            printf "%s\n" "Hit 🎯: $file_match"
-                            cd "$file_match" || return
-                        fi
-                    done 
-                    unset files
-                fi;;
-        esac
-        vcd "$1"
-    else
-        vcd "$HOME" || return
-    fi
+                done 
+                unset files
+            fi;;
+    esac
+    # vcd "$1"
 }
 
 urlencode() {
@@ -177,10 +180,10 @@ extract() {
             # *.gz)        gunzip "$1" -C target_dir      ;;
             *.tar)       tar xvf "$1" -C $target_dir     ;;
             *.zip)       unzip "$1" -d $target_dir       ;;
-            *)           echo "'$1' cannot be extracted via extract" ;;
+            *)           echo "'$1' is not a valid archive file!" ;;
         esac
     else
-        echo "'$1' is not a valid file!"
+        echo "extract requires a filepath"
     fi
 }
 
@@ -195,10 +198,23 @@ perm() {
 }
 
 hg() {
-	# search history for patterns (unique commands)
+	# [h]istory [g]rep searches history for patterns (unique commands)
     if [[ "$1" ]]; then
-        history | grep "$1" | awk '{ $1=""; print $0 }' | sort -u
+        # cut uses ' ' as a delimiter & prints everything from 
+        # the 3 field to the end of line
+        history | grep "$1" --color=always | cut -d' ' -f3- | uniq -u
     else
         echo -e "hg needs a pattern to look for"
+    fi
+}
+
+eye() {
+    # render markdown
+    filename=$(basename -- "$1")
+    extension="${filename##*.}"
+    if [[ $extension == "md" ]]; then
+        glow "$1"
+    else
+        less "$1"
     fi
 }
