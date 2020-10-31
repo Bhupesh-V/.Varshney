@@ -218,3 +218,14 @@ eye() {
         less "$1"
     fi
 }
+
+cb() {
+    # copy stuff from terminal to clipboard
+    # TODO: way to handle -a
+
+    # clear the cliboard 
+    xsel -bc
+
+    # add to clipboard
+    xsel -b < "$1"
+}

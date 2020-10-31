@@ -35,7 +35,7 @@ set autoindent
 ## paragraphs.  They cannot contain blank characters.  Only closing
 ## punctuation, optionally followed by closing brackets, can end
 ## sentences.
-# set brackets ""')>]}"
+set brackets ""')>]}"
 
 ## Do case-sensitive searches by default.
 # set casesensitive
@@ -68,7 +68,7 @@ set locking
 ## The opening and closing brackets that can be found by bracket
 ## searches.  They cannot contain blank characters.  The former set must
 ## come before the latter set, and both must be in the same order.
-# set matchbrackets "(<[{)>]}"
+set matchbrackets "(<[{)>]}"
 
 ## Use the blank line below the title bar as extra editing space.
 # set morespace
