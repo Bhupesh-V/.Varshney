@@ -24,7 +24,7 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 
 ## What's Inside 👀
 
-> ~I am pretty new to this stuff~ (not anymore), so you won't find any scripts that hack NASA. Anyways hope you find something useful, Good luck 👍
+> ~~I am pretty new to this stuff~~ (not anymore), so you won't find any scripts that hack NASA. Anyways hope you find something useful, Good luck 👍
 
 - [`scripts`](#scripts)
 - [`bash_functions`](#bash_functions)
@@ -108,6 +108,26 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 		<img title="sys.sh: get realtime update of your linux system" alt="sys.sh demo gif" src="https://user-images.githubusercontent.com/34342551/96346219-5cb00b00-10b8-11eb-90fb-d21f6ffa7c12.gif">
 	</details></td>
 	</tr>
+	<tr>
+		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/md.sh">md.sh</a></b></td>
+		<td align="center">A utility to watch a Markdown file & build its HTML preview using commonmarker</td>
+	</tr>
+	<tr><td align="center"><details><summary>Demo</summary>
+		<img title="md.sh: utility to watch a Markdown file & build its HTML preview using commonmarker" alt="md.sh demo gif" src="https://user-images.githubusercontent.com/34342551/97805510-a4b85b80-1c7c-11eb-9efe-3eedbb76a70b.gif">
+	</details></td>
+	</tr>
+	<tr>
+		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/colors.sh">colors.sh</a></b></td>
+		<td align="center">A utility to check color capability of your terminal</td>
+	</tr>
+	<tr><td align="center"><details><summary>Demo</summary>
+		<img title="colors.sh: utility to check color capabilities of your terminal" alt="colors.sh demo png" src="https://user-images.githubusercontent.com/34342551/97805252-f2cc5f80-1c7a-11eb-92be-31ac80ec0719.png">
+	</details></td>
+	</tr>
+	<tr>
+		<td align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/my-prs.py">my-prs.py</a></b></td>
+		<td align="center">A utility to list a github user's pull requests in a nicely readable markdown file with 0 dependencies.</td>
+	</tr>
 </table>
 
 
@@ -116,36 +136,38 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 Some handy aliases under different categories.
 
 1. Git
-```bash
-alias scommit='git commit -m'
-alias commit='git commit'
-alias clone='git clone'
-alias log='git log --graph --decorate --pretty=oneline --abbrev-commit'
-alias gdiff='git diff'
-```
+   ```bash
+   alias scommit='git commit -m'
+   alias commit='git commit'
+   alias clone='git clone'
+   alias log='git log --graph --decorate --pretty=oneline --abbrev-commit'
+   alias gdiff='git diff'
+   # undo last local commit
+   alias undo='git reset HEAD~'
+   ```
 
 2. Go
-```bash
-alias gb="go build"
-alias gr="go run"
-alias gd="go doc"
-alias gg="go get"
-alias gt="go test"
-```
+   ```bash
+   alias gb="go build"
+   alias gr="go run"
+   alias gd="go doc"
+   alias gg="go get"
+   alias gt="go test"
+   ```
 
 3. Miscellaneous
-```bash
-# create python virtualenv
-alias venv="python3 -m venv"
-# watch realtime system info
-alias sys="watch -ct -n0 $HOME/Documents/.Varshney/scripts/sys.sh"
-# python http server
-alias serve="python3 -m http.server"
-# grep pattern inside files
-alias lk="grep -nir --exclude-dir=.git"
-# search history for commands
-alias hg="history | grep"
-```
+   ```bash
+   # create python virtualenv
+   alias venv="python3 -m venv"
+   # watch realtime system info
+   alias sys="watch -ct -n0 $HOME/Documents/.Varshney/scripts/sys.sh"
+   # python http server
+   alias serve="python3 -m http.server"
+   # grep pattern inside files
+   alias lk="grep -nir --exclude-dir=.git"
+   # search history for commands
+   alias hg="history | grep"
+   ```
 
 
 ### [`.bashrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bashrc)
@@ -226,13 +248,8 @@ unset color_prompt force_color_prompt
   - [tender.vim](https://github.com/jacoborus/tender.vim)
 
 
-## Author
-
-🤓 **Bhupesh Varshney**
-
-- Web : [bhupesh.codes](https://bhupesh-v.github.io)
-- Twitter : [@bhupeshimself](https://twitter.com/bhupeshimself)
-- DEV : [bhupesh](https://dev.to/bhupesh)
+## Author [![bhupesh-twitter-image](https://kutt.it/bhupeshimself)](https://twitter.com/bhupeshimself)
+**🤓 [Bhupesh Varshney](https://bhupesh-v.github.io)** 
 
 
 ## ☺️ Show your support
