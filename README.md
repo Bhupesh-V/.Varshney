@@ -1,6 +1,6 @@
 # .Varshney
 
-My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & easy to use 	dotfiles manager" href="https://github.com/Bhupesh-V/dotman"><b>dotman 🖖</b></a>
+My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & easy to use dotfiles manager" href="https://github.com/Bhupesh-V/dotman"><b>dotman 🖖</b></a>
 
 <a href="https://github.com/Bhupesh-V/.Varshney/blob/master/LICENSE">
 	<img alt="License: GPLv3" src="https://img.shields.io/github/license/Bhupesh-V/.Varshney" />
