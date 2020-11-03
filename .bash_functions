@@ -72,35 +72,39 @@ scd() {
     # [s]mart [cd] : find absolute paths & automatically switch to them
     # Also see scd-completions.bash for automatic tab suggestions
 
-    [[ "$1" == "" ]] && cd "$HOME" || return;
-    case $1 in
-        ".." ) cd .. || return;;
-        "-" ) cd -  || return;;
-        "/" ) cd /  || return;;
-        * ) if [[ $1 = /* ]]; then
-                # match absolute path
-                cd "$1" || return
-            else
-                # redo work if tab suggestions are not used
-                while read -r value; do
-                    files+=($value)
-                done < <( locate -e -r "/$1$" | grep "$HOME" )
-                if [[ ${#files} == 0 ]]; then
-                    # do loose search
+    if [[ "$1" ]]; then
+        case $1 in
+            ".." ) cd .. || return;;
+            "-" ) cd -  || return;;
+            "/" ) cd /  || return;;
+            * ) if [[ $1 = /* ]]; then
+                    # match absolute path
+                    cd "$1" || return
+                else
+                    # redo work if tab suggestions are not used
                     while read -r value; do
                         files+=($value)
-                    done < <( locate -e -b -r "$1" | grep "$HOME" )
-                fi
-                for file_match in "${files[@]}"; do
-                    if [[ -d $file_match ]]; then
-                        printf "%s\n" "Hit 🎯: $file_match"
-                        cd "$file_match" || return
+                    done < <( locate -e -r "/$1$" | grep "$HOME" )
+                    if [[ ${#files} == 0 ]]; then
+                        # do loose search
+                        while read -r value; do
+                            files+=($value)
+                        done < <( locate -e -b -r "$1" | grep "$HOME" )
                     fi
-                done 
-                unset files
-            fi;;
-    esac
-    # vcd "$1"
+                    for file_match in "${files[@]}"; do
+                        if [[ -d $file_match ]]; then
+                            printf "%s\n" "Hit 🎯: $file_match"
+                            cd "$file_match" || return
+                        fi
+                    done 
+                    unset files
+                fi;;
+        esac
+    else
+        cd ~ || return
+    fi
+    # why tf is this not working
+    # [[ -z "$1" ]] && cd "$HOME" || exit
 }
 
 urlencode() {
