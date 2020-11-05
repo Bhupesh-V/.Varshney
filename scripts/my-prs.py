@@ -6,7 +6,7 @@
 # Note that you will need commonmarker to render this md file (or just paste it in github readme)
 #
 # TODO:
-# - Handle Pagination
+# - Handle Pagination (Done)
 # - Concurrent requests
 
 import urllib.parse
@@ -17,22 +17,46 @@ from dateutil import parser
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 
+def parse_link_header(link_header):
+    header_links = link_header.split(",")[0].split(";")
+    if header_links[1] == ' rel="next"':
+        next_page = header_links[0]
+        # yo why tf response headers are normal ?
+        next_page = next_page[1 : len(next_page) - 1]
+    else:
+        next_page = None
+
+    return next_page
+
+
 def request(url):
     req = urllib.request.Request(url, headers=HEADERS)
     with urllib.request.urlopen(req) as response:
         res = json.loads(response.read().decode("utf-8"))
         if response.headers["link"] is not None:
-            paginate = response.headers["link"].split(";")
+            next_url = parse_link_header(response.headers["link"])
         else:
-            paginate = None
+            next_url = None
 
-    return res, paginate
+    return res, next_url
+
+
+def handle_pagination(url):
+    res_list = []
+    while True:
+        res, next_url = request(url)
+        res_list += res
+        if next_url is None:
+            break
+        url = next_url
+
+    return res_list
 
 
 def get_user_repos(username):
     # Why ?, to eliminate contributions to self repos
     repo_list = []
-    repos, paginate = request(
+    repos, paginate = handle_pagination(
         f"https://api.github.com/users/{username}/repos?type=owner&per_page=100"
     )
     for repo in repos:
@@ -44,17 +68,17 @@ def get_user_repos(username):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-    	print("Needs a github username as an argument")
-    	exit()
+        print("Needs a github username as an argument")
+        exit()
     else:
-    	user = sys.argv[1]
+        user = sys.argv[1]
 
     user_repos = []
     print("Fetching User Repositories ...")
     user_repos = get_user_repos(user)
     # get all pull requests of a user
     print("Fetching {0}'s Pull Requests ...".format(user))
-    pull_requests, paginate = request(
+    pull_requests, paginate = handle_pagination(
         f"https://api.github.com/search/issues?q=author%3A{user}+type%3Apr&per_page=100"
     )
 

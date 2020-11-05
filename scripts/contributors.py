@@ -1,11 +1,11 @@
-#/usr/bin/env python3
+# /usr/bin/env python3
 
 # Find total contributors on all repositories of a github user (WIP)
 
 # TODO
 # 1. Add basic auth handlers (Done)
 # 2. Generate & write reports to a file
-# 3. Handle pagination
+# 3. Handle pagination (Done)
 # 4. Clean up error handling
 # 5. Fetch User's Organisation
 
@@ -19,36 +19,42 @@ base_url = "https://api.github.com"
 repo_contributors_url = ""
 
 
+def parse_link_header(link_header):
+    header_links = link_header.split(",")[0].split(";")
+    if header_links[1] == ' rel="next"':
+        next_page = header_links[0]
+        # yo why tf response headers are normal ?
+        next_page = next_page[1 : len(next_page) - 1]
+    else:
+        next_page = None
+
+    return next_page
+
+
 def request(url):
     req = urllib.request.Request(url, headers=HEADERS)
     with urllib.request.urlopen(req) as response:
         res = json.loads(response.read().decode("utf-8"))
         if response.headers["link"] is not None:
-            #print(response.headers["link"].split(";"))
-            header_links = response.headers["link"].split(',')[0].split(';')
-            if header_links[1] == ' rel="next"':
-                print(header_links)
-                next_url = header_links[0]
-                next_url = next_url[1:len(next_url)]
+            next_url = parse_link_header(response.headers["link"])
         else:
             next_url = None
 
     return res, next_url
 
+
 # with open('contributors.json', 'w') as file:
 # 	json.dump(repo_list, file)
 
+
 def handle_pagination(url):
     res_list = []
-    res, next_url = request(url)
-    res_list += res
-    while next_url:
-        res, next_url = request(next_url)
+    while True:
+        res, next_url = request(url)
+        res_list += res
         if next_url is None:
             break
-        else:
-            print("got new url")
-            res_list += res
+        url = next_url
 
     return res_list
 
@@ -65,6 +71,9 @@ def find_user_repos(user):
     except urllib.error.HTTPError as e:
         if e.code == 403:
             print("GitHub API rate limit exceeded. Only 60 requests/hour")
+            exit()
+        elif e.code == 404:
+            print("User doesn't exist. Please re-check username")
             exit()
         else:
             pass
@@ -94,9 +103,7 @@ def find_contributors(repo_list, user):
                 pass
         total_contributors += ccon
 
-    print(f"Total Contributors in {user}'s repos : {total_contributors}")
-
-    return contributor_list
+    print(f"Total Contributors in {user}'s repos : {total_contributors} ✨")
 
 
 def find_first_contributors(contributors, user, user_repos):
@@ -124,10 +131,10 @@ if __name__ == "__main__":
     elif len(sys.argv) == 3:
         HEADERS["Authorization"] = f"token {sys.argv[2]}"
     else:
-        print("No token provided, requests will be limited by GitHub")
+        print("No token provided, requests will be limited by GitHub (60/hr)")
 
     user = sys.argv[1]
     print(f"Fetching {user}'s repositories ...")
     repositories = find_user_repos(user)
     print(f"Fetching contributors ...")
-    contributors = find_contributors(repositories, user)
+    find_contributors(repositories, user)
