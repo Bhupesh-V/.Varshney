@@ -213,11 +213,13 @@ hg() {
 }
 
 eye() {
-    # render markdown
+    # custom file viewer
     filename=$(basename -- "$1")
     extension="${filename##*.}"
     if [[ $extension == "md" ]]; then
         glow "$1"
+    elif [[ $extension == "json" ]]; then
+    	python3 -m json.tool "$1"
     else
         less "$1"
     fi
