@@ -31,9 +31,14 @@ watch_changes() {
     done
 }
 
-html_preview="${1%.*}.html"
-build_preview "$1"
-echo -e "Opening preview in browser ..."
-# alternative is to directly invoke browser
-xdg-open "file://$PWD/$html_preview" &>/dev/null
-watch_changes "$1"
+if [[ -z "$1" ]]; then
+	echo -e "md requires a .md file"
+	exit 1
+else
+	html_preview="${1%.*}.html"
+	build_preview "$1"
+	echo -e "Opening preview in browser ..."
+	# alternative is to directly invoke browser
+	xdg-open "file://$PWD/$html_preview" &>/dev/null
+	watch_changes "$1"
+fi
