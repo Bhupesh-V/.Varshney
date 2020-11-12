@@ -240,13 +240,23 @@ unset color_prompt force_color_prompt
 
 ### [`init.vim` or `.vimrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/init.vim)
 
-- Some of my fav themes :
-  - [anderson](https://github.com/tlhr/anderson.vim)
-  - [nord-vim](https://github.com/arcticicestudio/nord-vim)
-  - [purify](https://github.com/kyoz/purify)
-  - [spacecamp](https://github.com/jaredgorski/SpaceCamp)
-  - [tender.vim](https://github.com/jacoborus/tender.vim)
+![current-setup-vim](https://user-images.githubusercontent.com/34342551/98931119-9f240680-2503-11eb-9571-f1937b5348de.png)
 
+Current theme: `palenight`
+
+- Plugins:
+  1. [vim-devicons](https://github.com/ryanoasis/vim-devicons) - for file icons
+  2. [NERDTree](https://github.com/scrooloose/nerdtree) - for tree like menu
+  3. [vim-auto-save](https://github.com/907th/vim-auto-save) - for auto-saving files (no need to `:w`)
+  4. [vim-airline](https://github.com/vim-airline/vim-airline) - for status bar at bottom
+
+- Some of my fav themes:
+  - [ayu](https://github.com/ayu-theme/ayu-vim)
+  - [sonokai](https://github.com/sainnhe/sonokai)
+  - [darcula](https://github.com/doums/darcula)
+  - [purify](https://github.com/kyoz/purify)
+  - [tender.vim](https://github.com/jacoborus/tender.vim)
+  - [palenight](https://github.com/drewtempelmeyer/palenight.vim)
 
 ## Author [![bhupesh-twitter-image](https://kutt.it/bhupeshimself)](https://twitter.com/bhupeshimself)
 **🤓 [Bhupesh Varshney](https://bhupesh-v.github.io)** 
@@ -268,3 +278,5 @@ Support me by giving a ⭐️ if this project helped you! or just [![Twitter URL
 
 Copyright © 2020 [Bhupesh Varshney](https://github.com/Bhupesh-V).<br />
 This project is [GPLv3](https://github.com/Bhupesh-V/.Varshney/blob/master/LICENSE) licensed.
+
+![GPLv3-logo](https://www.gnu.org/graphics/gplv3-with-text-136x68.png)

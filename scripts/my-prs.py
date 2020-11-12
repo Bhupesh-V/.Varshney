@@ -5,10 +5,7 @@
 # Usage: ./my-prs.py <username>
 # Note that you will need commonmarker to render this md file (or just paste it in github readme)
 #
-# TODO:
-# - Concurrent requests
 
-import urllib.parse
 import urllib.request
 import json, sys, os
 from datetime import datetime
@@ -32,7 +29,7 @@ def parse_link_header(link_header):
 def request(url):
     req = urllib.request.Request(url, headers=HEADERS)
     with urllib.request.urlopen(req) as response:
-        res = json.loads(response.read().decode("utf-8"))
+        res = json.loads(response.read())
         if response.headers["link"] is not None:
             next_url = parse_link_header(response.headers["link"])
         else:
@@ -63,8 +60,7 @@ def get_user_repos(username):
     repos = handle_pagination(
         f"https://api.github.com/users/{username}/repos?type=owner&per_page=100"
     )
-    # filter forked repos
-    repo_list = [repo["url"] for repo in repos if repo["fork"] is False]
+    repo_list = [repo["url"] for repo in repos]
 
     return repo_list
 

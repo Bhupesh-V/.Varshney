@@ -235,3 +235,18 @@ cb() {
     # add to clipboard
     xsel -b < "$1"
 }
+
+h() {
+	# Combined help lookup
+	#
+	# man -k == apropos
+	# man -f == whatis
+	if [[ -z "$1" ]]; then
+		echo "h needs an argument to look 👀"
+	else
+		type "$1"
+		whereis "$1"
+		whatis "$1"
+		apropos "$1"
+	fi
+}
