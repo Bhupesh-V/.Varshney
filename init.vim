@@ -1,5 +1,4 @@
 call plug#begin()
-Plug 'roxma/nvim-completion-manager'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'vim-airline/vim-airline'
@@ -12,6 +11,7 @@ Plug 'drewtempelmeyer/palenight.vim'
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'ayu-theme/ayu-vim'
 Plug 'danilo-augusto/vim-afterglow'
+Plug 'junegunn/vim-emoji'
 Plug 'ryanoasis/vim-devicons'
 call plug#end()
 
@@ -32,13 +32,14 @@ set autoindent smartindent
 set ts=4
 set expandtab
 set mouse=v
+set completefunc=emoji#complete
+
 
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ''
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 let NERDTreeMinimalUI = 1  " Disable ? etc
-let NERDTreeDirArrows = 1
 let g:auto_save = 1  " enable AutoSave on Vim startup (vim-auto-save plugin)
 let NERDTreeShowHidden=1  "Show hidden files (aka dotfiles)
 
@@ -47,7 +48,9 @@ let NERDTreeShowHidden=1  "Show hidden files (aka dotfiles)
 autocmd BufRead,BufNewFile * start "Switch to Insert mode when open a file
 autocmd VimEnter * NERDTree | wincmd p  "Automatically start NERDTree and focus back to file
 
-"Open a diretory if specified
+autocmd CompleteDone * %s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/g
+
+" Open a diretory if specified
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
 
