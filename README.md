@@ -240,7 +240,7 @@ unset color_prompt force_color_prompt
 
 ### [`init.vim` or `.vimrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/init.vim)
 
-![current-setup-vim](https://user-images.githubusercontent.com/34342551/98931119-9f240680-2503-11eb-9571-f1937b5348de.png)
+![sexy-nvim-setup](https://user-images.githubusercontent.com/34342551/99086457-93ae0980-25ef-11eb-9a08-87d5630206b4.png)
 
 Current theme: `palenight`
 
