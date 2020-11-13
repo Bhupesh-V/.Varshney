@@ -11,6 +11,7 @@ Plug 'drewtempelmeyer/palenight.vim'
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'ayu-theme/ayu-vim'
 Plug 'danilo-augusto/vim-afterglow'
+Plug 'psf/black', { 'branch': 'stable' }
 Plug 'junegunn/vim-emoji'
 Plug 'ryanoasis/vim-devicons'
 call plug#end()
@@ -25,6 +26,7 @@ nmap <F6> :NERDTreeToggle<CR>
 :iabbrev webs  https://bhupesh-v.github.io
 
 colorscheme palenight
+hi Normal guibg=NONE ctermbg=NONE
 
 set nu 
 set ai
@@ -48,7 +50,9 @@ let NERDTreeShowHidden=1  "Show hidden files (aka dotfiles)
 autocmd BufRead,BufNewFile * start "Switch to Insert mode when open a file
 autocmd VimEnter * NERDTree | wincmd p  "Automatically start NERDTree and focus back to file
 
+" vim-emoji doesn't replace :emoji_string: with the actual emoji by default
 autocmd CompleteDone * %s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/g
+
 
 " Open a diretory if specified
 autocmd StdinReadPre * let s:std_in=1
