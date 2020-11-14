@@ -242,15 +242,17 @@ unset color_prompt force_color_prompt
 
 ![sexy-nvim-setup](https://user-images.githubusercontent.com/34342551/99086457-93ae0980-25ef-11eb-9a08-87d5630206b4.png)
 
-Current theme: `palenight`
+Current colorscheme: `palenight`
 
 - Plugins:
   1. [vim-devicons](https://github.com/ryanoasis/vim-devicons) - for file icons
   2. [NERDTree](https://github.com/scrooloose/nerdtree) - for tree like menu
   3. [vim-auto-save](https://github.com/907th/vim-auto-save) - for auto-saving files (no need to `:w`)
   4. [vim-airline](https://github.com/vim-airline/vim-airline) - for status bar at bottom
+  5. [black.vim](https://github.com/psf/black/blob/master/plugin/black.vim) - python formatter
+  6. [vim-shfmt](https://github.com/z0mbix/vim-shfmt) - to format shell scripts
 
-- Some of my fav themes:
+- Some of my fav colorschemes:
   - [ayu](https://github.com/ayu-theme/ayu-vim)
   - [sonokai](https://github.com/sainnhe/sonokai)
   - [darcula](https://github.com/doums/darcula)

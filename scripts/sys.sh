@@ -3,11 +3,10 @@
 # Realtime system info
 #
 # Use: watch -ct -n0 sys.sh
-# 
+#
 # TODO:
-# 1. Netspeed 
+# 1. Netspeed
 # 2. Open ports ?
-
 
 # color definitions
 RESET=$'\e[0m'
