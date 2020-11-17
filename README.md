@@ -244,6 +244,8 @@ unset color_prompt force_color_prompt
 
 Current colorscheme: `palenight`
 
+> Learn more about vim in my **[my-vim-cheatsheet](https://github.com/Bhupesh-V/til/blob/master/Miscellaneous/my-vim-cheatsheet.md)**
+
 - Plugins:
   1. [vim-devicons](https://github.com/ryanoasis/vim-devicons) - for file icons
   2. [NERDTree](https://github.com/scrooloose/nerdtree) - for tree like menu
