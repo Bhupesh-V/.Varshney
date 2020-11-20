@@ -29,20 +29,26 @@ map <F5> :source $MYVIMRC<CR>
 " Write & quit on all tabs, windows
 map <F9> :wqa<CR>
 " Move lines up/down using Shift + ↑ ↓ 
-nnoremap <S-Up> :m-2<CR>
-inoremap <S-Up> <Esc>:m-2<CR>
-inoremap <S-Down> <Esc>:m+<CR>
-nnoremap <S-Down> :m+<CR>
-" Resizing
-nnoremap <A-Left> :vertical resize +5<CR>
-nnoremap <A-Right> :vertical resize -5<CR>
-nnoremap <A-Up> :resize +5<CR>
-nnoremap <A-Down> :resize -5<CR>
+nnoremap <S-k> :m-2<CR>
+inoremap <S-k> <Esc>:m-2<CR>
+nnoremap <S-j> :m+<CR>
+inoremap <S-j> <Esc>:m+<CR>
+" Resizing windows
+nnoremap <A-h> :vertical resize +3<CR>
+nnoremap <A-l> :vertical resize -3<CR>
+nnoremap <A-k> :resize +3<CR>
+nnoremap <A-j> :resize -3<CR>
+
 " Custom function calls
 nnoremap <S-r> :call AddCmdOuput()<CR>
 map <F8> :call Toggle_transparent()<CR>
+" Disable arrow keys for good
+map <Left> <Nop>
+map <Right> <Nop>
+map <Up> <Nop>
+map <Down> <Nop>
 
-" Abbrevations
+" Abbreviations
 :iabbrev @@    varshneybhupesh@gmail.com
 :iabbrev webs  https://bhupesh-v.github.io
 
@@ -55,10 +61,9 @@ set expandtab
 set showcmd
 set completefunc=emoji#complete
 set spell
+set title
 set dictionary+=/usr/share/dict/words
 
-" Make sure the spawned shell is an interactive shell (expands my aliases)
-" set shellcmdflag=-ic
 " netrw configs
 " Use v to open file in right window
 " Use t to open a file in a new tab
@@ -84,37 +89,45 @@ let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
-" Autocommands
+" Load my aliases
+" Make sure a .vim_env_bash file exists with following stuff
+" source ~/.bash_functions
+let $BASH_ENV = "~/.vim_bash_env"
+" Toggle transparent mode
+let g:is_transparent = 0
 
-"Switch to Insert mode when open a file
-autocmd BufRead,BufNewFile * start 
+" Auto commands
+
+" Set window title on every buffer switch
+autocmd bufenter * let &titlestring = "bhupesh on " . buffer_name("%")
 "Close NERDTree if its the only open window
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-" vim-emoji doesn't replace :emoji_string: with the actual emoji by default
-" autocmd CompleteDone *  :call FixEmoji()
 
 " My Plugins
 
+" vim-emoji doesn't replace :emoji_string: with the actual emoji by default
+" autocmd CompleteDone *  call FixEmoji()
 function! FixEmoji()
-		lettsheet.md.swp word = expand('<cWORD>')
-		let current_word = word[1:strlen(word)-2]
-		let acemoji = emoji#for(current_word)
-		execute "%s/" . word . "/" . acemoji . "/e"
+		"let word = expand('<cWORD>')
+        :echom v:completed_item['kind']
+        " remove colons :
+		" let current_word = word[1:strlen(word)-2]
+		" let acemoji = emoji#for(current_word)
+		execute "%s/" . expand('<cWORD>') . "/" . v:completed_item['kind'] . "/e"
 		" :%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/ge
 		" :normal <C-o>
 endfunction
 
-" Toggle transparent mode (make sure this is always below colorscheme setting
-let g:is_transparent = 0
+" Toggle transparent mode (make sure this is always below colorscheme setting 
 function! Toggle_transparent()
-		if g:is_transparent == 0
-				hi Normal guibg=NONE ctermbg=NONE
-				let g:is_transparent = 1
-		else
-				let g:is_transparent = 0
-				set background=dark
-		endif
-endfunction
+        if g:is_transparent == 0
+                hi Normal guibg=NONE ctermbg=NONE
+                let g:is_transparent = 1
+        else 
+                let g:is_transparent = 0 
+                set background=dark 
+        endif
+endfunction 
 
 " Run commands inside the editor & paste output in next line
 function! AddCmdOuput()
@@ -130,7 +143,37 @@ function! AddCmdOuput()
 				echo "⚠️  " . getline(".")[0:3] . ".. not found"
 		endif
 endfunction
-	
+
+" Return 1 if file is a non-ascii file, otherwise 0
+function! IsNonAsciiFile(file)
+    let isNonAscii = 1
+    let fileResult = system('file ' . a:file)
+    " Check if file contains ascii or is empty
+    if fileResult =~ "ASCII" || fileResult =~ "empty" || fileResult =~ "UTF"
+        let isNonAscii = 0
+    endif
+    return ret
+endfunction
+
+" Open Binary files in their appropriate viewer
+autocmd bufenter *.pdf,*.png,*.gif,*.jpg,*.mpv,*.mkv,*.avi :call OpenNonTextFiles()
+function! OpenNonTextFiles()
+        let current_file = expand('%')
+        execute "silent! !xdg-open " . current_file
+        if IsNonAsciiFile(current_file) == 1
+                " Delete and unload the buffer
+                execute "bd " . current_file
+        endif
+endfunction
+
+" WIP
+function! AddBold()
+    let word = expand("<cword>")
+    let command = "silent! %s/" . word . "/**" . word . "**/g"
+    execute command
+endfunction
+vmap <A-b> :call AddBold()<CR>
+
 "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
 "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
 " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
