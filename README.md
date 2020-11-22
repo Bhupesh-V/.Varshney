@@ -18,7 +18,7 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 - **OS**: Ubuntu 18.04
 - **DE**: Mate
 - **SHELL**: bash
-- **Editor**: NeoVim/Sublime
+- **Editor**: NeoVim
 - **TERM**: xterm-256color
 
 

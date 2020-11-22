@@ -22,10 +22,12 @@ call plug#end()
 " Enable Visual Mode select text, press Ctrl+c to copy
 " Don't Use Ctrl+v to paste (its kinda messed up rn)
 vnoremap <C-c> "+y
-imap <C-v> <esc> "+pi
+imap <C-v> <Esc>"+pi
 nmap <F6> :NERDTreeToggle<CR>
 map <F7> :e $MYVIMRC<CR>
 map <F5> :source $MYVIMRC<CR>
+
+
 " Write & quit on all tabs, windows
 map <F9> :wqa<CR>
 " Move lines up/down using Shift + ↑ ↓ 
@@ -38,6 +40,10 @@ nnoremap <A-h> :vertical resize +3<CR>
 nnoremap <A-l> :vertical resize -3<CR>
 nnoremap <A-k> :resize +3<CR>
 nnoremap <A-j> :resize -3<CR>
+"Use TAB to switch to command mode, backspace for back to normal mode
+nnoremap <Tab> :
+"Cycle through open buffers
+nnoremap <S-Tab> :bn<CR>
 
 " Custom function calls
 nnoremap <S-r> :call AddCmdOuput()<CR>
@@ -63,6 +69,7 @@ set completefunc=emoji#complete
 set spell
 set title
 set dictionary+=/usr/share/dict/words
+"set shada="NONE"
 
 " netrw configs
 " Use v to open file in right window
@@ -144,6 +151,15 @@ function! AddCmdOuput()
 		endif
 endfunction
 
+"Open hyper link in current line
+nnoremap <S-l> :call OpenLink()<CR>
+function! OpenLink()
+        let links = []
+        call substitute(getline('.'), 'https:\/\/[^)\"]*', '\=add(links, submatch(0))', 'g')
+        echo "Opening Link .. Hold on!"
+        exe "silent! !xdg-open " . links[0]
+endfunction
+
 " Return 1 if file is a non-ascii file, otherwise 0
 function! IsNonAsciiFile(file)
     let isNonAscii = 1
@@ -152,17 +168,23 @@ function! IsNonAsciiFile(file)
     if fileResult =~ "ASCII" || fileResult =~ "empty" || fileResult =~ "UTF"
         let isNonAscii = 0
     endif
-    return ret
+    return isNonAscii
 endfunction
 
 " Open Binary files in their appropriate viewer
 autocmd bufenter *.pdf,*.png,*.gif,*.jpg,*.mpv,*.mkv,*.avi :call OpenNonTextFiles()
 function! OpenNonTextFiles()
         let current_file = expand('%')
-        execute "silent! !xdg-open " . current_file
         if IsNonAsciiFile(current_file) == 1
-                " Delete and unload the buffer
-                execute "bd " . current_file
+                execute "silent! !xdg-open " . current_file
+                " Switch to next buffer and delete this one
+                " Else open a new buffer
+                if len(getbufinfo({'buflisted':1})) >= 2
+                        execute "bNext"
+                        execute "bd " . current_file
+                else
+                        execute "enew"
+                endif
         endif
 endfunction
 
