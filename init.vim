@@ -48,6 +48,7 @@ nnoremap <S-Tab> :bn<CR>
 " Custom function calls
 nnoremap <S-r> :call AddCmdOuput()<CR>
 map <F8> :call Toggle_transparent()<CR>
+nnoremap <S-l> :call OpenLink()<CR>
 " Disable arrow keys for good
 map <Left> <Nop>
 map <Right> <Nop>
@@ -69,6 +70,9 @@ set completefunc=emoji#complete
 set spell
 set title
 set dictionary+=/usr/share/dict/words
+set wildignore+=*/.git/*,*/site-packages/*,*/lib/*,*.pyc
+set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg,*.avi,*.mp4,*.mkv,*.pdf,*.odt
+set path+=**
 "set shada="NONE"
 
 " netrw configs
@@ -97,8 +101,8 @@ let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 " Load my aliases
-" Make sure a .vim_env_bash file exists with following stuff
-" source ~/.bash_functions
+" Make sure a .vim_env_bash file exists
+" Sample: https://github.com/Bhupesh-V/.Varshney/blob/master/.vim_bash_env
 let $BASH_ENV = "~/.vim_bash_env"
 " Toggle transparent mode
 let g:is_transparent = 0
@@ -152,7 +156,6 @@ function! AddCmdOuput()
 endfunction
 
 "Open hyper link in current line
-nnoremap <S-l> :call OpenLink()<CR>
 function! OpenLink()
         let links = []
         call substitute(getline('.'), 'https:\/\/[^)\"]*', '\=add(links, submatch(0))', 'g')
@@ -187,14 +190,6 @@ function! OpenNonTextFiles()
                 endif
         endif
 endfunction
-
-" WIP
-function! AddBold()
-    let word = expand("<cword>")
-    let command = "silent! %s/" . word . "/**" . word . "**/g"
-    execute command
-endfunction
-vmap <A-b> :call AddBold()<CR>
 
 "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
 "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
