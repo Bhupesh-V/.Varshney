@@ -7,7 +7,6 @@ Plug 'jacoborus/tender.vim'
 Plug 'kyoz/purify', { 'rtp': 'vim' }
 Plug 'sainnhe/sonokai'
 Plug 'drewtempelmeyer/palenight.vim'
-Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'ayu-theme/ayu-vim'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'junegunn/goyo.vim'
@@ -70,7 +69,7 @@ set completefunc=emoji#complete
 set spell
 set title
 set dictionary+=/usr/share/dict/words
-set wildignore+=*/.git/*,*/site-packages/*,*/lib/*,*.pyc
+set wildignore+=*/.git/*,*/site-packages/*,*/lib/*,*/bin/*,*.pyc
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg,*.avi,*.mp4,*.mkv,*.pdf,*.odt
 set path+=**
 "set shada="NONE"
@@ -81,8 +80,11 @@ set path+=**
 let g:netrw_banner=0         " disable annoying banner
 let g:netrw_liststyle=3      " tree view
 let g:netrw_browse_split = 2 " Open file in new vertical split
+let g:netrw_preview=1
 let g:netrw_altv = 1
-let g:netrw_winsize = 25     " Fix width to 25%
+let g:netrw_winsize = 27     " Fix width to 27%
+let g:netrw_special_syntax=1 " Enable special file highlighting
+let g:netrw_browsex_viewer= "xdg-open"
 
 " airline configs
 let g:airline_powerline_fonts = 1
