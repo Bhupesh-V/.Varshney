@@ -179,7 +179,6 @@ fi
 # Load custom bash completions
 source ~/scd-completions.bash
 
-eval "$(thefuck --alias fuck)"
 
 export CDPATH=".:/home/bhupesh"
 export DOT_REPO=https://github.com/Bhupesh-V/.Varshney DOT_DEST=Documents

@@ -9,7 +9,7 @@ alias commit='git commit'
 alias clone='git clone'
 alias log='git log --graph --decorate --pretty=oneline --abbrev-commit'
 alias merge='git merge'
-alias gdiff='git diff'
+alias gif='git diff'
 # undo last local commit
 alias undo='git reset HEAD~'
 alias p='python3'

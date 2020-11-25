@@ -43,7 +43,6 @@ nnoremap <A-j> :resize -3<CR>
 nnoremap <Tab> :
 "Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
-
 " Custom function calls
 nnoremap <S-r> :call AddCmdOuput()<CR>
 map <F8> :call Toggle_transparent()<CR>
@@ -61,6 +60,7 @@ map <Down> <Nop>
 colorscheme sonokai
 
 set number 
+set rnu
 set autoindent smartindent
 set ts=4
 set expandtab
@@ -110,6 +110,10 @@ let $BASH_ENV = "~/.vim_bash_env"
 let g:is_transparent = 0
 
 " Auto commands
+
+" Map CapsLock to Esc (must be X.Org compliant)
+au VimEnter * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
+au VimLeave * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Caps_Lock'
 
 " Set window title on every buffer switch
 autocmd bufenter * let &titlestring = "bhupesh on " . buffer_name("%")
