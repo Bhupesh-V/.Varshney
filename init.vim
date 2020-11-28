@@ -21,19 +21,22 @@ call plug#end()
 " Enable Visual Mode select text, press Ctrl+c to copy
 " Don't Use Ctrl+v to paste (its kinda messed up rn)
 vnoremap <C-c> "+y
-imap <C-v> <Esc>"+pi
+"imap <C-v> <Esc>"+pi
 nmap <F6> :NERDTreeToggle<CR>
 map <F7> :e $MYVIMRC<CR>
 map <F5> :source $MYVIMRC<CR>
 
-
 " Write & quit on all tabs, windows
 map <F9> :wqa<CR>
 " Move lines up/down using Shift + ↑ ↓ 
-nnoremap <S-k> :m-2<CR>
-inoremap <S-k> <Esc>:m-2<CR>
-nnoremap <S-j> :m+<CR>
-inoremap <S-j> <Esc>:m+<CR>
+nnoremap <S-k> :m-2<CR>==
+nnoremap <S-j> :m+<CR>==
+inoremap <A-k> <Esc>:m-2<CR>==gi
+inoremap <A-j> <Esc>:m+<CR>==gi
+
+" Move a block/range of lines
+vnoremap <S-J> :m '>+1<CR>gv=gv
+vnoremap <S-k> :m '<-2<CR>gv=gv 
 " Resizing windows
 nnoremap <A-h> :vertical resize +3<CR>
 nnoremap <A-l> :vertical resize -3<CR>
@@ -164,9 +167,13 @@ endfunction
 "Open hyper link in current line
 function! OpenLink()
         let links = []
-        call substitute(getline('.'), 'https:\/\/[^)\"]*', '\=add(links, submatch(0))', 'g')
-        echo "Opening Link .. Hold on!"
-        exe "silent! !xdg-open " . links[0]
+        try
+                call substitute(getline('.'), 'https*:\/\/[^)\"]*', '\=add(links, submatch(0))', 'g')
+                exe "silent! !xdg-open " . links[0]
+        catch E684
+                echo "No link found :("
+                return
+        endtry
 endfunction
 
 " Return 1 if file is a non-ascii file, otherwise 0
