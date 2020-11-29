@@ -16,10 +16,7 @@ Plug 'junegunn/vim-emoji'
 Plug 'ryanoasis/vim-devicons'
 call plug#end()
 
-" Key Mappings
-" Use Shit+Ctrl+v to paste from anywhere
-" Enable Visual Mode select text, press Ctrl+c to copy
-" Don't Use Ctrl+v to paste (its kinda messed up rn)
+" Key Mappings {{{
 vnoremap <C-c> "+y
 "imap <C-v> <Esc>"+pi
 nmap <F6> :NERDTreeToggle<CR>
@@ -28,33 +25,39 @@ map <F5> :source $MYVIMRC<CR>
 
 " Write & quit on all tabs, windows
 map <F9> :wqa<CR>
+
 " Move lines up/down using Shift + ↑ ↓ 
 nnoremap <S-k> :m-2<CR>==
 nnoremap <S-j> :m+<CR>==
 inoremap <A-k> <Esc>:m-2<CR>==gi
 inoremap <A-j> <Esc>:m+<CR>==gi
 
-" Move a block/range of lines
+" Move a block/range of lines {{{
 vnoremap <S-J> :m '>+1<CR>gv=gv
 vnoremap <S-k> :m '<-2<CR>gv=gv 
-" Resizing windows
+"}}}
+" Resizing windows {{{
 nnoremap <A-h> :vertical resize +3<CR>
 nnoremap <A-l> :vertical resize -3<CR>
 nnoremap <A-k> :resize +3<CR>
 nnoremap <A-j> :resize -3<CR>
+"}}}
 "Use TAB to switch to command mode, backspace for back to normal mode
 nnoremap <Tab> :
 "Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
-" Custom function calls
+" Custom function calls {{{
 nnoremap <S-r> :call AddCmdOuput()<CR>
 map <F8> :call Toggle_transparent()<CR>
 nnoremap <S-l> :call OpenLink()<CR>
-" Disable arrow keys for good
+"}}}
+" Disable arrow keys for good {{{
 map <Left> <Nop>
 map <Right> <Nop>
 map <Up> <Nop>
 map <Down> <Nop>
+"}}}
+"}}}
 
 " Abbreviations
 :iabbrev @@    varshneybhupesh@gmail.com
@@ -62,6 +65,7 @@ map <Down> <Nop>
 
 colorscheme sonokai
 
+" Common Settings {{{
 set number 
 set rnu
 set autoindent smartindent
@@ -72,12 +76,16 @@ set completefunc=emoji#complete
 set spell
 set title
 set dictionary+=/usr/share/dict/words
+set wildignorecase
 set wildignore+=*/.git/*,*/site-packages/*,*/lib/*,*/bin/*,*.pyc
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg,*.avi,*.mp4,*.mkv,*.pdf,*.odt
 set path+=**
+set foldcolumn=2
 "set shada="NONE"
 
-" netrw configs
+"}}}
+
+" netrw configs {{{
 " Use v to open file in right window
 " Use t to open a file in a new tab
 let g:netrw_banner=0         " disable annoying banner
@@ -88,23 +96,27 @@ let g:netrw_altv = 1
 let g:netrw_winsize = 27     " Fix width to 27%
 let g:netrw_special_syntax=1 " Enable special file highlighting
 let g:netrw_browsex_viewer= "xdg-open"
+"}}}
 
-" airline configs
+" airline settings {{{
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ''
 let g:airline#extensions#tabline#formatter = 'unique_tail'
-let g:auto_save = 1  " enable AutoSave on Vim startup (vim-auto-save plugin)
+"}}}
 
-" NERDTRee config
+" NERDTRee config {{{
 let NERDTreeMinimalUI = 1  " Disable ? etc
 let NERDTreeShowHidden=1  "Show hidden files (aka dotfiles)
+"}}}
 
-" Ulti snips config
+" Ulti snips config {{{
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+" }}}
 
+let g:auto_save = 1  " enable AutoSave on Vim startup (vim-auto-save plugin)
 " Load my aliases
 " Make sure a .vim_env_bash file exists
 " Sample: https://github.com/Bhupesh-V/.Varshney/blob/master/.vim_bash_env
@@ -112,7 +124,14 @@ let $BASH_ENV = "~/.vim_bash_env"
 " Toggle transparent mode
 let g:is_transparent = 0
 
-" Auto commands
+" Auto commands {{{
+
+" Set foldmethod based on file type
+augroup FoldMethodType
+    autocmd!
+    autocmd FileType python,css,javascript,go,html,sh setlocal foldmethod=indent
+    autocmd FileType vim setlocal foldmethod=marker
+augroup END
 
 " Map CapsLock to Esc (must be X.Org compliant)
 au VimEnter * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
@@ -122,6 +141,8 @@ au VimLeave * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Caps_Lock'
 autocmd bufenter * let &titlestring = "bhupesh on " . buffer_name("%")
 "Close NERDTree if its the only open window
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+"}}}
 
 " My Plugins
 
