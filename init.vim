@@ -20,11 +20,11 @@ call plug#end()
 vnoremap <C-c> "+y
 "imap <C-v> <Esc>"+pi
 nmap <F6> :NERDTreeToggle<CR>
-map <F7> :e $MYVIMRC<CR>
-map <F5> :source $MYVIMRC<CR>
+noremap <F7> :e $MYVIMRC<CR>
+noremap <F5> :source $MYVIMRC<CR>
 
 " Write & quit on all tabs, windows
-map <F9> :wqa<CR>
+noremap <F9> :wqa<CR>
 
 " Move lines up/down using Shift + ↑ ↓ 
 nnoremap <S-k> :m-2<CR>==
@@ -32,31 +32,43 @@ nnoremap <S-j> :m+<CR>==
 inoremap <A-k> <Esc>:m-2<CR>==gi
 inoremap <A-j> <Esc>:m+<CR>==gi
 
+" Toggle code-folds
+noremap <space> za
+
 " Move a block/range of lines {{{
 vnoremap <S-J> :m '>+1<CR>gv=gv
 vnoremap <S-k> :m '<-2<CR>gv=gv 
 "}}}
+
 " Resizing windows {{{
 nnoremap <A-h> :vertical resize +3<CR>
 nnoremap <A-l> :vertical resize -3<CR>
 nnoremap <A-k> :resize +3<CR>
 nnoremap <A-j> :resize -3<CR>
 "}}}
+
 "Use TAB to switch to command mode, backspace for back to normal mode
 nnoremap <Tab> :
 "Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
+
 " Custom function calls {{{
 nnoremap <S-r> :call AddCmdOuput()<CR>
-map <F8> :call Toggle_transparent()<CR>
+noremap <F8> :call Toggle_transparent()<CR>
 nnoremap <S-l> :call OpenLink()<CR>
 "}}}
+
 " Disable arrow keys for good {{{
 map <Left> <Nop>
 map <Right> <Nop>
 map <Up> <Nop>
 map <Down> <Nop>
 "}}}
+
+" Use j/k to select from completion menu
+inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
+inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
+
 "}}}
 
 " Abbreviations
@@ -75,6 +87,7 @@ set showcmd
 set completefunc=emoji#complete
 set spell
 set title
+set cursorline
 set dictionary+=/usr/share/dict/words
 set wildignorecase
 set wildignore+=*/.git/*,*/site-packages/*,*/lib/*,*/bin/*,*.pyc
@@ -84,6 +97,15 @@ set foldcolumn=2
 "set shada="NONE"
 
 "}}}
+
+" Custom Global Highlights {{{
+"
+" Make current line bold
+highlight CursorLine cterm=bold gui=bold ctermbg=none guibg=none
+highlight CursorLineNr ctermbg=none guibg=none
+" Bold the markers on fold column
+highlight FoldColumn cterm=bold gui=bold
+" }}}
 
 " netrw configs {{{
 " Use v to open file in right window
@@ -174,15 +196,19 @@ endfunction
 function! AddCmdOuput()
         " A liner for this can be :
         " nnoremap <S-r> !!sh<CR>
-
-		echo "Executing " . getline(".")[0:3] . " ... "
-		let cmd_output = systemlist(getline("."))
-		if stridx(cmd_output[0], "command not found") == -1
-				call append(line('.'), cmd_output)
-		else
-				redraw
-				echo "⚠️  " . getline(".")[0:3] . ".. not found"
-		endif
+        try
+                let cmd_output = systemlist(getline("."))
+                echo "Executing " . getline(".")[0:3] . " ... "
+        catch E684
+                echo "Not a command"
+                return
+        if stridx(cmd_output[0], "command not found") == -1
+                call append(line('.'), cmd_output)
+        else
+                redraw
+                echo "⚠️  " . getline(".")[0:3] . ".. not found"
+        endif
+        endtry
 endfunction
 
 "Open hyper link in current line
