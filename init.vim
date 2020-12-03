@@ -56,6 +56,7 @@ nnoremap <S-Tab> :bn<CR>
 nnoremap <S-r> :call AddCmdOuput()<CR>
 noremap <F8> :call Toggle_transparent()<CR>
 nnoremap <S-l> :call OpenLink()<CR>
+nnoremap t :call ToggleComment()<CR>
 "}}}
 
 " Disable arrow keys for good {{{
@@ -68,6 +69,7 @@ map <Down> <Nop>
 " Use j/k to select from completion menu
 inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
 inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
+ 
 
 "}}}
 
@@ -215,7 +217,7 @@ endfunction
 function! OpenLink()
         let links = []
         try
-                call substitute(getline('.'), 'https*:\/\/[^)\"]*', '\=add(links, submatch(0))', 'g')
+                call substitute(getline('.'), 'https?:\/\/[^)\"]*', '\=add(links, submatch(0))', 'g')
                 exe "silent! !xdg-open " . links[0]
         catch E684
                 echo "No link found :("
@@ -232,6 +234,48 @@ function! IsNonAsciiFile(file)
         let isNonAscii = 0
     endif
     return isNonAscii
+endfunction
+
+function! SetComment()
+        " TODO: make it work in visual mode aka group selection
+        " TODO: Detect inline CSS
+        if &filetype == "vim"
+                call setline('.', "\" " . getline('.'))
+        elseif &filetype == "go"
+                call setline('.', "// " . getline('.'))
+        elseif &filetype == "python" || &filetype == "sh"
+                call setline('.', "# " . getline('.'))
+        elseif &filetype == "html"
+                call setline('.', "<!-- " . getline('.') . " -->")
+        elseif &filetype == "cpp" || &filetype == "css"
+                call setline('.', "/* " . getline('.') . " */")
+        endif
+
+endfunction
+
+" Toggle Comment in Current Line
+function! ToggleComment()
+        let current_line = getline('.')
+        " Need to have a <space> after comment character
+        if current_line[0:1] == "\" "
+                call setline('.', trim(getline('.'), "\" "))
+                :normal ==
+                return
+        elseif current_line[0:1] == "# "
+                call setline('.', trim(current_line, "# "))
+                :normal ==
+                return
+        elseif current_line[0:1] == "/
+                call setline('.', trim(current_line, "// "))
+                :normal ==
+                return
+        elseif current_line[0:1] == "<!"
+                call setline('.', current_line[5:len(current_line)-5]) 
+                :normal ==
+                return
+        else
+                call SetComment()
+        endif
 endfunction
 
 " Open Binary files in their appropriate viewer
