@@ -81,7 +81,7 @@ colorscheme sonokai
 
 " Common Settings {{{
 set number 
-set rnu
+" set rnu
 set autoindent smartindent
 set ts=4
 set expandtab
@@ -231,42 +231,46 @@ function! IsNonAsciiFile(file)
     let fileResult = system('file ' . a:file)
     " Check if file contains ascii or is empty
     if fileResult =~ "ASCII" || fileResult =~ "empty" || fileResult =~ "UTF"
-        let isNonAscii = 0
+            let isNonAscii = 0
     endif
     return isNonAscii
 endfunction
 
 function! SetComment()
         " TODO: make it work in visual mode aka group selection
-        " TODO: Detect inline CSS
-        if &filetype == "vim"
-                call setline('.', "\" " . getline('.'))
-        elseif &filetype == "go"
-                call setline('.', "// " . getline('.'))
-        elseif &filetype == "python" || &filetype == "sh"
-                call setline('.', "# " . getline('.'))
-        elseif &filetype == "html"
-                call setline('.', "<!-- " . getline('.') . " -->")
-        elseif &filetype == "cpp" || &filetype == "css"
-                call setline('.', "/* " . getline('.') . " */")
+        " TODO: Detect inline CSS & JS (wIP)
+        let comment_chars = {
+                \ 'vim': { 'prefix': "\" ", 'suffix': "" },
+                \ 'python': { 'prefix': "# ", 'suffix': "" },
+                \ 'sh': { 'prefix': "# ", 'suffix': "" },
+                \ 'go': { 'prefix': "// ", 'suffix': "" },
+                \ 'html': { 'prefix': "<!-- ", 'suffix': " -->" },
+                \ 'css': { 'prefix': "/* ", 'suffix': " */" },
+                \ 'javascript': { 'prefix': "/* ", 'suffix': " */" },
+                \}
+        if &filetype == "html"
+                let line_numbers = []
+                let current_lino = line('.')
+                exe "g/[</]style/call add(line_numbers, line('.'))"
+                if current_lino >= min(line_numbers) && current_lino <= max(line_numbers)
+                        call setline('.', comment_chars["css"]["prefix"] . trim(getline('.')) . comment_chars["css"]["suffix"])
+                endif
+        else
+                call setline('.', comment_chars[&filetype]["prefix"] . trim(getline('.')) . comment_chars[&filetype]["suffix"])
         endif
-
+        :normal ==
 endfunction
 
 " Toggle Comment in Current Line
 function! ToggleComment()
-        let current_line = getline('.')
+        let current_line = trim(getline('.'))
         " Need to have a <space> after comment character
         if current_line[0:1] == "\" "
-                call setline('.', trim(getline('.'), "\" "))
+                call setline('.', trim(current_line, "\" "))
                 :normal ==
                 return
         elseif current_line[0:1] == "# "
                 call setline('.', trim(current_line, "# "))
-                :normal ==
-                return
-        elseif current_line[0:1] == "/
-                call setline('.', trim(current_line, "// "))
                 :normal ==
                 return
         elseif current_line[0:1] == "<!"
