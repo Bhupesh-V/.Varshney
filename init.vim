@@ -236,49 +236,59 @@ function! IsNonAsciiFile(file)
     return isNonAscii
 endfunction
 
-function! SetComment()
-        " TODO: make it work in visual mode aka group selection
-        " TODO: Detect inline CSS & JS (wIP)
-        let comment_chars = {
-                \ 'vim': { 'prefix': "\" ", 'suffix': "" },
-                \ 'python': { 'prefix': "# ", 'suffix': "" },
-                \ 'sh': { 'prefix': "# ", 'suffix': "" },
-                \ 'go': { 'prefix': "// ", 'suffix': "" },
-                \ 'html': { 'prefix': "<!-- ", 'suffix': " -->" },
-                \ 'css': { 'prefix': "/* ", 'suffix': " */" },
-                \ 'javascript': { 'prefix': "/* ", 'suffix': " */" },
-                \}
-        if &filetype == "html"
-                let line_numbers = []
-                let current_lino = line('.')
-                exe "g/[</]style/call add(line_numbers, line('.'))"
-                if current_lino >= min(line_numbers) && current_lino <= max(line_numbers)
-                        call setline('.', comment_chars["css"]["prefix"] . trim(getline('.')) . comment_chars["css"]["suffix"])
-                endif
+" Need to have a <space> after comment character
+let g:comment_chars = {
+        \ 'vim': { 'prefix': "\" ", 'suffix': "" },
+        \ 'python': { 'prefix': "# ", 'suffix': "" },
+        \ 'sh': { 'prefix': "# ", 'suffix': "" },
+        \ 'go': { 'prefix': "// ", 'suffix': "" },
+        \ 'html': { 'prefix': "<!-- ", 'suffix': " -->" },
+        \ 'css': { 'prefix': "/* ", 'suffix': " */" },
+        \ 'javascript': { 'prefix': "/* ", 'suffix': " */" },
+        \}
+
+function! HandleInlineCode()
+        let js_line_numbers = []
+        let css_line_numbers = []
+        let current_lino = line('.')
+        exe "g/[</]style/call add(css_line_numbers, line('.'))"
+        exe "g/[</]script/call add(js_line_numbers, line('.'))"
+        if current_lino > min(js_line_numbers) && current_lino < max(js_line_numbers)
+                let inlineCodeType = "javascript"
+        elseif current_lino > min(css_line_numbers) && current_lino < max(css_line_numbers)
+                let inlineCodeType = "css"
         else
-                call setline('.', comment_chars[&filetype]["prefix"] . trim(getline('.')) . comment_chars[&filetype]["suffix"])
+                let inlineCodeType = "html"
         endif
-        :normal ==
+        exe ":" . current_lino
+        return inlineCodeType
 endfunction
+
 
 " Toggle Comment in Current Line
 function! ToggleComment()
+        " TODO: make it work in visual mode aka group selection
         let current_line = trim(getline('.'))
-        " Need to have a <space> after comment character
-        if current_line[0:1] == "\" "
-                call setline('.', trim(current_line, "\" "))
+        let comment = 0
+        for lang_comment in keys(g:comment_chars)
+                let lang_prefix = g:comment_chars[lang_comment]["prefix"]
+                let lang_suffix = g:comment_chars[lang_comment]["suffix"]
+                if current_line[0:len(lang_prefix)-1] == lang_prefix 
+                        call setline('.', current_line[len(lang_prefix):len(current_line)-len(lang_suffix)])
+                        let comment = 1
+                        :normal ==
+                        break
+                endif
+        endfor
+        if comment == 0
+                " fuck HTML
+                if &filetype == "html"
+                        let code_type = HandleInlineCode()
+                        call setline('.', g:comment_chars[code_type]["prefix"] . trim(getline('.')) . g:comment_chars[code_type]["suffix"])
+                else
+                        call setline('.', g:comment_chars[&filetype]["prefix"] . trim(getline('.')) . g:comment_chars[&filetype]["suffix"])
+                endif
                 :normal ==
-                return
-        elseif current_line[0:1] == "# "
-                call setline('.', trim(current_line, "# "))
-                :normal ==
-                return
-        elseif current_line[0:1] == "<!"
-                call setline('.', current_line[5:len(current_line)-5]) 
-                :normal ==
-                return
-        else
-                call SetComment()
         endif
 endfunction
 
