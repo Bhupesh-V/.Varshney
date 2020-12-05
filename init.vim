@@ -83,7 +83,6 @@ colorscheme sonokai
 set number 
 " set rnu
 set autoindent smartindent
-set ts=4
 set expandtab
 set showcmd
 set completefunc=emoji#complete
@@ -156,6 +155,13 @@ augroup FoldMethodType
     autocmd FileType python,css,javascript,go,html,sh setlocal foldmethod=indent
     autocmd FileType vim setlocal foldmethod=marker
 augroup END
+
+augroup FileIndentLevel
+    autocmd!
+    autocmd FileType cpp,yaml,html,sh setlocal shiftwidth=2 tabstop=2 softtabstop=2
+    autocmd FileType python,vim setlocal tabstop=4
+augroup END
+
 
 " Map CapsLock to Esc (must be X.Org compliant)
 au VimEnter * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
@@ -245,6 +251,9 @@ let g:comment_chars = {
         \ 'html': { 'prefix': "<!-- ", 'suffix': " -->" },
         \ 'css': { 'prefix': "/* ", 'suffix': " */" },
         \ 'javascript': { 'prefix': "/* ", 'suffix': " */" },
+        \ 'cpp': { 'prefix': "/* ", 'suffix': " */" },
+        \ 'yaml': { 'prefix': "# ", 'suffix': "" },
+        \ 'markdown': { 'prefix': "<!-- ", 'suffix': " -->" },
         \}
 
 function! HandleInlineCode()
@@ -280,7 +289,7 @@ function! ToggleComment()
                         break
                 endif
         endfor
-        if comment == 0
+        if comment == 0 " add a comment
                 " fuck HTML
                 if &filetype == "html"
                         let code_type = HandleInlineCode()
@@ -288,7 +297,7 @@ function! ToggleComment()
                 else
                         call setline('.', g:comment_chars[&filetype]["prefix"] . trim(getline('.')) . g:comment_chars[&filetype]["suffix"])
                 endif
-                :normal ==
+                ":normal ==
         endif
 endfunction
 

@@ -4,7 +4,7 @@
 
 catch_ctrl+c() {
 	printf "\n%s" "Removing $1"
-	rm "$1"
+  rm "$1"
 	exit
 }
 
@@ -22,7 +22,7 @@ watch_changes() {
 		echo -en "\rWatching file $(tput bold)$1$(tput sgr0) ..."
 		last_modify_time=$(date -d "@$(stat -c '%Y' "$1")" '+%T')
 		sleep 0.1
-		last_modify_time_2=$(date -d "@$(stat -c '%Y' "$1")" '+%T')
+    last_modify_time_2=$(date -d "@$(stat -c '%Y' "$1")" '+%T')
 
 		[[ "$last_modify_time" != "$last_modify_time_2" ]] && build_preview "$1"
 
@@ -31,8 +31,8 @@ watch_changes() {
 }
 
 if [[ -z "$1" ]]; then
-	echo -e "md requires a .md file"
-	exit 1
+  echo -e "md requires a .md file"
+  exit 1
 else
 	html_preview="${1%.*}.html"
 	build_preview "$1"
