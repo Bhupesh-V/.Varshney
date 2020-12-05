@@ -18,7 +18,7 @@ call plug#end()
 
 " Key Mappings {{{
 vnoremap <C-c> "+y
-"imap <C-v> <Esc>"+pi
+imap <C-v> <Esc>"+pi
 nmap <F6> :NERDTreeToggle<CR>
 noremap <F7> :e $MYVIMRC<CR>
 noremap <F5> :source $MYVIMRC<CR>
@@ -47,9 +47,11 @@ nnoremap <A-k> :resize +3<CR>
 nnoremap <A-j> :resize -3<CR>
 "}}}
 
-"Use TAB to switch to command mode, backspace for back to normal mode
-nnoremap <Tab> :
-"Cycle through open buffers
+" Use Enter to switch to command mode
+nnoremap <Tab> <C-w><C-w>
+" Tab to cycle through open splits
+nnoremap <CR> :
+" Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
 
 " Custom function calls {{{
@@ -121,19 +123,19 @@ let g:netrw_special_syntax=1 " Enable special file highlighting
 let g:netrw_browsex_viewer= "xdg-open"
 "}}}
 
-" airline settings {{{
+" Airline settings {{{
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ''
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 "}}}
 
-" NERDTRee config {{{
+" NERDTree config {{{
 let NERDTreeMinimalUI = 1  " Disable ? etc
 let NERDTreeShowHidden=1  "Show hidden files (aka dotfiles)
 "}}}
 
-" Ulti snips config {{{
+" Ulti-snips config {{{
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
@@ -156,6 +158,7 @@ augroup FoldMethodType
     autocmd FileType vim setlocal foldmethod=marker
 augroup END
 
+" Set Indent level based on FileType
 augroup FileIndentLevel
     autocmd!
     autocmd FileType cpp,yaml,html,sh setlocal shiftwidth=2 tabstop=2 softtabstop=2
@@ -163,7 +166,7 @@ augroup FileIndentLevel
 augroup END
 
 
-" Map CapsLock to Esc (must be X.Org compliant)
+" Map Caps Lock to Esc (must be X.Org compliant)
 au VimEnter * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
 au VimLeave * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Caps_Lock'
 
@@ -242,7 +245,7 @@ function! IsNonAsciiFile(file)
     return isNonAscii
 endfunction
 
-" Need to have a <space> after comment character
+" Need to have a <space> before/after comment character
 let g:comment_chars = {
         \ 'vim': { 'prefix': "\" ", 'suffix': "" },
         \ 'python': { 'prefix': "# ", 'suffix': "" },
@@ -275,8 +278,10 @@ endfunction
 
 
 " Toggle Comment in Current Line
+" Only for vim >= 8
 function! ToggleComment()
         " TODO: make it work in visual mode aka group selection
+        " TODO: Detect whether a // is used or /*
         let current_line = trim(getline('.'))
         let comment = 0
         for lang_comment in keys(g:comment_chars)
@@ -297,7 +302,7 @@ function! ToggleComment()
                 else
                         call setline('.', g:comment_chars[&filetype]["prefix"] . trim(getline('.')) . g:comment_chars[&filetype]["suffix"])
                 endif
-                ":normal ==
+                :normal ==
         endif
 endfunction
 
