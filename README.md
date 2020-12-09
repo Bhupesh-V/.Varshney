@@ -265,6 +265,7 @@ Current colorscheme: `palenight`
 ## Author [![bhupesh-twitter-image](https://kutt.it/bhupeshimself)](https://twitter.com/bhupeshimself)
 **🤓 [Bhupesh Varshney](https://bhupesh-v.github.io)** 
 
+<img height="200px" src="https://user-images.githubusercontent.com/34342551/101245824-8e973280-3735-11eb-982e-17d59d74891a.png">
 
 ## ☺️ Show your support
 
