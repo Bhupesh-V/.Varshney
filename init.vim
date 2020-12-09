@@ -13,7 +13,6 @@ Plug 'junegunn/goyo.vim'
 Plug 'psf/black', { 'branch': 'stable' }
 Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
 Plug 'junegunn/vim-emoji'
-Plug 'ryanoasis/vim-devicons'
 call plug#end()
 
 " Key Mappings {{{
@@ -91,6 +90,7 @@ set completefunc=emoji#complete
 set spell
 set title
 set cursorline
+set iskeyword+=-
 set dictionary+=/usr/share/dict/words
 set wildignorecase
 set wildignore+=*/.git/*,*/site-packages/*,*/lib/*,*/bin/*,*.pyc
@@ -108,6 +108,8 @@ highlight CursorLine cterm=bold gui=bold ctermbg=none guibg=none
 highlight CursorLineNr ctermbg=none guibg=none
 " Bold the markers on fold column
 highlight FoldColumn cterm=bold gui=bold
+highlight SpaceEnd ctermbg=red guibg=red
+autocmd BufWinEnter * match SpaceEnd /\s\+$/
 " }}}
 
 " netrw configs {{{
@@ -180,15 +182,11 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 " My Plugins
 
 " vim-emoji doesn't replace :emoji_string: with the actual emoji by default
-" autocmd CompleteDone *  call FixEmoji()
+autocmd CompleteDone *  call FixEmoji()
 function! FixEmoji()
-		"let word = expand('<cWORD>')
         :echom v:completed_item['kind']
-        " remove colons :
-		" let current_word = word[1:strlen(word)-2]
-		" let acemoji = emoji#for(current_word)
-		execute "%s/" . expand('<cWORD>') . "/" . v:completed_item['kind'] . "/e"
 		" :%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/ge
+        call substitute(getline('.'), ':\([^:]\+\):', '\=emoji#for(submatch(1), submatch(0))', 'e')
 		" :normal <C-o>
 endfunction
 
@@ -226,7 +224,7 @@ endfunction
 function! OpenLink()
         let links = []
         try
-                call substitute(getline('.'), 'https?:\/\/[^)\"]*', '\=add(links, submatch(0))', 'g')
+                call substitute(getline('.'), 'http[s]\?:\/\/[^) \"]*', '\=add(links, submatch(0))', 'g')
                 exe "silent! !xdg-open " . links[0]
         catch E684
                 echo "No link found :("
