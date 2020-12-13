@@ -16,7 +16,7 @@ if [[ "$1" ]]; then
 else
         for file in $(du --exclude='.git' -a . | awk '{ print $2 }'); do
             if [[ -f "${file:2}" ]]; then
-                last_modify_date=$(git log --follow -p -- "${file:2}" | awk '/Date/ { print $4,$3,$6 }' | head -1)
+                last_modify_date=$(git log --follow -q -- "${file:2}" | awk '/Date/ { print $4,$3,$6 }' | head -1)
                 [[ "$last_modify_date" ]] && printf "%12s : %s\n" "$last_modify_date" "${file:2}"
             fi
         done
