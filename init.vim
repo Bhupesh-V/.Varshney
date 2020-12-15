@@ -16,6 +16,7 @@ Plug 'junegunn/vim-emoji'
 call plug#end()
 
 " Key Mappings {{{
+
 vnoremap <C-c> "+y
 imap <C-v> <Esc>"+pi
 nmap <F6> :NERDTreeToggle<CR>
@@ -24,53 +25,60 @@ noremap <F5> :source $MYVIMRC<CR>
 
 " Write & quit on all tabs, windows
 noremap <F9> :wqa<CR>
-
-" Move lines up/down using Shift + ↑ ↓ 
-nnoremap <S-k> :m-2<CR>==
-nnoremap <S-j> :m+<CR>==
-inoremap <A-k> <Esc>:m-2<CR>==gi
-inoremap <A-j> <Esc>:m+<CR>==gi
-
+" Insert Date (dd mm, yyyy)
+nnoremap <F4> "=strftime('%d %b, %Y')<CR>P
+inoremap <F4> <C-R>=strftime("%d %b, %Y")<CR>
+" Disable spell & start :terminal
+nnoremap <S-t> :set nospell <bar> :term<CR>
 " Toggle code-folds
 noremap <space> za
-
-" Move a block/range of lines {{{
-vnoremap <S-J> :m '>+1<CR>gv=gv
-vnoremap <S-k> :m '<-2<CR>gv=gv 
-"}}}
-
-" Resizing windows {{{
-nnoremap <A-h> :vertical resize +3<CR>
-nnoremap <A-l> :vertical resize -3<CR>
-nnoremap <A-k> :resize +3<CR>
-nnoremap <A-j> :resize -3<CR>
-"}}}
-
 " Use Enter to switch to command mode
 nnoremap <Tab> <C-w><C-w>
 " Tab to cycle through open splits
 nnoremap <CR> :
 " Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
+" Use j/k to select from completion menu
+inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
+inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
 
-" Custom function calls {{{
+" Map keys in terminal mode
+" listen up, CapsLock is already mapped to Esc via xmodmap
+" So there is no need of this, but sometimes xmod starts behaving weirdly
+if has('nvim')
+    tnoremap <Esc> <C-\><C-n>
+endif
+
+" Move lines up/down using Shift + ↑ ↓ {{{
+nnoremap <S-k> :m-2<CR>==
+nnoremap <S-j> :m+<CR>==
+inoremap <A-k> <Esc>:m-2<CR>==gi
+inoremap <A-j> <Esc>:m+<CR>==gi
+" Move a block/range of lines 
+vnoremap <S-J> :m '>+1<CR>gv=gv
+vnoremap <S-k> :m '<-2<CR>gv=gv 
+" }}}
+
+" Resizing Windows {{{
+nnoremap <A-h> :vertical resize +3<CR>
+nnoremap <A-l> :vertical resize -3<CR>
+nnoremap <A-k> :resize +3<CR>
+nnoremap <A-j> :resize -3<CR>
+"}}}
+
+" Custom Function calls {{{
 nnoremap <S-r> :call AddCmdOuput()<CR>
 noremap <F8> :call Toggle_transparent()<CR>
 nnoremap <S-l> :call OpenLink()<CR>
 nnoremap t :call ToggleComment()<CR>
 "}}}
 
-" Disable arrow keys for good {{{
+" Disable Arrow keys for good {{{
 map <Left> <Nop>
 map <Right> <Nop>
 map <Up> <Nop>
 map <Down> <Nop>
 "}}}
-
-" Use j/k to select from completion menu
-inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
-inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
- 
 
 "}}}
 
@@ -108,12 +116,16 @@ highlight CursorLine cterm=bold gui=bold ctermbg=none guibg=none
 highlight CursorLineNr ctermbg=none guibg=none
 " Bold the markers on fold column
 highlight FoldColumn cterm=bold gui=bold
-highlight SpaceEnd ctermbg=red guibg=red
-autocmd BufWinEnter * match SpaceEnd /\s\+$/
+" Highlight trailing white space
+" highlight SpaceEnd ctermbg=red guibg=red
+" autocmd BufWinEnter * match SpaceEnd /\s\+$/
+
+:highlight MatchParen ctermbg=246 guibg=#7f8490
 " }}}
 
-" netrw configs {{{
-" Use v to open file in right window
+" Netrw Settings {{{
+"
+" Use v to open file in right split
 " Use t to open a file in a new tab
 let g:netrw_banner=0         " disable annoying banner
 let g:netrw_liststyle=3      " tree view
@@ -125,7 +137,7 @@ let g:netrw_special_syntax=1 " Enable special file highlighting
 let g:netrw_browsex_viewer= "xdg-open"
 "}}}
 
-" Airline settings {{{
+" Airline Settings {{{
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ''
@@ -151,7 +163,7 @@ let $BASH_ENV = "~/.vim_bash_env"
 " Toggle transparent mode
 let g:is_transparent = 0
 
-" Auto commands {{{
+" Auto Commands {{{
 
 " Set foldmethod based on file type
 augroup FoldMethodType
@@ -164,9 +176,8 @@ augroup END
 augroup FileIndentLevel
     autocmd!
     autocmd FileType cpp,yaml,html,sh setlocal shiftwidth=2 tabstop=2 softtabstop=2
-    autocmd FileType python,vim setlocal tabstop=4
+    autocmd FileType go,python,vim setlocal tabstop=4 sts=4 shiftwidth=4
 augroup END
-
 
 " Map Caps Lock to Esc (must be X.Org compliant)
 au VimEnter * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
@@ -184,52 +195,52 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 " vim-emoji doesn't replace :emoji_string: with the actual emoji by default
 autocmd CompleteDone *  call FixEmoji()
 function! FixEmoji()
-        :echom v:completed_item['kind']
-		" :%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/ge
-        call substitute(getline('.'), ':\([^:]\+\):', '\=emoji#for(submatch(1), submatch(0))', 'e')
-		" :normal <C-o>
+    :echom v:completed_item['kind']
+    " :%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/ge
+    :call substitute(getline('.'), ':\([^:]\+\):', '\=emoji#for(submatch(1), submatch(0))', 'e')
+    " :normal <C-o>
 endfunction
 
-" Toggle transparent mode (make sure this is always below colorscheme setting 
+" Toggle transparent mode (make sure this is always below colorscheme setting
 function! Toggle_transparent()
-        if g:is_transparent == 0
-                hi Normal guibg=NONE ctermbg=NONE
-                let g:is_transparent = 1
-        else 
-                let g:is_transparent = 0 
-                set background=dark 
-        endif
-endfunction 
+    if g:is_transparent == 0
+        hi Normal guibg=NONE ctermbg=NONE
+        let g:is_transparent = 1
+    else
+        let g:is_transparent = 0
+        set background=dark
+    endif
+endfunction
 
 " Run commands inside the editor & paste output in next line
 function! AddCmdOuput()
-        " A liner for this can be :
-        " nnoremap <S-r> !!sh<CR>
-        try
-                let cmd_output = systemlist(getline("."))
-                echo "Executing " . getline(".")[0:3] . " ... "
-        catch E684
-                echo "Not a command"
-                return
+    " A liner for this can be :
+    " nnoremap <S-r> !!sh<CR>
+    try
+        let cmd_output = systemlist(getline("."))
+        echo "Executing " . getline(".")[0:3] . " ... "
+    catch E684
+        echo "Not a command"
+        return
         if stridx(cmd_output[0], "command not found") == -1
-                call append(line('.'), cmd_output)
+            call append(line('.'), cmd_output)
         else
-                redraw
-                echo "⚠️  " . getline(".")[0:3] . ".. not found"
+            redraw
+            echo "⚠️  " . getline(".")[0:3] . ".. not found"
         endif
-        endtry
+    endtry
 endfunction
 
-"Open hyper link in current line
+" Open hyper link in current line
 function! OpenLink()
-        let links = []
-        try
-                call substitute(getline('.'), 'http[s]\?:\/\/[^) \"]*', '\=add(links, submatch(0))', 'g')
-                exe "silent! !xdg-open " . links[0]
-        catch E684
-                echo "No link found :("
-                return
-        endtry
+    let links = []
+    try
+        call substitute(getline('.'), 'http[s]\?:\/\/[^) \"]*', '\=add(links, submatch(0))', 'g')
+        exe "silent! !xdg-open " . links[0]
+    catch E684
+        echo "No link found :("
+        return
+    endtry
 endfunction
 
 " Return 1 if file is a non-ascii file, otherwise 0
@@ -238,92 +249,91 @@ function! IsNonAsciiFile(file)
     let fileResult = system('file ' . a:file)
     " Check if file contains ascii or is empty
     if fileResult =~ "ASCII" || fileResult =~ "empty" || fileResult =~ "UTF"
-            let isNonAscii = 0
+        let isNonAscii = 0
     endif
     return isNonAscii
 endfunction
 
 " Need to have a <space> before/after comment character
 let g:comment_chars = {
-        \ 'vim': { 'prefix': "\" ", 'suffix': "" },
-        \ 'python': { 'prefix': "# ", 'suffix': "" },
-        \ 'sh': { 'prefix': "# ", 'suffix': "" },
-        \ 'go': { 'prefix': "// ", 'suffix': "" },
-        \ 'html': { 'prefix': "<!-- ", 'suffix': " -->" },
-        \ 'css': { 'prefix': "/* ", 'suffix': " */" },
-        \ 'javascript': { 'prefix': "/* ", 'suffix': " */" },
-        \ 'cpp': { 'prefix': "/* ", 'suffix': " */" },
-        \ 'yaml': { 'prefix': "# ", 'suffix': "" },
-        \ 'markdown': { 'prefix': "<!-- ", 'suffix': " -->" },
-        \}
+            \ 'vim': { 'prefix': "\" ", 'suffix': "" },
+            \ 'python': { 'prefix': "# ", 'suffix': "" },
+            \ 'sh': { 'prefix': "# ", 'suffix': "" },
+            \ 'go': { 'prefix': "// ", 'suffix': "" },
+            \ 'html': { 'prefix': "<!-- ", 'suffix': " -->" },
+            \ 'css': { 'prefix': "/* ", 'suffix': " */" },
+            \ 'javascript': { 'prefix': "/* ", 'suffix': " */" },
+            \ 'cpp': { 'prefix': "/* ", 'suffix': " */" },
+            \ 'yaml': { 'prefix': "# ", 'suffix': "" },
+            \ 'markdown': { 'prefix': "<!-- ", 'suffix': " -->" },
+            \}
 
 function! HandleInlineCode()
-        let js_line_numbers = []
-        let css_line_numbers = []
-        let current_lino = line('.')
-        exe "g/[</]style/call add(css_line_numbers, line('.'))"
-        exe "g/[</]script/call add(js_line_numbers, line('.'))"
-        if current_lino > min(js_line_numbers) && current_lino < max(js_line_numbers)
-                let inlineCodeType = "javascript"
-        elseif current_lino > min(css_line_numbers) && current_lino < max(css_line_numbers)
-                let inlineCodeType = "css"
-        else
-                let inlineCodeType = "html"
-        endif
-        exe ":" . current_lino
-        return inlineCodeType
+    let js_line_numbers = []
+    let css_line_numbers = []
+    let current_lino = line('.')
+    exe "g/[</]style/call add(css_line_numbers, line('.'))"
+    exe "g/[</]script/call add(js_line_numbers, line('.'))"
+    if current_lino > min(js_line_numbers) && current_lino < max(js_line_numbers)
+        let inlineCodeType = "javascript"
+    elseif current_lino > min(css_line_numbers) && current_lino < max(css_line_numbers)
+        let inlineCodeType = "css"
+    else
+        let inlineCodeType = "html"
+    endif
+    exe ":" . current_lino
+    return inlineCodeType
 endfunction
-
 
 " Toggle Comment in Current Line
 " Only for vim >= 8
 function! ToggleComment()
-        " TODO: make it work in visual mode aka group selection
-        " TODO: Detect whether a // is used or /*
-        let current_line = trim(getline('.'))
-        let comment = 0
-        for lang_comment in keys(g:comment_chars)
-                let lang_prefix = g:comment_chars[lang_comment]["prefix"]
-                let lang_suffix = g:comment_chars[lang_comment]["suffix"]
-                if current_line[0:len(lang_prefix)-1] == lang_prefix 
-                        call setline('.', current_line[len(lang_prefix):len(current_line)-len(lang_suffix)])
-                        let comment = 1
-                        :normal ==
-                        break
-                endif
-        endfor
-        if comment == 0 " add a comment
-                " fuck HTML
-                if &filetype == "html"
-                        let code_type = HandleInlineCode()
-                        call setline('.', g:comment_chars[code_type]["prefix"] . trim(getline('.')) . g:comment_chars[code_type]["suffix"])
-                else
-                        call setline('.', g:comment_chars[&filetype]["prefix"] . trim(getline('.')) . g:comment_chars[&filetype]["suffix"])
-                endif
-                :normal ==
+    " TODO: make it work in visual mode aka group selection
+    " TODO: Detect whether a // is used or /*
+    let current_line = trim(getline('.'))
+    let comment = 0
+    for lang_comment in keys(g:comment_chars)
+        let lang_prefix = g:comment_chars[lang_comment]["prefix"]
+        let lang_suffix = g:comment_chars[lang_comment]["suffix"]
+        if current_line[0:len(lang_prefix)-1] == lang_prefix 
+            call setline('.', current_line[len(lang_prefix):len(current_line)-len(lang_suffix)])
+            let comment = 1
+            :normal ==
+            break
         endif
+    endfor
+    if comment == 0 " add a comment
+        " fuck HTML
+        if &filetype == "html"
+            let code_type = HandleInlineCode()
+            call setline('.', g:comment_chars[code_type]["prefix"] . trim(getline('.')) . g:comment_chars[code_type]["suffix"])
+        else
+            call setline('.', g:comment_chars[&filetype]["prefix"] . trim(getline('.')) . g:comment_chars[&filetype]["suffix"])
+        endif
+        :normal ==
+    endif
 endfunction
 
 " Open Binary files in their appropriate viewer
 autocmd bufenter *.pdf,*.png,*.gif,*.jpg,*.mpv,*.mkv,*.avi :call OpenNonTextFiles()
 function! OpenNonTextFiles()
-        let current_file = expand('%')
-        if IsNonAsciiFile(current_file) == 1
-                execute "silent! !xdg-open " . current_file
-                " Switch to next buffer and delete this one
-                " Else open a new buffer
-                if len(getbufinfo({'buflisted':1})) >= 2
-                        execute "bNext"
-                        execute "bd " . current_file
-                else
-                        execute "enew"
-                endif
+    let current_file = expand('%')
+    if IsNonAsciiFile(current_file) == 1
+        execute "silent! !xdg-open " . current_file
+        " Switch to next buffer and delete this one
+        " Else open a new buffer
+        if len(getbufinfo({'buflisted':1})) >= 2
+            execute "bNext"
+            execute "bd " . current_file
+        else
+            execute "enew"
         endif
+    endif
 endfunction
 
 "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
 "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
 " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
 if (has("termguicolors"))
-		set termguicolors
+    set termguicolors
 endif
