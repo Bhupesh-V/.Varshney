@@ -4,7 +4,22 @@ wib() {
 	blog_dir="$HOME"/Desktop/Bhupesh-V.github.io/
 	printf "Total Blogs: %s" "$(ls "$blog_dir"/_posts/ | wc -l)"
 	printf "\n%s" "Total Words: "
-	grep -nir -o -P '.{0,5} totalwords' --exclude-dir=tag --exclude "feed.xml" "$blog_dir/"_site | awk '{print $2}' | awk '{s+=$0} END {print s}'
+	words_blogs=$(grep -nir -o -P '.{0,5} totalwords' --exclude-dir=tag --exclude "feed.xml" "$blog_dir/"_site | awk '{print $2}' | awk '{s+=$0} END {print s}')
+        echo $words_blogs
+        til_data=("CleanCode" "Python" "Shell" "Go" "WebDev" "Miscellaneous")
+
+        for dir in ${til_data[@]}; do
+            files=$(ls "$HOME/Documents/til/$dir")
+            for til in ${files[@]}; do
+                words=$(wc -w "$HOME/Documents/til/$dir/$til" | awk '{print $1}')
+                let total_words+=$words
+                # printf "%s%s\n" "words = ${words}, total = ${total_words}"
+            done
+        done
+        printf "\n%s\n" "Total TILs: $(awk '/count/ {print $2}' Documents/til/count.json)"
+        printf "%s" "Total Words: ${total_words}"
+        printf "\n\n%s" "Grand Total: $((total_words + words_blogs))"
+
 }
 
 gdl() {

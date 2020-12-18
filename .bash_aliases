@@ -1,14 +1,14 @@
-alias push='git push'
-alias pull='git pull'
-alias add='git add -A'
-alias branch='git branch'
-alias switch='git checkout'
-alias status='git status'
-alias scommit='git commit -m'
-alias commit='git commit'
-alias clone='git clone'
-alias log='git log --graph --decorate --pretty=oneline --abbrev-commit'
-alias merge='git merge'
+alias psh='git push'
+alias gip='git pull'
+alias gia='git add -A'
+alias gib='git branch'
+alias gich='git checkout'
+alias gis='git status'
+alias gisc='git commit -m'
+alias gic='git commit'
+alias gicl='git clone'
+alias gil='git log --graph --decorate --pretty=oneline --abbrev-commit'
+alias gim='git merge'
 alias gif='git diff'
 # undo last local commit
 alias undo='git reset HEAD~'
@@ -16,7 +16,6 @@ alias p='python3'
 alias dotman='$HOME/dotman/dotman.sh'
 alias update='sudo apt-get update'
 alias upgrade='sudo apt-get upgrade'
-alias z=zsh
 alias b=bash
 alias cd="vcd"
 alias venv="python3 -m venv"
@@ -31,5 +30,4 @@ alias gt="go test"
 alias lk="grep -nir --exclude-dir={.git,.github}"
 alias bb="jekyll serve --watch"
 alias md="\$HOME/Documents/.Varshney/scripts/md.sh"
-alias s="subl"
 alias n="nvim"
