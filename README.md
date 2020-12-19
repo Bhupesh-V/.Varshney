@@ -128,6 +128,11 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 		<td align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/my-prs.py">my-prs.py</a></b></td>
 		<td align="center">A utility to list a github user's pull requests in a nicely readable markdown file with 0 dependencies.</td>
 	</tr>
+        <tr>
+		<td align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/backup_as_gist.py">backup_as_gist.py</a></b></td>
+		<td align="center">A utility to backup files on Github as a Secret Gist (0 dependency)</td>
+	</tr>
+
 </table>
 
 
