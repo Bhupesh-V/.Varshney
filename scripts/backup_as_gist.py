@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
+
 # File Backup as Gist
 # Script to backup files as a GitHub Gist with 0 dependency
-#
+
 # Usage:
 # 1. Make sure you have a Personal Access Token with Gist Scope
 # 2. Create a file named .env & save your token in it (just token, nothing else)
@@ -38,7 +40,7 @@ def get(filename):
         res = json.loads(response.read().decode("utf-8"))
     for gist in res:
         if filename in gist["files"]:
-            print("Found File backup with id:", gist["id"])
+            print("✔️  Found File backup")
             gid = gist["id"]
             break
         gid = None
@@ -46,6 +48,7 @@ def get(filename):
 
 def update(gist_id, data):
     # Update gist file
+    print("📤 Updating backup")
     req = urllib.request.Request(f"{base_url}/gists/{gist_id}", data=data, headers=HEADERS)
     req.get_method = lambda: 'PATCH'
     with urllib.request.urlopen(req) as response:
@@ -69,7 +72,6 @@ def controller(filepath):
     gist_id = get(filename)
 
     if gist_id is not None:
-        print("Updating Gist:", filename)
         update(gist_id, json.dumps(content).encode("utf-8"))
     else:
         print(f"No backup found for file: {filename}")
