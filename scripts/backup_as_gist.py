@@ -9,7 +9,7 @@
 # 3. Run script: python backup_as_gist.py <file-to-backup>
 
 import urllib.request
-import json, sys, os
+import json, sys
 from pathlib import Path
 
 HEADERS = {
@@ -32,7 +32,7 @@ def create(url, data):
         res = json.loads(response.read().decode("utf-8"))
         print("Success! 😃")
 
-def get(filename):
+def get_backup(filename):
     # Get Gist id if we already have a backup
     print("📦 Checking for backup ...")
     req = urllib.request.Request(f"{base_url}/gists", headers=HEADERS)
@@ -48,7 +48,7 @@ def get(filename):
 
 def update(gist_id, data):
     # Update gist file
-    print("📤 Updating backup")
+    print("📤 Updating ...")
     req = urllib.request.Request(f"{base_url}/gists/{gist_id}", data=data, headers=HEADERS)
     req.get_method = lambda: 'PATCH'
     with urllib.request.urlopen(req) as response:
@@ -69,7 +69,7 @@ def controller(filepath):
     filename = userfile.name
     file_content = userfile.read_text()
     content["files"] = {filename: {"content": file_content}}
-    gist_id = get(filename)
+    gist_id = get_backup(filename)
 
     if gist_id is not None:
         update(gist_id, json.dumps(content).encode("utf-8"))
