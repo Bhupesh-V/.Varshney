@@ -10,6 +10,7 @@
 
 import urllib.request
 import json, sys
+from datetime import datetime
 from pathlib import Path
 
 HEADERS = {
@@ -25,35 +26,35 @@ content = {
     # "files": {"test": {"content": "# title"}},
 }
 
-def create(url, data):
-    # Create a New File Backup
-    req = urllib.request.Request(url, data=data, headers=HEADERS)
+
+def request(url, data=None, method=None):
+    if method == "PATCH":
+        req = urllib.request.Request(url, data=data, headers=HEADERS)
+        req.get_method = lambda: "PATCH"
+    elif method == "POST":
+        req = urllib.request.Request(url, data=data, headers=HEADERS)
+    else:
+        req = urllib.request.Request(url, headers=HEADERS)
     with urllib.request.urlopen(req) as response:
         res = json.loads(response.read().decode("utf-8"))
-        print("Success! 😃")
+    return res, response.code
+
 
 def get_backup(filename):
     # Get Gist id if we already have a backup
     print("📦 Checking for backup ...")
-    req = urllib.request.Request(f"{base_url}/gists", headers=HEADERS)
-    with urllib.request.urlopen(req) as response:
-        res = json.loads(response.read().decode("utf-8"))
+    res, _ = request(url=f"{base_url}/gists")
     for gist in res:
         if filename in gist["files"]:
-            print("✔️  Found File backup")
+            updated_date = datetime.strptime(
+                gist["updated_at"], "%Y-%m-%dT%H:%M:%SZ"
+            ).strftime("%d %b %Y")
+            print(f"""✔️  Found File backup ({updated_date})""")
             gid = gist["id"]
             break
         gid = None
     return gid
 
-def update(gist_id, data):
-    # Update gist file
-    print("📤 Updating ...")
-    req = urllib.request.Request(f"{base_url}/gists/{gist_id}", data=data, headers=HEADERS)
-    req.get_method = lambda: 'PATCH'
-    with urllib.request.urlopen(req) as response:
-        res = json.loads(response.read().decode("utf-8"))
-        print("Success! 😃")
 
 def read_token():
     env_path = Path.home() / ".env"
@@ -66,17 +67,23 @@ def read_token():
 
 def controller(filepath):
     userfile = Path(filepath)
-    filename = userfile.name
-    file_content = userfile.read_text()
-    content["files"] = {filename: {"content": file_content}}
-    gist_id = get_backup(filename)
+    content["files"] = {userfile.name: {"content": userfile.read_text()}}
+    gist_id = get_backup(userfile.name)
 
     if gist_id is not None:
-        update(gist_id, json.dumps(content).encode("utf-8"))
+        print("📤 Updating ...")
+        res, code = request(
+            f"{base_url}/gists/{gist_id}", json.dumps(content).encode("utf-8"), "PATCH"
+        )
     else:
         print(f"No backup found for file: {filename}")
         print("Creating Backup ...")
-        create(f"{base_url}/gists", json.dumps(content).encode("utf-8"))
+        res, code = request(
+            f"{base_url}/gists", json.dumps(content).encode("utf-8"), "POST"
+        )
+    if code == 200 or code == 201:
+        print("Success! 😃")
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
