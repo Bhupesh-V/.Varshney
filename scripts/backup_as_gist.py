@@ -82,7 +82,7 @@ def controller(filepath):
             f"{base_url}/gists/{gist_id}", json.dumps(content).encode("utf-8"), "PATCH"
         )
     else:
-        print(f"No backup found for file: {filename}")
+        print(f"No backup found for file: {filepath}")
         print("Creating Backup ...")
         res, code = request(
             f"{base_url}/gists", json.dumps(content).encode("utf-8"), "POST"

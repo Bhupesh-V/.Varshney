@@ -32,6 +32,7 @@ inoremap <F4> <C-R>=strftime("%d %b, %Y")<CR>
 nnoremap <S-t> :set nospell <bar> :term<CR>
 " Toggle code-folds
 noremap <space> za
+nnoremap <A-CR> :Goyo<CR>
 " Use Enter to switch to command mode
 nnoremap <Tab> <C-w><C-w>
 " Tab to cycle through open splits
@@ -163,6 +164,10 @@ let $BASH_ENV = "~/.vim_bash_env"
 " Toggle transparent mode
 let g:is_transparent = 0
 
+" Prettify JSON using python
+" See this: https://github.com/Bhupesh-V/.Varshney/blob/b6a6123b3acc7961e208ad66c66c8cefd60773f3/.bash_functions#L275-L282 
+:command Pretty !pj %:p
+
 " Auto Commands {{{
 
 " Set foldmethod based on file type
@@ -195,9 +200,9 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 " vim-emoji doesn't replace :emoji_string: with the actual emoji by default
 autocmd CompleteDone *  call FixEmoji()
 function! FixEmoji()
-    :echom v:completed_item['kind']
+    " :echom v:completed_item['kind']
     " :%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/ge
-    :call substitute(getline('.'), ':\([^:]\+\):', '\=emoji#for(submatch(1), submatch(0))', 'e')
+    " :call substitute(getline('.'), ':\([^:]\+\):', '\=emoji#for(submatch(1), submatch(0))', 'e')
     " :normal <C-o>
 endfunction
 
