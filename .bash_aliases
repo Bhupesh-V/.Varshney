@@ -1,5 +1,5 @@
-alias psh='git push'
-alias gip='git pull'
+alias gsh='git push'
+alias gll='git pull'
 alias gia='git add -A'
 alias gib='git branch'
 alias gich='git checkout'
@@ -9,25 +9,26 @@ alias gic='git commit'
 alias gicl='git clone'
 alias gil='git log --graph --decorate --pretty=oneline --abbrev-commit'
 alias gim='git merge'
-alias gif='git diff'
+alias gid='git diff'
 # undo last local commit
 alias undo='git reset HEAD~'
-alias p='python3'
-alias dotman='$HOME/dotman/dotman.sh'
-alias update='sudo apt-get update'
-alias upgrade='sudo apt-get upgrade'
-alias b=bash
-alias cd="vcd"
-alias venv="python3 -m venv"
-alias sys="watch -ct -n0 \$HOME/Documents/.Varshney/scripts/sys.sh"
-alias serve="python3 -m http.server"
 alias gb="go build"
 alias gr="go run"
 alias gd="go doc"
 alias gg="go get"
 alias gt="go test"
-# handy to explore unknown codebases
+alias n="nvim"
+alias p='python3'
+alias b=bash
+alias venv="python3 -m venv"
+alias dotman='$HOME/dotman/dotman.sh'
+alias update='sudo apt-get update'
+alias upgrade='sudo apt-get upgrade'
+alias cd="vcd"
+alias serve="python3 -m http.server"
 alias lk="grep -nir --exclude-dir={.git,.github}"
+alias sys="watch -ct -n0 \$HOME/Documents/.Varshney/scripts/sys.sh"
 alias bb="jekyll serve --watch"
 alias md="\$HOME/Documents/.Varshney/scripts/md.sh"
-alias n="nvim"
+alias bkp="\$HOME/Documents/.Varshney/scripts/backup_as_gist.py"
+alias gif="\$HOME/Documents/.Varshney/scripts/convert-to-gif.sh"

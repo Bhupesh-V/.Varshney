@@ -271,3 +271,12 @@ h() {
 		apropos "$1"
 	fi
 }
+
+pj() {
+        # prettify json using python3
+        if [[ -z "$1" ]]; then
+                echo "No file path"
+                exit 1
+        fi
+        pretty_json=$(python3 -m json.tool "$1") && echo "$pretty_json" > "$1"
+}
