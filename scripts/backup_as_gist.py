@@ -5,7 +5,8 @@
 
 # Usage:
 # 1. Make sure you have a Personal Access Token with Gist Scope
-# 2. Create a file named .env & save your token in it (just token, nothing else)
+# 2. Create a file named .env.json in your home directory with contents:
+# {"GITHUB_TOKEN": "<your-token>" }
 # 3. Run script: python backup_as_gist.py <file-to-backup>
 
 import urllib.request
@@ -57,11 +58,16 @@ def get_backup(filename):
 
 
 def read_token():
-    env_path = Path.home() / ".env"
+    env_path = Path.home() / ".env.json"
     if env_path.is_file():
-        HEADERS["Authorization"] = f"token {env_path.read_text().rstrip()}"
+        secrets = json.loads(env_path.read_text())
+        if "GITHUB_TOKEN" in secrets:
+            HEADERS["Authorization"] = f"token {secrets['GITHUB_TOKEN']}"
+        else:
+            print("GITHUB_TOKEN not found in .env.json")
+            exit()
     else:
-        print("No .env file found in home directory")
+        print("No .env.json file found in home directory")
         exit()
 
 
