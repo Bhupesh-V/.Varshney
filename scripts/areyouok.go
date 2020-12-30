@@ -9,6 +9,9 @@ import (
     "net/url"
     "time"
     "log"
+    "strings"
+    "path/filepath"
+    "flag"
 )
 
 func checkLink(link string, ch chan<- string) {
@@ -30,8 +33,32 @@ func checkLink(link string, ch chan<- string) {
     ch <- fmt.Sprintf("Took %.2fs to fetch %s, Status: %d", secs, link, resp.StatusCode)
 }
 
-func main() {
-    filepath := os.Args[1]
+func GetFiles(choosenDirectory string) []string {
+    var validFiles []string
+    err := filepath.Walk(choosenDirectory,
+    func(path string, info os.FileInfo, err error) error {
+        if err != nil {
+            return err
+        }
+        if info.IsDir() && info.Name() == ".git" {
+            return filepath.SkipDir
+        }
+        if strings.HasSuffix(filepath.Base(path), "go") {
+            fmt.Println(filepath.Base(path))
+            validFiles = append(validFiles, path)
+        }
+        return nil
+    })
+    if err != nil {
+        log.Println(err)
+    }
+    return validFiles
+}
+
+func GetLinks() {
+
+}
+func driver(filepath string) {
     data, err := ioutil.ReadFile(filepath)
     if err != nil {
         fmt.Println("File reading error", err)
@@ -54,4 +81,22 @@ func main() {
         fmt.Println(<-ch)
     }
     fmt.Printf("Total Time: %.2fs\n", time.Since(start).Seconds())
+}
+
+func main() {
+    var typeOfFile string
+    // flags declaration using flag package
+    flag.StringVar(&typeOfFile, "t", "md", "Specify type of file. Default is .md")
+    flag.Parse()
+    fmt.Printf("type = %s\n", typeOfFile)
+
+    if _, err := os.Stat(flag.Args()[0]); err == nil {
+        user_dir := flag.Args()[0]
+    } else if os.IsNotExist(err) {
+        log.Fatal("Filepath does not exist.")
+    } else {
+        user_dir := "."
+    }
+    fmt.Println(user_dir)
+    // driver(user_dir)
 }
