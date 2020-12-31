@@ -20,6 +20,7 @@ TODO:
 1. Concurrent reading of files?
 2. Ignore Directories OR
 3. Set for files which have a link (no duplicate scanning)
+4. Report Generator (JSON/HTML/TXT)
 */
 
 // its not perfect (look for edge cases)
@@ -45,15 +46,27 @@ func checkLink(link string, ch chan<- string) {
 	ch <- fmt.Sprintf("Took %.2fs to fetch %s, Status: %d", secs, link, resp.StatusCode)
 }
 
-func GetFiles(user_path string, filetype string) []string {
+func In(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
+func GetFiles(user_path string, filetype string, ignore []string) []string {
 	var validFiles []string
+
 	err := filepath.Walk(user_path,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
-			if info.IsDir() && info.Name() == ".git" {
-				return filepath.SkipDir
+			if info.IsDir() {
+				if In(info.Name(), ignore) {
+					return filepath.SkipDir
+				}
 			}
 			if strings.HasSuffix(filepath.Base(path), filetype) {
 				validFiles = append(validFiles, path)
@@ -118,10 +131,18 @@ func driver(filepath string) {
 
 func main() {
 	var typeOfFile string
+	var ignoreDirs string
 	var user_dir string
+	var dirs []string
 	flag.StringVar(&typeOfFile, "t", "md", "Specify type of files to scan")
+	flag.StringVar(&ignoreDirs, "i", "", "Comma separated directory names to ignore")
 	flag.Parse()
 	fmt.Printf("type = %s\n", typeOfFile)
+	fmt.Printf("ignore = %s\n", ignoreDirs)
+
+	if ignoreDirs != "" {
+		dirs = strings.Split(ignoreDirs, ",")
+	}
 
 	if len(flag.Args()) == 0 {
 		user_dir = "."
@@ -129,7 +150,6 @@ func main() {
 		user_dir = flag.Args()[0]
 	}
 
-	fmt.Println(user_dir)
-	var valid_files = GetFiles(user_dir, typeOfFile)
+	var valid_files = GetFiles(user_dir, typeOfFile, dirs)
 	GetLinks(valid_files)
 }
