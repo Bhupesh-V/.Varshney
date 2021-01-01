@@ -18,14 +18,12 @@ import (
 /*
 TODO:
 1. Concurrent reading of files?
-2. Ignore Directories OR
-3. Set for files which have a link (no duplicate scanning)
-4. Report Generator (JSON/HTML/TXT)
+2. Report Generator (JSON/HTML/TXT)
 */
 
 // its not perfect (look for edge cases)
 // https://www.suon.co.uk/product/1/7/3/
-var re = regexp.MustCompile(`https?:\/\/[^)\n,\s\"]+`)
+var re = regexp.MustCompile(`https?:\/\/[^)\n,\s\"*]+`)
 
 func checkLink(link string, ch chan<- string) {
 	reqURL, _ := url.Parse(link)
@@ -68,7 +66,7 @@ func GetFiles(user_path string, filetype string, ignore []string) []string {
 					return filepath.SkipDir
 				}
 			}
-			if strings.HasSuffix(filepath.Base(path), filetype) {
+			if strings.HasSuffix(filepath.Base(path), filetype) && !In(info.Name(), ignore) {
 				validFiles = append(validFiles, path)
 			}
 			return nil
@@ -87,13 +85,15 @@ func Indent(v interface{}) string {
 	return string(b)
 }
 
-func GetLinks(files []string) {
+func GetLinks(files []string) []string {
 	hyperlinks := make(map[string][]string)
+    var totalLinks int
+    var allLinks []string
+
 	for _, file := range files {
 		data, err := ioutil.ReadFile(file)
 		if err != nil {
 			fmt.Println("File reading error", err)
-			return
 		}
 		file_content := string(data)
 		submatchall := re.FindAllString(file_content, -1)
@@ -101,44 +101,42 @@ func GetLinks(files []string) {
 			hyperlinks[file] = submatchall
 		}
 	}
+	for _, v := range hyperlinks {
+		totalLinks += len(v)
+        allLinks = append(allLinks, v...)
+	}
 	// yay! Jackpot!!
-	fmt.Println(Indent(hyperlinks))
+	fmt.Printf("%d links found across %d files\n\n", totalLinks, len(hyperlinks))
+    // fmt.Println(Indent(hyperlinks))
+
+    return allLinks
 }
 
-func driver(filepath string) {
-	data, err := ioutil.ReadFile(filepath)
-	if err != nil {
-		fmt.Println("File reading error", err)
-		return
-	}
-	file_content := string(data)
-
-	re := regexp.MustCompile(`https?:\/\/[^)\n,\s\"]+`)
-	fmt.Printf("Pattern: %v\n", re.String())  // print pattern
-	fmt.Println(re.MatchString(file_content)) // true
-
-	submatchall := re.FindAllString(file_content, -1)
+func Driver(links []string) {
+    // fmt.Println(links)
 	start := time.Now()
 	ch := make(chan string)
-	for _, element := range submatchall {
+	for _, element := range links {
 		go checkLink(element, ch)
 	}
-	for range submatchall {
+	for range links {
 		fmt.Println(<-ch)
 	}
 	fmt.Printf("Total Time: %.2fs\n", time.Since(start).Seconds())
 }
 
 func main() {
-	var typeOfFile string
-	var ignoreDirs string
-	var user_dir string
-	var dirs []string
+	var (
+		typeOfFile string
+		ignoreDirs string
+		user_dir   string
+		dirs       []string
+	)
 	flag.StringVar(&typeOfFile, "t", "md", "Specify type of files to scan")
-	flag.StringVar(&ignoreDirs, "i", "", "Comma separated directory names to ignore")
+	flag.StringVar(&ignoreDirs, "i", "", "Comma separated directory and/or file names to ignore")
 	flag.Parse()
-	fmt.Printf("type = %s\n", typeOfFile)
-	fmt.Printf("ignore = %s\n", ignoreDirs)
+	// fmt.Printf("type = %s\n", typeOfFile)
+	// fmt.Printf("ignore = %s\n", ignoreDirs)
 
 	if ignoreDirs != "" {
 		dirs = strings.Split(ignoreDirs, ",")
@@ -151,5 +149,6 @@ func main() {
 	}
 
 	var valid_files = GetFiles(user_dir, typeOfFile, dirs)
-	GetLinks(valid_files)
+    // fmt.Println(GetLinks(valid_files))
+	Driver(GetLinks(valid_files))
 }
