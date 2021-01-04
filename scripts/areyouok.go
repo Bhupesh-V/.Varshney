@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -20,9 +21,9 @@ import (
 /*
 TODO:
 1. Concurrent reading of files?
-2. Report Generator (JSON/HTML/TXT)
-4. Handle localhost URL
-5. Handle ` char in url
+2. Handle localhost URL
+3. Handle ` char in url
+4. Improve --help
 */
 
 // its not perfect (look for edge cases)
@@ -114,11 +115,34 @@ func GetLinks(files []string) []string {
 }
 
 func GenerateReport(data []map[string]string, reportType string) {
-	j, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		fmt.Println(err)
+	if reportType == "html" {
+        now := time.Now()
+		t, err := template.ParseFiles("report_template.html")
+		if err != nil {
+			fmt.Println(err)
+		}
+		f, err := os.Create("report.html")
+		if err != nil {
+			log.Println("File error: ", err)
+			return
+		}
+		template_data := struct {
+			NotOkurls []map[string]string
+			Date      string
+			Time      string
+		}{
+			NotOkurls: data,
+			Date:      now.Format("January 2, 2006"),
+            Time:      now.Format(time.Kitchen),
+		}
+		t.Execute(f, template_data)
+	} else if reportType == "json" {
+		j, err := json.MarshalIndent(data, "", "  ")
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = ioutil.WriteFile("report."+reportType, j, 0644)
 	}
-	err = ioutil.WriteFile("report."+reportType, j, 0644)
 }
 
 func Driver(links []string) []map[string]string {
@@ -153,7 +177,7 @@ func main() {
 	)
 	flag.StringVar(&typeOfFile, "t", "md", "Specify type of files to scan")
 	flag.StringVar(&ignoreDirs, "i", "", "Comma separated directory and/or file names to ignore")
-	flag.StringVar(&reportType, "r", "", "Generate report. Supported formats include JSON")
+	flag.StringVar(&reportType, "r", "html", "Generate report. Supported formats include json/html")
 	flag.Parse()
 
 	if ignoreDirs != "" {
