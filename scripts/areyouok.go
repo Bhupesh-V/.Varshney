@@ -11,7 +11,9 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -19,13 +21,16 @@ import (
 TODO:
 1. Concurrent reading of files?
 2. Report Generator (JSON/HTML/TXT)
+4. Handle localhost URL
+5. Handle ` char in url
 */
 
 // its not perfect (look for edge cases)
 // https://www.suon.co.uk/product/1/7/3/
 var re = regexp.MustCompile(`https?:\/\/[^)\n,\s\"*]+`)
 
-func checkLink(link string, ch chan<- string) {
+func checkLink(link string, wg *sync.WaitGroup, ch chan map[string]string) {
+	defer wg.Done()
 	reqURL, _ := url.Parse(link)
 	req := &http.Request{
 		Method: "GET",
@@ -34,14 +39,13 @@ func checkLink(link string, ch chan<- string) {
 			"User-Agent": {"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"},
 		},
 	}
-	start := time.Now()
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatalln(err)
+		// fmt.Printf("Skipping %s due to Error: %s\n", link, err)
+		ch <- map[string]string{"url": link, "message": err.Error()}
+		return
 	}
-	// fmt.Println("HTTP Response Status:", resp.StatusCode, http.StatusText(resp.StatusCode))
-	secs := time.Since(start).Seconds()
-	ch <- fmt.Sprintf("Took %.2fs to fetch %s, Status: %d", secs, link, resp.StatusCode)
+	ch <- map[string]string{"url": link, "code": strconv.Itoa(resp.StatusCode), "message": http.StatusText(resp.StatusCode)}
 }
 
 func In(a string, list []string) bool {
@@ -87,8 +91,7 @@ func Indent(v interface{}) string {
 
 func GetLinks(files []string) []string {
 	hyperlinks := make(map[string][]string)
-    var totalLinks int
-    var allLinks []string
+	var allLinks []string
 
 	for _, file := range files {
 		data, err := ioutil.ReadFile(file)
@@ -102,27 +105,42 @@ func GetLinks(files []string) []string {
 		}
 	}
 	for _, v := range hyperlinks {
-		totalLinks += len(v)
-        allLinks = append(allLinks, v...)
+		allLinks = append(allLinks, v...)
 	}
 	// yay! Jackpot!!
-	fmt.Printf("%d links found across %d files\n\n", totalLinks, len(hyperlinks))
-    // fmt.Println(Indent(hyperlinks))
+	fmt.Printf("%d links found across %d files\n\n", len(allLinks), len(hyperlinks))
 
-    return allLinks
+	return allLinks
 }
 
-func Driver(links []string) {
-    // fmt.Println(links)
+func GenerateReport(data []map[string]string, reportType string) {
+	j, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = ioutil.WriteFile("report."+reportType, j, 0644)
+}
+
+func Driver(links []string) []map[string]string {
+	var wg sync.WaitGroup
+	var notoklinks []map[string]string
 	start := time.Now()
-	ch := make(chan string)
-	for _, element := range links {
-		go checkLink(element, ch)
+	ch := make(chan map[string]string, len(links)) //unbuffered channel
+	wg.Add(len(links))
+	for _, url := range links {
+		go checkLink(url, &wg, ch)
 	}
-	for range links {
-		fmt.Println(<-ch)
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+	for i, _ := range links {
+		notoklinks = append(notoklinks, <-ch)
+		fmt.Printf("\rAnalyzing %d/%d URLs", i+1, len(links))
 	}
-	fmt.Printf("Total Time: %.2fs\n", time.Since(start).Seconds())
+	// fmt.Println(Indent(notoklinks))
+	fmt.Printf("\nTotal Time: %.2fs\n", time.Since(start).Seconds())
+	return notoklinks
 }
 
 func main() {
@@ -130,13 +148,13 @@ func main() {
 		typeOfFile string
 		ignoreDirs string
 		user_dir   string
+		reportType string
 		dirs       []string
 	)
 	flag.StringVar(&typeOfFile, "t", "md", "Specify type of files to scan")
 	flag.StringVar(&ignoreDirs, "i", "", "Comma separated directory and/or file names to ignore")
+	flag.StringVar(&reportType, "r", "", "Generate report. Supported formats include JSON")
 	flag.Parse()
-	// fmt.Printf("type = %s\n", typeOfFile)
-	// fmt.Printf("ignore = %s\n", ignoreDirs)
 
 	if ignoreDirs != "" {
 		dirs = strings.Split(ignoreDirs, ",")
@@ -149,6 +167,8 @@ func main() {
 	}
 
 	var valid_files = GetFiles(user_dir, typeOfFile, dirs)
-    // fmt.Println(GetLinks(valid_files))
-	Driver(GetLinks(valid_files))
+	data := Driver(GetLinks(valid_files))
+	if reportType != "" {
+		GenerateReport(data, reportType)
+	}
 }
