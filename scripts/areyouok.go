@@ -30,6 +30,12 @@ TODO:
 // https://www.suon.co.uk/product/1/7/3/
 var re = regexp.MustCompile(`https?:\/\/[^)\n,\s\"*]+`)
 
+var (
+	totalTime  string
+	totalFiles int
+	totalLinks int
+)
+
 func checkLink(link string, wg *sync.WaitGroup, ch chan map[string]string) {
 	defer wg.Done()
 	reqURL, _ := url.Parse(link)
@@ -109,6 +115,8 @@ func GetLinks(files []string) []string {
 		allLinks = append(allLinks, v...)
 	}
 	// yay! Jackpot!!
+	totalFiles = len(hyperlinks)
+	totalLinks = len(allLinks)
 	fmt.Printf("%d links found across %d files\n\n", len(allLinks), len(hyperlinks))
 
 	return allLinks
@@ -116,7 +124,7 @@ func GetLinks(files []string) []string {
 
 func GenerateReport(data []map[string]string, reportType string) {
 	if reportType == "html" {
-        now := time.Now()
+		now := time.Now()
 		t, err := template.ParseFiles("report_template.html")
 		if err != nil {
 			fmt.Println(err)
@@ -127,13 +135,19 @@ func GenerateReport(data []map[string]string, reportType string) {
 			return
 		}
 		template_data := struct {
-			NotOkurls []map[string]string
-			Date      string
-			Time      string
+			NotOkurls  []map[string]string
+			Date       string
+			Time       string
+			TotalLinks string
+			TotalFiles string
+			TotalTime  string
 		}{
-			NotOkurls: data,
-			Date:      now.Format("January 2, 2006"),
-            Time:      now.Format(time.Kitchen),
+			NotOkurls:  data,
+			Date:       now.Format("January 2, 2006"),
+			Time:       now.Format(time.Kitchen),
+			TotalLinks: strconv.Itoa(totalLinks),
+			TotalFiles: strconv.Itoa(totalFiles),
+			TotalTime:  totalTime,
 		}
 		t.Execute(f, template_data)
 	} else if reportType == "json" {
@@ -163,6 +177,7 @@ func Driver(links []string) []map[string]string {
 		fmt.Printf("\rAnalyzing %d/%d URLs", i+1, len(links))
 	}
 	// fmt.Println(Indent(notoklinks))
+	totalTime = fmt.Sprintf("%.2fs", time.Since(start).Seconds())
 	fmt.Printf("\nTotal Time: %.2fs\n", time.Since(start).Seconds())
 	return notoklinks
 }
@@ -178,8 +193,15 @@ func main() {
 	flag.StringVar(&typeOfFile, "t", "md", "Specify type of files to scan")
 	flag.StringVar(&ignoreDirs, "i", "", "Comma separated directory and/or file names to ignore")
 	flag.StringVar(&reportType, "r", "html", "Generate report. Supported formats include json/html")
-	flag.Parse()
 
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stdout, "AreYouOK URL Health Checker\n")
+		fmt.Fprintf(os.Stdout, "Usage: areyouok [OPTIONS] <directory-path>\nFollowing options are available:\n")
+		flag.PrintDefaults()
+		fmt.Fprintf(os.Stdout, "Example: areyouok -i=.git,README.md -r=html Documents/some-dir/\n\n")
+		fmt.Fprintf(os.Stdout, "\nReport Any Bugs to varshneybhupesh@gmail.com\n")
+	}
+	flag.Parse()
 	if ignoreDirs != "" {
 		dirs = strings.Split(ignoreDirs, ",")
 	}
@@ -192,7 +214,5 @@ func main() {
 
 	var valid_files = GetFiles(user_dir, typeOfFile, dirs)
 	data := Driver(GetLinks(valid_files))
-	if reportType != "" {
-		GenerateReport(data, reportType)
-	}
+	GenerateReport(data, reportType)
 }
