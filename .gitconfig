@@ -9,5 +9,5 @@
 	helper = store
 [alias]
         wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
-        his = log --date=format:'%d %b %Y' --diff-filter=A --name-only --pretty='%n%C(yellow bold)%ad%Creset'
+        cake = log --date=format:'%d %b %Y' --diff-filter=A --name-only --pretty='%n%C(yellow bold)🎂️ %ad%Creset by (%C(blue bold)%h%Creset)'
   

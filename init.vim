@@ -12,7 +12,6 @@ Plug 'danilo-augusto/vim-afterglow'
 Plug 'junegunn/goyo.vim'
 Plug 'psf/black', { 'branch': 'stable' }
 Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
-Plug 'junegunn/vim-emoji'
 call plug#end()
 
 " Key Mappings {{{
@@ -72,6 +71,8 @@ nnoremap <S-r> :call AddCmdOuput()<CR>
 noremap <F8> :call Toggle_transparent()<CR>
 nnoremap <S-l> :call OpenLink()<CR>
 nnoremap t :call ToggleComment()<CR>
+nnoremap <F10> :call PrettyMe()<CR>
+inoremap <F10> :call PrettyMe()<CR>
 "}}}
 
 " Disable Arrow keys for good {{{
@@ -81,6 +82,11 @@ map <Up> <Nop>
 map <Down> <Nop>
 "}}}
 
+" Auto Pair Brackets/Parentheses/Braces {{{
+inoremap <expr> ( ConditionalPairMap('(', ')')
+inoremap <expr> { ConditionalPairMap('{', '}')
+inoremap <expr> [ ConditionalPairMap('[', ']')
+"}}}
 "}}}
 
 " Abbreviations
@@ -164,10 +170,6 @@ let $BASH_ENV = "~/.vim_bash_env"
 " Toggle transparent mode
 let g:is_transparent = 0
 
-" Prettify JSON using python
-" See this: https://github.com/Bhupesh-V/.Varshney/blob/b6a6123b3acc7961e208ad66c66c8cefd60773f3/.bash_functions#L275-L282 
-:command Pretty !pj %:p
-
 " Auto Commands {{{
 
 " Set foldmethod based on file type
@@ -197,15 +199,6 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 
 " My Plugins
 
-" vim-emoji doesn't replace :emoji_string: with the actual emoji by default
-autocmd CompleteDone *  call FixEmoji()
-function! FixEmoji()
-    " :echom v:completed_item['kind']
-    " :%s/:\([^:]\+\):/\=emoji#for(submatch(1), submatch(0))/ge
-    " :call substitute(getline('.'), ':\([^:]\+\):', '\=emoji#for(submatch(1), submatch(0))', 'e')
-    " :normal <C-o>
-endfunction
-
 " Toggle transparent mode (make sure this is always below colorscheme setting
 function! Toggle_transparent()
     if g:is_transparent == 0
@@ -219,8 +212,7 @@ endfunction
 
 " Run commands inside the editor & paste output in next line
 function! AddCmdOuput()
-    " A liner for this can be :
-    " nnoremap <S-r> !!sh<CR>
+    " A one liner for this can be nnoremap <S-r> !!sh<CR>
     try
         let cmd_output = systemlist(getline("."))
         echo "Executing " . getline(".")[0:3] . " ... "
@@ -257,6 +249,21 @@ function! IsNonAsciiFile(file)
         let isNonAscii = 0
     endif
     return isNonAscii
+endfunction
+
+" Indent Files based on file type
+function! PrettyMe()
+    if &filetype == "json"
+        " See this: https://bhupesh-v.github.io/prettifying-json-files-using-bash-python-vim/ 
+        exe "!pj %:p"
+    elseif &filetype == "python"
+        exe ":Black"
+    elseif &filetype == "go"
+        exe ":!gofmt -w %"
+    else
+        " Indent and Go back to my previous cursor pos
+        exe "norm! gg=G\<C-o>"
+    endif
 endfunction
 
 " Need to have a <space> before/after comment character
@@ -335,6 +342,17 @@ function! OpenNonTextFiles()
         endif
     endif
 endfunction
+
+" https://vim.fandom.com/wiki/Automatically_append_closing_characters
+function! ConditionalPairMap(open, close)
+    let line = getline('.')
+    let col = col('.')
+    if col < col('$') || stridx(line, a:close, col + 1) != -1
+        return a:open
+    else
+        return a:open . a:close . repeat("\<left>", len(a:close))
+    endif
+endf
 
 "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
 "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
