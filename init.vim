@@ -41,6 +41,11 @@ nnoremap <S-Tab> :bn<CR>
 " Use j/k to select from completion menu
 inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
 inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
+" Efficiently browse vim manuals using helpg
+nnoremap <kPlus> :cn<CR>
+nnoremap <kMinus> :cn<CR>
+" Search selected text when in visual mode by pressing /
+vmap / y/<C-R>"<CR>
 
 " Map keys in terminal mode
 " listen up, CapsLock is already mapped to Esc via xmodmap
@@ -82,16 +87,26 @@ map <Up> <Nop>
 map <Down> <Nop>
 "}}}
 
-" Auto Pair Brackets/Parentheses/Braces {{{
-inoremap <expr> ( ConditionalPairMap('(', ')')
-inoremap <expr> { ConditionalPairMap('{', '}')
-inoremap <expr> [ ConditionalPairMap('[', ']')
-"}}}
 "}}}
 
-" Abbreviations
-:iabbrev @@    varshneybhupesh@gmail.com
-:iabbrev webs  https://bhupesh-v.github.io
+" abbreviations
+iabbr @@    varshneybhupesh@gmail.com
+iabbr webs  https://bhupesh-v.github.io
+
+" Auto pair brackets and stuff
+" Lmao bye bye plugins
+iabbr <silent> ( ()<Left><C-R>=Eatchar('\s')<CR>
+iabbr <silent> { {}<Left><C-R>=Eatchar('\s')<CR>
+iabbr <silent> [ []<Left><C-R>=Eatchar('\s')<CR>
+iabbr <silent> " ""<Left><C-R>=Eatchar('\s')<CR>
+iabbr <silent> ' ''<Left><C-R>=Eatchar('\s')<CR>
+iabbr <silent> ` ``<Left><C-R>=Eatchar('\s')<CR>
+
+func Eatchar(pat)
+    " Remove extra space after expanded abbr
+    let c = nr2char(getchar(0))
+    return (c =~ a:pat) ? '' : c
+endfunc
 
 colorscheme sonokai
 
@@ -343,16 +358,6 @@ function! OpenNonTextFiles()
     endif
 endfunction
 
-" https://vim.fandom.com/wiki/Automatically_append_closing_characters
-function! ConditionalPairMap(open, close)
-    let line = getline('.')
-    let col = col('.')
-    if col < col('$') || stridx(line, a:close, col + 1) != -1
-        return a:open
-    else
-        return a:open . a:close . repeat("\<left>", len(a:close))
-    endif
-endf
 
 "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
 "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
