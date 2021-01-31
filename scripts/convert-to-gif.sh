@@ -9,8 +9,8 @@
 
 
 if [[ -z "$1" ]]; then
-  echo "No video file specified"
-  exit 1
+    echo "No video file specified"
+    exit 1
 fi
 
 # get everything after last /
@@ -29,9 +29,9 @@ ffmpeg -i "$1" -vf "fps=22,scale=${dimensions%x*}:-1:flags=lanczos,palettegen" "
 echo -e "$(tput bold) Converting Video to GIF $(tput sgr0)"
 
 if [[ "$2" ]]; then
-  ffmpeg -t "$2" -i "$1" -i "$filename".png -filter_complex "fps=22,scale=${dimensions%x*}:-1:flags=lanczos[x];[x][1:v]paletteuse" "$filename".gif
+    ffmpeg -t "$2" -i "$1" -i "$filename".png -filter_complex "fps=22,scale=${dimensions%x*}:-1:flags=lanczos[x];[x][1:v]paletteuse" "$filename".gif
 else
-  ffmpeg -i "$1" -i "$filename".png -filter_complex "fps=22,scale=${dimensions%x*}:-1:flags=lanczos[x];[x][1:v]paletteuse" "$filename".gif
+    ffmpeg -i "$1" -i "$filename".png -filter_complex "fps=22,scale=${dimensions%x*}:-1:flags=lanczos[x];[x][1:v]paletteuse" "$filename".gif
 fi
 
 echo -e "Removing palette"

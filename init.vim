@@ -32,9 +32,9 @@ nnoremap <S-t> :set nospell <bar> :term<CR>
 " Toggle code-folds
 noremap <space> za
 nnoremap <A-CR> :Goyo<CR>
-" Use Enter to switch to command mode
-nnoremap <Tab> <C-w><C-w>
 " Tab to cycle through open splits
+nnoremap <Tab> <C-w><C-w>
+" Use Enter to switch to command mode
 nnoremap <CR> :
 " Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
@@ -43,10 +43,9 @@ inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
 inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
 " Efficiently browse vim manuals using helpg
 nnoremap <kPlus> :cn<CR>
-nnoremap <kMinus> :cn<CR>
+nnoremap <kMinus> :cp<CR>
 " Search selected text when in visual mode by pressing /
 vmap / y/<C-R>"<CR>
-
 " Map keys in terminal mode
 " listen up, CapsLock is already mapped to Esc via xmodmap
 " So there is no need of this, but sometimes xmod starts behaving weirdly
@@ -89,7 +88,7 @@ map <Down> <Nop>
 
 "}}}
 
-" abbreviations
+" Abbreviations
 iabbr @@    varshneybhupesh@gmail.com
 iabbr webs  https://bhupesh-v.github.io
 
@@ -116,8 +115,7 @@ set number
 set autoindent smartindent
 set expandtab
 set showcmd
-set completefunc=emoji#complete
-set spell
+" set completefunc=<SID>thesaurus()
 set title
 set cursorline
 set iskeyword+=-
@@ -127,7 +125,10 @@ set wildignore+=*/.git/*,*/site-packages/*,*/lib/*,*/bin/*,*.pyc
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg,*.avi,*.mp4,*.mkv,*.pdf,*.odt
 set path+=**
 set foldcolumn=2
-"set shada="NONE"
+set noswapfile
+" set lazyredraw
+" set thesaurus+=/home/bhupesh/mthesaur.txt
+" set shada="NONE"
 
 "}}}
 
@@ -197,8 +198,8 @@ augroup END
 " Set Indent level based on FileType
 augroup FileIndentLevel
     autocmd!
-    autocmd FileType cpp,yaml,html,sh setlocal shiftwidth=2 tabstop=2 softtabstop=2
-    autocmd FileType go,python,vim setlocal tabstop=4 sts=4 shiftwidth=4
+    autocmd FileType cpp,yaml,html setlocal shiftwidth=2 tabstop=2 softtabstop=2
+    autocmd FileType go,python,vim,sh setlocal tabstop=4 sts=4 shiftwidth=4
 augroup END
 
 " Map Caps Lock to Esc (must be X.Org compliant)
@@ -210,6 +211,7 @@ autocmd bufenter * let &titlestring = "bhupesh on " . buffer_name("%")
 "Close NERDTree if its the only open window
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
+au FileType markdown set spell
 "}}}
 
 " My Plugins
@@ -274,7 +276,7 @@ function! PrettyMe()
     elseif &filetype == "python"
         exe ":Black"
     elseif &filetype == "go"
-        exe ":!gofmt -w %"
+        exe ":!gofmt -w -s %"
     else
         " Indent and Go back to my previous cursor pos
         exe "norm! gg=G\<C-o>"
@@ -357,7 +359,6 @@ function! OpenNonTextFiles()
         endif
     endif
 endfunction
-
 
 "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
 "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >

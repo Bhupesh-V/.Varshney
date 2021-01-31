@@ -10,8 +10,10 @@ alias gicl='git clone'
 alias gil='git log --graph --decorate --pretty=oneline --abbrev-commit'
 alias gim='git merge'
 alias gid='git diff'
-# undo last local commit
-alias undo='git reset HEAD~'
+# undo last commit (unstage everything)
+alias giu='git reset HEAD~'
+# undo last commit (don't unstage everything)
+alias gius='git reset --soft HEAD^'
 alias gb="go build"
 alias gr="go run"
 alias gd="go doc"

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 wib() {
 	# words in blog
 	# determine total words in my blog
@@ -279,4 +281,14 @@ pj() {
                 exit 1
         fi
         pretty_json=$(python3 -m json.tool "$1") && echo "$pretty_json" > "$1"
+}
+
+hl () { 
+    # FROM: http://www.wassen.net/highlight-output.html
+    # Use: tail file.txt | hl word-to-highlight
+    if [[ $1 = '-i' ]]; then
+        ARGS='--ignore-case'
+        shift
+    fi
+    egrep $ARGS --color=always -e '' $(echo $* | xargs -n1 printf "-e%s "); 
 }
