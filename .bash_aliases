@@ -5,6 +5,9 @@ alias gib='git branch'
 alias gich='git checkout'
 alias gis='git status'
 alias gisc='git commit -m'
+# Add your staged changes to the previous commit
+# while preserving your commit message
+alias giac='git commit --amend -C HEAD'
 alias gic='git commit'
 alias gicl='git clone'
 alias gil='git log --graph --decorate --pretty=oneline --abbrev-commit'
@@ -36,3 +39,4 @@ alias bkp="\$HOME/Documents/.Varshney/scripts/backup_as_gist.py"
 alias gif="\$HOME/Documents/.Varshney/scripts/convert-to-gif.sh"
 alias lc="\$HOME/Documents/.Varshney/scripts/last-modify.sh"
 alias lt="ls --human-readable --size -1 -S --classify"
+alias browse="xdg-open 2>/dev/null"

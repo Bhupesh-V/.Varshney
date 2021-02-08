@@ -36,8 +36,12 @@ def request(url, data=None, method=None):
         req = urllib.request.Request(url, data=data, headers=HEADERS)
     else:
         req = urllib.request.Request(url, headers=HEADERS)
-    with urllib.request.urlopen(req) as response:
-        res = json.loads(response.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req) as response:
+            res = json.loads(response.read().decode("utf-8"))
+    except urllib.error.URLError as e:
+        print(e.reason)
+        exit()
     return res, response.code
 
 

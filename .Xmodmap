@@ -1,0 +1,5 @@
+! 66 is the keycode of Caps_Lock
+! https://superuser.com/questions/566871/how-to-map-the-caps-lock-key-to-escape-key-in-arch-linux
+
+clear    Lock
+keycode  66 = Escape

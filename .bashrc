@@ -69,8 +69,8 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 # color definitions
 RESET="\e[0m"
 BOLD_BLACK_FG="\e[1;30m"
-ORANGE_FG="\e[38;5;214m"
-ORANGE_BG="\e[48;5;214m"
+# ARROW_FG="\e[38;5;214m"
+# ARROW_BG="\e[48;5;214m"
 GRAY_BG="\e[48;5;234m"
 GRAY_FG="\e[38;5;234m"
 BOLD_L_YELLOW=$'\e[1;38;5;11m'
@@ -105,8 +105,13 @@ RIGHT_PROMPT="\n\$(tput sc; rightprompt; tput rc)"
 
 custom_prompt() {
 	EXIT="$?"
+    color_themes=("38" "112" "220" "196" "200" "208" "255")
+    size=${#color_themes[@]}
+    index=$(($RANDOM % $size))
+    ARROW_FG="\e[38;5;${color_themes[$index]}m"
+    ARROW_BG="\e[48;5;${color_themes[$index]}m"
 	last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "\[$BOLD_RED_FG\]✘")
-    arrp="\[$GRAY_BG\] $last_command_status $(random_emoji) \[$GRAY_FG\]\[$ORANGE_BG\]\[$ORANGE_BG\]\[$BOLD_BLACK_FG\] $(virtualenv_ps1) \[$RESET\]\[$ORANGE_FG\]\[$RESET\]"
+    arrp="\[$GRAY_BG\] $last_command_status $(random_emoji) \[$GRAY_FG\]\[$ARROW_BG\]\[$ARROW_BG\]\[$BOLD_BLACK_FG\] $(virtualenv_ps1) \[$RESET\]\[$ARROW_FG\]\[$RESET\]"
     PS1="\[$BOLD_L_YELLOW\]\[$RIGHT_PROMPT\]\[$RESET\]\[$BOLD_GREEN_FG\]\w\[$RESET\] $(get_git_branch)\n$arrp "
 }
 

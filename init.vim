@@ -35,7 +35,7 @@ nnoremap <A-CR> :Goyo<CR>
 " Tab to cycle through open splits
 nnoremap <Tab> <C-w><C-w>
 " Use Enter to switch to command mode
-nnoremap <CR> :
+" nnoremap <CR> :
 " Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
 " Use j/k to select from completion menu
@@ -44,6 +44,9 @@ inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
 " Efficiently browse vim manuals using helpg
 nnoremap <kPlus> :cn<CR>
 nnoremap <kMinus> :cp<CR>
+" Map C-m to :make
+nnoremap <A-m> :make<bar>cw<CR>
+inoremap <A-m> <Esc>:make<CR>
 " Search selected text when in visual mode by pressing /
 vmap / y/<C-R>"<CR>
 " Map keys in terminal mode
@@ -126,9 +129,18 @@ set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg,*.avi,*.mp4,*.mkv,*.pdf,*.odt
 set path+=**
 set foldcolumn=2
 set noswapfile
-" set lazyredraw
+set lazyredraw
 " set thesaurus+=/home/bhupesh/mthesaur.txt
-" set shada="NONE"
+set shada="NONE"
+let g:loaded_python_provider=0
+let g:loaded_ruby_provider = 0
+let g:loaded_node_provider = 0
+
+let g:loaded_zipPlugin=1
+let g:loaded_zip=1
+
+let g:loaded_tarPlugin=1
+let g:loaded_tar=1
 
 "}}}
 
@@ -203,15 +215,16 @@ augroup FileIndentLevel
 augroup END
 
 " Map Caps Lock to Esc (must be X.Org compliant)
-au VimEnter * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
-au VimLeave * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Caps_Lock'
+" au VimEnter * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
+" au VimLeave * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Caps_Lock'
 
 " Set window title on every buffer switch
-autocmd bufenter * let &titlestring = "bhupesh on " . buffer_name("%")
-"Close NERDTree if its the only open window
+" autocmd bufenter * let &titlestring = "bhupesh on " . buffer_name("%")
+" Close NERDTree if its the only open window
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-au FileType markdown set spell
+au FileType markdown setlocal spell
+au FileType go setlocal makeprg=go\ run\ %
 "}}}
 
 " My Plugins

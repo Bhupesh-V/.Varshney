@@ -2,7 +2,9 @@
 
 # md.sh: watch a MD file & build its HTML preview using commonmarker
 
-catch_ctrlc() {
+IFS=$'\n'
+
+cleanup() {
     printf "\n%s" "Removing $1"
     rm "$1"
     exit
@@ -26,7 +28,7 @@ watch_changes() {
 
         [[ "$last_modify_time" != "$last_modify_time_2" ]] && build_preview "$1"
 
-        [[ -f "$html_preview" ]] && trap 'catch_ctrlc $html_preview' SIGINT
+        [[ -f "$html_preview" ]] && trap "cleanup '$html_preview'" SIGINT
     done
 }
 
