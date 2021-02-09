@@ -1,6 +1,5 @@
 # Prettify/Indent JSON
-
-```go
+snippet json
 // import "encoding/json"
 func Indent(v interface{}) string {
 	b, err := json.MarshalIndent(v, "", "  ")
@@ -9,17 +8,21 @@ func Indent(v interface{}) string {
 	}
 	return string(b)
 }
-```
+endsnippet
 
 # Check Item in Slice/List
-
-```go
-func In(a string, list []string) bool {
+snippet in
+func In(item $1, list []$2) bool {
 	for _, b := range list {
-		if b == a {
+		if b == item {
 			return true
 		}
 	}
 	return false
 }
-```
+endsnippet
+
+# Insert a CLI Flag
+snippet flag
+flag.StringVar(&${1:var}, "${2:flag}", "${3:defaultValue}", "${4:description}")
+endsnippet
