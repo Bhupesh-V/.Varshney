@@ -251,13 +251,42 @@ Current colorscheme: `palenight`
 
 > Learn more about vim in my **[my-vim-cheatsheet](https://github.com/Bhupesh-V/til/blob/master/Miscellaneous/my-vim-cheatsheet.md)**
 
+
+#### Keyboard Shortcuts
+
+|    Shortcut    |    Purpose    |
+|:-------------:|:-------------|
+|  `F3` |    Open **:term**   |
+|  `F4` |    Insert Current Date (dd mm, yyyy)   |
+|  `F5` |    Source **$MYVIMRC**   |
+|  `F6` |    **:NERDToggle**   |
+|  `F7` |    Edit **$MYVIMRC**   |
+|  `F8` |    Switch to Transparent Mode   |
+|  `F9` |    Write and Quit on all buffers (Kill Switch)   |
+|  `F10` |    Indent based on FileType   |
+|  `Alt` + `m` |  Build & Run code using **:make**  |
+|  `Alt` + `h` |  Vertical resize +3  |
+|  `Alt` + `l` |  Vertical resize -3  |
+|  `Alt` + `k` |  Horizontal resize +3  |
+|  `Alt` + `j` |  Horizontal resize +3  |
+|  `Alt` + `<CR>` |  Switch to **:Goyo** Mode  |
+|  `Shift` + `k` |  Move line(s) up  |
+|  `Shift` + `j` |  Move line(s) down  |
+|  `Shift` + `r` |  Run linux Command at current line  |
+|  `Shift` + `l` |  Open hyperlink at current line  |
+|  `Shift` + `t` |  Switch buffer in current window |
+|  `Ctrl` + `c` |   Copy in Visual Mode  |
+|  `Ctrl` + `v` |   Paste in Insert Mode |
+|  `t` |    Toggle Comment in Current line (Normal Mode)  |
+|  `<space>` |    Toggle Fold at Current line |
+|  `<Tab>` |  Switch Windows |
+
 - Plugins:
-  1. [vim-devicons](https://github.com/ryanoasis/vim-devicons) - for file icons
-  2. [NERDTree](https://github.com/scrooloose/nerdtree) - for tree like menu
-  3. [vim-auto-save](https://github.com/907th/vim-auto-save) - for auto-saving files (no need to `:w`)
-  4. [vim-airline](https://github.com/vim-airline/vim-airline) - for status bar at bottom
-  5. [black.vim](https://github.com/psf/black/blob/master/plugin/black.vim) - python formatter
-  6. [vim-shfmt](https://github.com/z0mbix/vim-shfmt) - to format shell scripts
+  1. [NERDTree](https://github.com/scrooloose/nerdtree) - for tree like menu
+  2. [vim-auto-save](https://github.com/907th/vim-auto-save) - for auto-saving files (no need to `:w`)
+  3. [vim-airline](https://github.com/vim-airline/vim-airline) - for status bar at bottom
+  4. [black.vim](https://github.com/psf/black/blob/master/plugin/black.vim) - python formatter
+  5. [UltiSnips](https://github.com/SirVer/ultisnips) - code snippet management
 
 - Some of my fav colorschemes:
   - [ayu](https://github.com/ayu-theme/ayu-vim)
