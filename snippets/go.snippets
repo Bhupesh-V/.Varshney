@@ -26,3 +26,15 @@ endsnippet
 snippet flag
 flag.StringVar(&${1:var}, "${2:flag}", "${3:defaultValue}", "${4:description}")
 endsnippet
+
+snippet go "Go Starter" b
+package main
+
+import (
+    "fmt"
+)
+
+func main() {
+    $0
+}
+endsnippet

@@ -11,7 +11,10 @@ Plug 'ayu-theme/ayu-vim'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'junegunn/goyo.vim'
 Plug 'psf/black', { 'branch': 'stable' }
-Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
+Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'voldikss/vim-floaterm'
+" Plug 'itchyny/lightline.vim'
 call plug#end()
 
 " Key Mappings {{{
@@ -24,11 +27,11 @@ noremap <F5> :source $MYVIMRC<CR>
 
 " Write & quit on all tabs, windows
 noremap <F9> :wqa<CR>
-" Insert Date (dd mm, yyyy)
-nnoremap <F4> "=strftime('%d %b, %Y')<CR>P
-inoremap <F4> <C-R>=strftime("%d %b, %Y")<CR>
 " Disable spell & start :terminal
-nnoremap <S-t> :set nospell <bar> :term<CR>
+nnoremap <F3> :set nospell <bar> :term<CR>
+" Insert Date (dd mm, yyyy)
+inoremap <F4> <C-R>=strftime("%d %b, %Y")<CR>
+nnoremap <F4> "=strftime('%d %b, %Y')<CR>P
 " Toggle code-folds
 noremap <space> za
 nnoremap <A-CR> :Goyo<CR>
@@ -45,10 +48,12 @@ inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
 nnoremap <kPlus> :cn<CR>
 nnoremap <kMinus> :cp<CR>
 " Map C-m to :make
-nnoremap <A-m> :make<bar>cw<CR>
-inoremap <A-m> <Esc>:make<CR>
+" nnoremap <A-m> :make<bar>cw<CR>
+inoremap <A-m> <Esc>:make! <bar> botright cw<CR>
+nnoremap <silent> <A-m> :make! <bar> botright cw<CR>
 " Search selected text when in visual mode by pressing /
 vmap / y/<C-R>"<CR>
+nnoremap <S-t> :FloatermToggle<CR>
 " Map keys in terminal mode
 " listen up, CapsLock is already mapped to Esc via xmodmap
 " So there is no need of this, but sometimes xmod starts behaving weirdly
@@ -118,7 +123,7 @@ set number
 set autoindent smartindent
 set expandtab
 set showcmd
-" set completefunc=<SID>thesaurus()
+" set completefunc=UltiSnips#ListSnippets()
 set title
 set cursorline
 set iskeyword+=-
@@ -128,10 +133,11 @@ set wildignore+=*/.git/*,*/site-packages/*,*/lib/*,*/bin/*,*.pyc
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg,*.avi,*.mp4,*.mkv,*.pdf,*.odt
 set path+=**
 set foldcolumn=2
-set noswapfile
+" set noswapfile
 set lazyredraw
 " set thesaurus+=/home/bhupesh/mthesaur.txt
-set shada="NONE"
+" set shada="NONE"
+set completeopt-=preview
 let g:loaded_python_provider=0
 let g:loaded_ruby_provider = 0
 let g:loaded_node_provider = 0
@@ -142,20 +148,22 @@ let g:loaded_zip=1
 let g:loaded_tarPlugin=1
 let g:loaded_tar=1
 
+let g:deoplete#enable_at_startup=1
+call deoplete#custom#option('auto_complete_delay', 100)
 "}}}
 
 " Custom Global Highlights {{{
 "
 " Make current line bold
-highlight CursorLine cterm=bold gui=bold ctermbg=none guibg=none
-highlight CursorLineNr ctermbg=none guibg=none
+" highlight CursorLine cterm=bold gui=bold ctermbg=none guibg=none
+" highlight CursorLineNr ctermbg=none guibg=none
 " Bold the markers on fold column
-highlight FoldColumn cterm=bold gui=bold
+hi FoldColumn cterm=bold gui=bold
 " Highlight trailing white space
 " highlight SpaceEnd ctermbg=red guibg=red
 " autocmd BufWinEnter * match SpaceEnd /\s\+$/
-
-:highlight MatchParen ctermbg=246 guibg=#7f8490
+hi FloatermBorder cterm=bold gui=bold guibg=NONE guifg=orange
+hi MatchParen ctermbg=246 guibg=#7f8490
 " }}}
 
 " Netrw Settings {{{
@@ -186,8 +194,10 @@ let NERDTreeShowHidden=1  "Show hidden files (aka dotfiles)
 
 " Ulti-snips config {{{
 let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsListSnippets="<c-l>"
+" let g:UltiSnipsJumpForwardTrigger="<c-j>"
+" let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+let g:UltiSnipsSnippetDirectories=["UltiSnips", "vim-snippets", $HOME.'/Documents/.Varshney/snippets/']
 " }}}
 
 let g:auto_save = 1  " enable AutoSave on Vim startup (vim-auto-save plugin)
@@ -197,7 +207,7 @@ let g:auto_save = 1  " enable AutoSave on Vim startup (vim-auto-save plugin)
 let $BASH_ENV = "~/.vim_bash_env"
 " Toggle transparent mode
 let g:is_transparent = 0
-
+let g:floaterm_title = "😎️"
 " Auto Commands {{{
 
 " Set foldmethod based on file type
@@ -225,6 +235,14 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 
 au FileType markdown setlocal spell
 au FileType go setlocal makeprg=go\ run\ %
+au FileType python setlocal makeprg=python3\ %
+
+" Automatically adjust quickfix window height
+" FROM: https://vim.fandom.com/wiki/Automatically_fitting_a_quickfix_window_height
+au FileType qf call AdjustWindowHeight(3, 10)
+function! AdjustWindowHeight(minheight, maxheight)
+  exe max([min([line("$"), a:maxheight]), a:minheight]) . "wincmd _"
+endfunction
 "}}}
 
 " My Plugins
