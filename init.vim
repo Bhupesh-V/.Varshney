@@ -1,7 +1,6 @@
 call plug#begin()
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-Plug 'vim-airline/vim-airline'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'jacoborus/tender.vim'
 Plug 'kyoz/purify', { 'rtp': 'vim' }
@@ -14,7 +13,9 @@ Plug 'psf/black', { 'branch': 'stable' }
 Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'voldikss/vim-floaterm'
-" Plug 'itchyny/lightline.vim'
+Plug 'itchyny/lightline.vim'
+Plug 'mhartington/oceanic-next'
+" Plug 'vim-airline/vim-airline'
 call plug#end()
 
 " Key Mappings {{{
@@ -138,6 +139,8 @@ set lazyredraw
 " set thesaurus+=/home/bhupesh/mthesaur.txt
 " set shada="NONE"
 set completeopt-=preview
+set noshowmode
+
 let g:loaded_python_provider=0
 let g:loaded_ruby_provider = 0
 let g:loaded_node_provider = 0
@@ -149,6 +152,9 @@ let g:loaded_tarPlugin=1
 let g:loaded_tar=1
 
 let g:deoplete#enable_at_startup=1
+let g:lightline = {
+      \ 'colorscheme': 'ayu_dark',
+      \ }
 call deoplete#custom#option('auto_complete_delay', 100)
 "}}}
 
@@ -162,7 +168,6 @@ hi FoldColumn cterm=bold gui=bold
 " Highlight trailing white space
 " highlight SpaceEnd ctermbg=red guibg=red
 " autocmd BufWinEnter * match SpaceEnd /\s\+$/
-hi FloatermBorder cterm=bold gui=bold guibg=NONE guifg=orange
 hi MatchParen ctermbg=246 guibg=#7f8490
 " }}}
 
@@ -192,6 +197,12 @@ let NERDTreeMinimalUI = 1  " Disable ? etc
 let NERDTreeShowHidden=1  "Show hidden files (aka dotfiles)
 "}}}
 
+" floaterm config {{{
+
+let g:floaterm_title = "😎️"
+hi FloatermBorder cterm=bold gui=bold guibg=NONE guifg=orange
+" }}}
+
 " Ulti-snips config {{{
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsListSnippets="<c-l>"
@@ -207,7 +218,7 @@ let g:auto_save = 1  " enable AutoSave on Vim startup (vim-auto-save plugin)
 let $BASH_ENV = "~/.vim_bash_env"
 " Toggle transparent mode
 let g:is_transparent = 0
-let g:floaterm_title = "😎️"
+
 " Auto Commands {{{
 
 " Set foldmethod based on file type
@@ -234,8 +245,13 @@ augroup END
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 au FileType markdown setlocal spell
-au FileType go setlocal makeprg=go\ run\ %
-au FileType python setlocal makeprg=python3\ %
+
+augroup SetMakePrg
+    autocmd!
+    au FileType go setlocal makeprg=go\ run\ %
+    au FileType python setlocal makeprg=python3\ %
+    au FileType sh setlocal makeprg=shellcheck\ %
+augroup END
 
 " Automatically adjust quickfix window height
 " FROM: https://vim.fandom.com/wiki/Automatically_fitting_a_quickfix_window_height
@@ -346,7 +362,7 @@ function! HandleInlineCode()
 endfunction
 
 " Toggle Comment in Current Line
-" Only for vim >= 8
+" Only for NeoVim & Vim >= 8
 function! ToggleComment()
     " TODO: make it work in visual mode aka group selection
     " TODO: Detect whether a // is used or /*
@@ -362,8 +378,8 @@ function! ToggleComment()
             break
         endif
     endfor
+    " fuck HTML
     if comment == 0 " add a comment
-        " fuck HTML
         if &filetype == "html"
             let code_type = HandleInlineCode()
             call setline('.', g:comment_chars[code_type]["prefix"] . trim(getline('.')) . g:comment_chars[code_type]["suffix"])
@@ -391,9 +407,39 @@ function! OpenNonTextFiles()
     endif
 endfunction
 
-"For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
-"Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
-" < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+xnoremap <leader>s :<c-u>call SearchInternet()<CR>
+function! SearchInternet()
+    " Thanks: https://stackoverflow.com/a/6271254/8209510
+    let [line_start, column_start] = getpos("'<")[1:2]
+    let [line_end, column_end] = getpos("'>")[1:2]
+    let lines = getline(line_start, line_end)
+    let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
+    let lines[0] = lines[0][column_start - 1:]
+    let urlsafe = ""
+    for char in split(join(lines, "\n"), '.\zs')
+        if matchend(char, '[-_.~a-zA-Z0-9]') >= 0
+            let urlsafe = urlsafe . char
+        else
+            let decimal = char2nr(char)
+            let urlsafe = urlsafe . "%" . printf("%02x", decimal)
+        endif
+    endfor
+	" Browsers :
+	" Chrome: chromium-browser <url>
+	" Firefox: firefox --new-tab <url>
+    "
+	" Search Engine Query URLs :
+	" Google: https://www.google.com/search?q=<string to search>
+	" DuckDuckGo: https://duckduckgo.com/?q=<search_term>
+	" DuckDuckGo Lite: https://lite.duckduckgo.com/lite/?q=<search_term>
+	" GitHub: https://github.com/search?q=<string to search>&ref=opensearch
+    "         Parameters: &type=code for searching code snippets!!
+    "         Parameters: &type=commits for searching commits, can help fix bugs!!
+    "         Parameters: &type=wikis for searching wikis!!
+    exe "silent!" . system("chromium-browser www.google.com/search?q=" . urlsafe) 
+    normal! gv
+endfunction
+
 if (has("termguicolors"))
     set termguicolors
 endif
