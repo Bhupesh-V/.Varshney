@@ -153,8 +153,8 @@ let g:loaded_tar=1
 
 let g:deoplete#enable_at_startup=1
 let g:lightline = {
-      \ 'colorscheme': 'ayu_dark',
-      \ }
+            \ 'colorscheme': 'ayu_dark',
+            \ }
 call deoplete#custom#option('auto_complete_delay', 100)
 "}}}
 
@@ -257,7 +257,7 @@ augroup END
 " FROM: https://vim.fandom.com/wiki/Automatically_fitting_a_quickfix_window_height
 au FileType qf call AdjustWindowHeight(3, 10)
 function! AdjustWindowHeight(minheight, maxheight)
-  exe max([min([line("$"), a:maxheight]), a:minheight]) . "wincmd _"
+    exe max([min([line("$"), a:maxheight]), a:minheight]) . "wincmd _"
 endfunction
 "}}}
 
@@ -397,7 +397,6 @@ function! OpenNonTextFiles()
     if IsNonAsciiFile(current_file) == 1
         execute "silent! !xdg-open " . current_file
         " Switch to next buffer and delete this one
-        " Else open a new buffer
         if len(getbufinfo({'buflisted':1})) >= 2
             execute "bNext"
             execute "bd " . current_file
@@ -407,6 +406,8 @@ function! OpenNonTextFiles()
     endif
 endfunction
 
+let g:browser = "chromium-browser"
+let g:search_engine = "github"
 xnoremap <leader>s :<c-u>call SearchInternet()<CR>
 function! SearchInternet()
     " Thanks: https://stackoverflow.com/a/6271254/8209510
@@ -416,6 +417,13 @@ function! SearchInternet()
     let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
     let lines[0] = lines[0][column_start - 1:]
     let urlsafe = ""
+    let search_engines = {
+                \ 'google': "google.com/search?q=",
+                \ 'duckduckgo': "duckduckgo.com/?q=",
+                \ 'duckduckgo-lite': "lite.duckduckgo.com/lite/?q=",
+                \ 'github': "github.com/search?q=",
+                \ 'stackoverflow': "stackoverflow.com/search?q="
+                \}
     for char in split(join(lines, "\n"), '.\zs')
         if matchend(char, '[-_.~a-zA-Z0-9]') >= 0
             let urlsafe = urlsafe . char
@@ -424,19 +432,8 @@ function! SearchInternet()
             let urlsafe = urlsafe . "%" . printf("%02x", decimal)
         endif
     endfor
-	" Browsers :
-	" Chrome: chromium-browser <url>
-	" Firefox: firefox --new-tab <url>
-    "
-	" Search Engine Query URLs :
-	" Google: https://www.google.com/search?q=<string to search>
-	" DuckDuckGo: https://duckduckgo.com/?q=<search_term>
-	" DuckDuckGo Lite: https://lite.duckduckgo.com/lite/?q=<search_term>
-	" GitHub: https://github.com/search?q=<string to search>&ref=opensearch
-    "         Parameters: &type=code for searching code snippets!!
-    "         Parameters: &type=commits for searching commits, can help fix bugs!!
-    "         Parameters: &type=wikis for searching wikis!!
-    exe "silent!" . system("chromium-browser www.google.com/search?q=" . urlsafe) 
+    echo "Opening Browser with [". g:search_engine . "] & query: ". join(lines, "\n")
+    exe "silent!" . system(g:browser . " " . search_engines[g:search_engine] . urlsafe) 
     normal! gv
 endfunction
 
