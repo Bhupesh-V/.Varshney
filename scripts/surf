@@ -6,11 +6,14 @@ import urllib.request
 import urllib.parse
 import json
 import pprint
+import argparse
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64)",
     "Content-Type": "application/json",
 }
+
+searx_instances = ["https://searx.nevrlands.de/", "https://searx.olymp.to/"]
 
 RED = "\033[31m"
 BLUE = "\033[34m"
@@ -32,16 +35,41 @@ def request(url, data=None, method=None):
     return res, response.code
 
 
-query = str(input("\nSearch 🔍️ : "))
-data = request(
-    f"https://searx.olymp.to/search?q={urllib.parse.quote_plus(query)}&format=json"
-)
+def search(query, show_description):
+    data = request(
+        f"{searx_instances[0]}search?q={urllib.parse.quote_plus(query)}&format=json"
+    )
 
-print(f"""{len(data[0]["results"])} results for your query\n""")
+    print(f"""Found {len(data[0]["results"])} results\n""")
 
-if len(data[0]["corrections"]) > 0:
-    print(f"""Did you mean {BOLD}{data[0]["corrections"][1]}{RESET} ?\n""")
+    if len(data[0]["corrections"]) > 0:
+        print(f"""Did you mean {BOLD}{data[0]["corrections"][1]}{RESET} ?\n""")
 
-for res in data[0]["results"]:
-    print(f"""{BOLD}{YELLOW}{res["title"]}{RESET}""")
-    print("- ", f"""{CYAN}{res["url"]}{RESET}""")
+    for res in data[0]["results"]:
+        print(f"""{BOLD}{YELLOW}{res["title"]}{RESET}""")
+        if res["content"] != "" and show_description:
+            print(f"""   {GREEN}{res["content"]:4}{RESET}""")
+        print("- ", f"""{CYAN}{res["url"]}{RESET}""")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Surf Internet on Command line")
+    parser.add_argument(
+        "-q",
+        "--query",
+        type=str,
+        help="Search query",
+    )
+    parser.add_argument(
+        "-s",
+        "--show-description",
+        action="store_true",
+        default=False,
+        help="Show link description",
+    )
+    args = parser.parse_args()
+    if not args.query:
+        query = str(input("\nSearch 🔍️ : "))
+    else:
+        query = args.query
+    search(query, args.show_description)
