@@ -11,6 +11,7 @@
 
 import urllib.request
 import json, sys
+import argparse
 from datetime import datetime
 from pathlib import Path
 
@@ -94,10 +95,17 @@ def controller(filepath):
     if code == 200 or code == 201:
         print("Success! 😃")
 
+    return res
+
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        print("No file path provided 👀")
-        exit()
+    parser = argparse.ArgumentParser(description="Backup text files as a GitHub Gist")
+    parser.add_argument("filepath", type=str, help="Absolute file path")
+    parser.add_argument("-s", "--show-url", action="store_true", default=False, help="Show github gist url")
+    args = parser.parse_args()
+
     read_token()
-    controller(sys.argv[1])
+    data = controller(args.filepath)
+    if args.show_url:
+        print(f"""Gist url: {data["html_url"]}""")
+
