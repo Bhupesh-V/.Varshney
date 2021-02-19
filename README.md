@@ -50,21 +50,8 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 	</td>
 	</tr>
 	<tr>
-		<td align="center"><code><b>search</b></code>🔍</td>
-		<td align="center">Invoke browser directly with search results</td>
-	</tr>
-	<tr>
 		<td align="center"><code><b>vcd</b></code>🐍</td>
 		<td align="center">Automatically activate python virtual environments on cd</td>
-	</tr>
-	<tr>
-		<td rowspan="2" align="center"><code><b>urlencode</b></code>🔗</td>
-		<td align="center">Dependency of search(), converts strings to URL safe version.</td>
-	</tr>
-	<tr><td><details><summary>Demo</summary>
-		<img title="urlencode: encode strings to URL safe version" alt="demo of urlencode" src="https://user-images.githubusercontent.com/34342551/90170221-54d4a180-ddbd-11ea-9c76-029a70f5dc37.png">
-	</details>
-	</td>
 	</tr>
 	<tr>
 		<td rowspan="2" align="center"><code><b>scd</b></code>💡</td>
@@ -101,7 +88,7 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 		<th width="70%">Description & Demo</th>
 	</tr>
 	<tr>
-		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/sys.sh">sys.sh</a></b></td>
+		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/sys">sys.sh</a></b></td>
 		<td align="center">A realtime update of your system using common shell commands</td>
 	</tr>
 	<tr><td align="center"><details><summary>Demo</summary>
@@ -109,7 +96,7 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 	</details></td>
 	</tr>
 	<tr>
-		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/md.sh">md.sh</a></b></td>
+		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/md">md.sh</a></b></td>
 		<td align="center">A utility to watch a Markdown file & build its HTML preview using commonmarker</td>
 	</tr>
 	<tr><td align="center"><details><summary>Demo</summary>
@@ -117,7 +104,7 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 	</details></td>
 	</tr>
 	<tr>
-		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/colors.sh">colors.sh</a></b></td>
+		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/colors">colors.sh</a></b></td>
 		<td align="center">A utility to check color capability of your terminal</td>
 	</tr>
 	<tr><td align="center"><details><summary>Demo</summary>
@@ -125,11 +112,11 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 	</details></td>
 	</tr>
 	<tr>
-		<td align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/my-prs.py">my-prs.py</a></b></td>
+		<td align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/myprs">my-prs.py</a></b></td>
 		<td align="center">A utility to list a github user's pull requests in a nicely readable markdown file with 0 dependencies.</td>
 	</tr>
         <tr>
-		<td align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/backup_as_gist.py">backup_as_gist.py</a></b></td>
+		<td align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/bkp">backup_as_gist.py</a></b></td>
 		<td align="center">A utility to backup files on Github as a Secret Gist (0 dependency)</td>
 	</tr>
 
