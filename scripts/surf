@@ -41,6 +41,11 @@ searx_instances = [
     "https://searx.olymp.to/",
     "https://search.mdosch.de/",
     "https://dynabyte.ca/",
+    "https://searx.fmac.xyz/",
+    "https://searx.bar/",
+    "https://searx.tuxcloud.net/",
+    "https://metasearch.nl/",
+    "https://searx.pwoss.org/"
 ]
 
 
@@ -92,6 +97,22 @@ def search(query, show_description):
 if __name__ == "__main__":
     is_pipe = not isatty(stdin.fileno())
     parser = argparse.ArgumentParser(description="Surf Internet on Command line")
+    parser.usage = """surf\n
+(Assuimng surf is in your current working directory)
+1. Just run the script, without any arguments
+   $ ./surf
+
+2. Show link description
+   $ ./surf -s
+
+3. Provide search query as parameter
+   $ ./surf -sq "how to change the world"
+
+4. You can also pipe data to surf ¯\_(ツ)_/¯
+   $ echo "search this" | ./surf
+
+   > For better experience, add surf to your PATH or move it to $HOME/.local/bin
+   """
     parser.add_argument(
         "-q",
         "--query",
