@@ -26,6 +26,9 @@ import json
 import pprint
 import random
 import argparse
+import readline
+from sys import stdin
+from os import isatty
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36",
@@ -68,11 +71,12 @@ def request(url, data=None, method=None):
 
 def search(query, show_description):
     data = request(f"{instance}search?q={urllib.parse.quote_plus(query)}&format=json")
-    print(f"""Found {len(data["results"])} results\n""")
+    print(f"Using {colors.BOLD}{instance}{colors.RESET}")
+    print(f"""Found {colors.BOLD}{len(data["results"])}{colors.RESET} results\n""")
 
     if len(data["corrections"]) > 0:
         print(
-            f"""Did you mean {colors.BOLD}{data["corrections"][1]}{colors.RESET}?\n"""
+            f"""Did you mean {colors.BOLD}{data["corrections"]}{colors.RESET}?\n"""
         )
 
     for res in data["results"]:
@@ -86,6 +90,7 @@ def search(query, show_description):
 
 
 if __name__ == "__main__":
+    is_pipe = not isatty(stdin.fileno())
     parser = argparse.ArgumentParser(description="Surf Internet on Command line")
     parser.add_argument(
         "-q",
@@ -101,7 +106,9 @@ if __name__ == "__main__":
         help="Show link description",
     )
     args = parser.parse_args()
-    if not args.query:
+    if is_pipe:
+        query = stdin.read()
+    elif not args.query:
         query = str(input("\nSearch 🔍️ : "))
     else:
         query = args.query
