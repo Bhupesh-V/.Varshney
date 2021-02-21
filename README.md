@@ -42,7 +42,7 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 	</tr>
 	<tr>
 		<td rowspan="2" align="center"><code><b>netu</b></code>🌐</td>
-		<td align="center">Analyze network data usage</td>
+		<td>Analyze network data usage</td>
 	</tr>
 	<tr><td><details><summary>Demo</summary>
 			<img title="netu: check network usage stats" alt="demo of netu gif" src="https://user-images.githubusercontent.com/34342551/90170484-c280cd80-ddbd-11ea-9d38-71821250989c.png">
@@ -51,11 +51,11 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 	</tr>
 	<tr>
 		<td align="center"><code><b>vcd</b></code>🐍</td>
-		<td align="center">Automatically activate python virtual environments on cd</td>
+		<td>Automatically activate python virtual environments on cd</td>
 	</tr>
 	<tr>
 		<td rowspan="2" align="center"><code><b>scd</b></code>💡</td>
-		<td align="center"><p>[s]mart cd searches absolute path names of directories inside your system and switches to them automatically. No need to remember any locations !!. 
+		<td><p>[s]mart cd searches absolute path names of directories inside your system and switches to them automatically. No need to remember any locations !!. 
 		<a href="https://bhupesh-v.github.io/creating-a-smart-alternative-to-cd/">Read More</a></p>
 		Also see <a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scd-completions.bash"><samp>scd-completions.bash</samp></a> for automatic tab suggestions.
 		</td>
@@ -67,60 +67,93 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 	</tr>
 	<tr>
 		<td align="center"><code><b>alarm</b></code>⏰</td>
-		<td align="center">A single line utility for a timer/alarm</td>
+		<td>A single line utility for a timer/alarm</td>
 	</tr>
 	<tr>
 		<td align="center"><code><b>myip</b></code>🌐</td>
-		<td align="center">A single line utility for showing my IP address</td>
+		<td>A single line utility for showing my IP address</td>
 	</tr>
 	<tr>
 		<td align="center"><code><b>extract</b></code>📦</td>
-		<td align="center">A utility for extracting different archives in an easy way</td>
+		<td>A utility for extracting different archives in an easy way</td>
 	</tr>
 </table>
 
 
 ### [`scripts`](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/)
 
-<table>
-	<tr>
-		<th>Name</th>
-		<th width="70%">Description & Demo</th>
-	</tr>
-	<tr>
-		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/sys">sys.sh</a></b></td>
-		<td align="center">A realtime update of your system using common shell commands</td>
-	</tr>
-	<tr><td align="center"><details><summary>Demo</summary>
-		<img title="sys.sh: get realtime update of your linux system" alt="sys.sh demo gif" src="https://user-images.githubusercontent.com/34342551/96346219-5cb00b00-10b8-11eb-90fb-d21f6ffa7c12.gif">
-	</details></td>
-	</tr>
-	<tr>
-		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/md">md.sh</a></b></td>
-		<td align="center">A utility to watch a Markdown file & build its HTML preview using commonmarker</td>
-	</tr>
-	<tr><td align="center"><details><summary>Demo</summary>
-		<img title="md.sh: utility to watch a Markdown file & build its HTML preview using commonmarker" alt="md.sh demo gif" src="https://user-images.githubusercontent.com/34342551/97805510-a4b85b80-1c7c-11eb-9efe-3eedbb76a70b.gif">
-	</details></td>
-	</tr>
-	<tr>
-		<td rowspan="2" align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/colors">colors.sh</a></b></td>
-		<td align="center">A utility to check color capability of your terminal</td>
-	</tr>
-	<tr><td align="center"><details><summary>Demo</summary>
-		<img title="colors.sh: utility to check color capabilities of your terminal" alt="colors.sh demo png" src="https://user-images.githubusercontent.com/34342551/97805252-f2cc5f80-1c7a-11eb-92be-31ac80ec0719.png">
-	</details></td>
-	</tr>
-	<tr>
-		<td align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/myprs">my-prs.py</a></b></td>
-		<td align="center">A utility to list a github user's pull requests in a nicely readable markdown file with 0 dependencies.</td>
-	</tr>
-        <tr>
-		<td align="center"><b><a href="https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/bkp">backup_as_gist.py</a></b></td>
-		<td align="center">A utility to backup files on Github as a Secret Gist (0 dependency)</td>
-	</tr>
 
-</table>
+1. [**sys**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/sys)
+   > A realtime update of your system using common shell commands
+   <details><summary>Demo</summary>
+   <img title="sys.sh: get realtime update of your linux system" alt="sys.sh demo gif" src="https://user-images.githubusercontent.com/34342551/96346219-5cb00b00-10b8-11eb-90fb-d21f6ffa7c12.gif">
+   </details>
+
+   Install
+   ```
+   wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/sys && chmod +x sys && mv sys $HOME/.local/bin/
+   ```
+
+2. [**md**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/md)
+   > A utility to watch a Markdown file & build its HTML preview using commonmarker
+   <details><summary>Demo</summary>
+   <img title="md.sh: utility to watch a Markdown file & build its HTML preview using commonmarker" alt="md.sh demo gif" src="https://user-images.githubusercontent.com/34342551/97805510-a4b85b80-1c7c-11eb-9efe-3eedbb76a70b.gif">
+   </details>
+
+   Install
+   ```
+   wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/md && chmod +x md && mv md $HOME/.local/bin/
+   ```
+
+3. [**colors**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/colors)
+   > A utility to check color capability of your terminal
+   <details><summary>Demo</summary>
+   <img title="colors.sh: utility to check color capabilities of your terminal" alt="colors.sh demo png" src="https://user-images.githubusercontent.com/34342551/97805252-f2cc5f80-1c7a-11eb-92be-31ac80ec0719.png">
+   </details>
+   
+   Install
+   ```
+   wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/colors && chmod +x colors && mv colors $HOME/.local/bin/
+   ```
+
+4. [**myprs**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/myprs)
+   > A python utility to list a github user's pull requests in a nicely readable markdown file with 0 external dependencies.
+
+   Install
+   ```
+   wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/myprs && chmod +x myprs && mv myprs $HOME/.local/bin/
+   ```
+5. [**bkp**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/bkp)
+   > A python utility to backup files on Github as a Secret Gist (0 dependency)
+
+   Install
+   ```
+   wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/bkp && chmod +x bkp && mv bkp $HOME/.local/bin/
+   ```
+6. [**contributors**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/contributors)
+   > A python utility to list all the contributors on your github repositories 
+
+   Install
+   ```
+   wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/contributors && chmod +x contributors && mv contributors $HOME/.local/bin/
+   ```
+7. [**gif**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/gif)
+   > A shell utility to convert videos to high-quality GIFs using ffmpeg
+
+   Install
+   ```
+   wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/gif && chmod +x gif && mv gif $HOME/.local/bin/
+   ```
+8. [**surf**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/surf)
+   > A python script to surf the web from command line, powered by searx (0 external dependencies)
+   <details><summary>Demo</summary>
+   <img title="surf.py surf internet in terminal" alt="surf.py demo png" src="https://user-images.githubusercontent.com/34342551/108616880-9e223f80-7437-11eb-988d-8b048fb39af2.gif">
+   </details>
+
+   Install
+   ```
+   wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/surf && chmod +x surf && mv surf $HOME/.local/bin/
+   ```
 
 
 ### [`.bash_aliases`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bash_aliases)
@@ -129,20 +162,25 @@ Some handy aliases under different categories.
 
 1. Git
    ```bash
-   alias scommit='git commit -m'
-   alias commit='git commit'
-   alias clone='git clone'
-   alias log='git log --graph --decorate --pretty=oneline --abbrev-commit'
-   alias gdiff='git diff'
-   # undo last local commit
-   alias undo='git reset HEAD~'
+   # Add your staged changes to the previous commit
+   # while preserving your commit message
+   alias giac='git commit --amend -C HEAD'
+   alias gic='git commit'
+   alias gicl='git clone'
+   alias gil='git log --graph --decorate --pretty=oneline --abbrev-commit'
+   alias gim='git merge'
+   alias gid='git diff'
+   # undo last commit (unstage everything)
+   alias giu='git reset HEAD~'
+   # undo last commit (don't unstage everything)
+   alias gius='git reset --soft HEAD^'
    ```
 
 2. Go
    ```bash
    alias gb="go build"
    alias gr="go run"
-   alias gd="go doc"
+   alias gd="go doc -all"
    alias gg="go get"
    alias gt="go test"
    ```
