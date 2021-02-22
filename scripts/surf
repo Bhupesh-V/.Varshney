@@ -31,73 +31,12 @@ from sys import stdin
 from os import isatty
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36",
-    "Content-Type": "application/json",
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
+    "Content-Type": "application/x-www-form-urlencoded",
 }
 
-# add/remove your fav searx instances
-searx_instances = [
-    "https://searx.nevrlands.de/",
-    "https://searx.olymp.to/",
-    "https://search.mdosch.de/",
-    "https://dynabyte.ca/",
-    "https://searx.fmac.xyz/",
-    "https://searx.bar/",
-    "https://searx.tuxcloud.net/",
-    "https://metasearch.nl/",
-    "https://searx.pwoss.org/"
-]
 
-
-class colors:
-    RED = "\033[31m"
-    BLUE = "\033[34m"
-    CYAN = "\033[1;36m"
-    GREEN = "\033[32m"
-    YELLOW = "\033[33m"
-    RESET = "\033[m"
-    BOLD = "\033[;1m"
-
-
-# Don't overload one server, might be rate-limited
-instance = random.choice(searx_instances)
-
-
-def request(url, data=None, method=None):
-    req = urllib.request.Request(url, headers=HEADERS)
-    try:
-        with urllib.request.urlopen(req) as response:
-            res = json.loads(response.read().decode("utf-8"))
-    except urllib.error.URLError as e:
-        print(e.reason)
-        exit()
-    return res
-
-
-def search(query, show_description):
-    data = request(f"{instance}search?q={urllib.parse.quote_plus(query)}&format=json")
-    print(f"Using {colors.BOLD}{instance}{colors.RESET}")
-    print(f"""Found {colors.BOLD}{len(data["results"])}{colors.RESET} results\n""")
-
-    if len(data["corrections"]) > 0:
-        print(
-            f"""Did you mean {colors.BOLD}{data["corrections"]}{colors.RESET}?\n"""
-        )
-
-    for res in data["results"]:
-        print(f"""{colors.BOLD}{colors.YELLOW}{res["title"]}{colors.RESET}""")
-        if show_description and res["content"] != "":
-            print(f"""   {colors.GREEN}{res["content"]:4}{colors.RESET}""")
-        print(
-            f"{colors.BOLD}►{colors.RESET} ",
-            f"""{colors.CYAN}{res["url"]}{colors.RESET}""",
-        )
-
-
-if __name__ == "__main__":
-    is_pipe = not isatty(stdin.fileno())
-    parser = argparse.ArgumentParser(description="Surf Internet on Command line")
-    parser.usage = """surf\n
+USAGE = """surf\n
 (Assuimng surf is in your current working directory)
 1. Just run the script, without any arguments
    $ ./surf
@@ -113,6 +52,86 @@ if __name__ == "__main__":
 
    > For better experience, add surf to your PATH or move it to $HOME/.local/bin
    """
+
+
+class colors:
+    RED = "\033[31m"
+    BLUE = "\033[34m"
+    CYAN = "\033[1;36m"
+    GREEN = "\033[32m"
+    YELLOW = "\033[33m"
+    RESET = "\033[m"
+    BOLD = "\033[;1m"
+
+
+def request(url, data=None, method=None):
+    req = urllib.request.Request(url, headers=HEADERS)
+    # print(req.headers)
+    try:
+        with urllib.request.urlopen(req) as response:
+            res = json.loads(response.read().decode("utf-8"))
+    except urllib.error.URLError as e:
+        return e.reason, e.code
+    return res, response.code
+
+
+def dont_hurt_instance(query):
+    # searx is fighting to block bot traffic, we need to be nice
+    # but we also need search results
+    searx_instances = {
+        "https://searx.nevrlands.de/",
+        "https://searx.olymp.to/",
+        "https://search.mdosch.de/",
+        "https://dynabyte.ca/",
+        "https://searx.fmac.xyz/",
+        "https://searx.bar/",
+        "https://searx.tuxcloud.net/",
+        "https://metasearch.nl/",
+        "https://searx.pwoss.org/",
+    }
+    overloaded_instance = set()
+    while True:
+        instance = random.choice(tuple(searx_instances))
+        print(f"Using {colors.BOLD}{instance}{colors.RESET}")
+        data, code = request(
+            f"{instance}search?q={urllib.parse.quote_plus(query)}&format=json"
+        )
+        if code == 429:
+            overloaded_instance.add(instance)
+            print(f"Oh Snap! {instance} says {data} :(")
+            searx_instances = searx_instances - overloaded_instance
+            continue
+        elif code == 200 and len(data["results"]) > 0:
+            break
+    return data, code
+
+
+def search(query, show_description, instance=None):
+    if instance is not None:
+        data, code = request(
+            f"{instance}search?q={urllib.parse.quote_plus(query)}&format=json"
+        )
+    else:
+        data, code = dont_hurt_instance(query)
+    print(f"""Found {colors.BOLD}{len(data["results"])}{colors.RESET} results\n""")
+
+    if len(data["corrections"]) > 0:
+        print(f"""Did you mean {colors.BOLD}{data["corrections"]}{colors.RESET}?\n""")
+
+    for res in data["results"]:
+        print(f"""{colors.BOLD}{colors.YELLOW}{res["title"]}{colors.RESET}""")
+        if show_description and res["content"] != "":
+            print(f"""   {colors.GREEN}{res["content"]:4}{colors.RESET}""")
+        print(
+            f"{colors.BOLD}►{colors.RESET} ",
+            f"""{colors.CYAN}{res["url"]}{colors.RESET}""",
+        )
+
+
+if __name__ == "__main__":
+    is_pipe = not isatty(stdin.fileno())
+    parser = argparse.ArgumentParser(description="Surf Internet on Command line")
+    parser.usage = USAGE
     parser.add_argument(
         "-q",
         "--query",
