@@ -50,6 +50,10 @@ USAGE = """surf\n
 4. You can also pipe data to surf ¯\_(ツ)_/¯
    $ echo "search this" | ./surf
 
+5. Use -c to specify search category:
+   $ surf -c "videos" -sq "how to make a pizza"
+   Default category is "general". Other categories include: "news", "files", "images", "map"
+
    > For better experience, add surf to your PATH or move it to $HOME/.local/bin
    """
 
@@ -75,7 +79,7 @@ def request(url, data=None, method=None):
     return res, response.code
 
 
-def dont_hurt_instance(query):
+def dont_hurt_instance(query, category):
     # searx is fighting to block bot traffic, we need to be nice
     # but we also need search results
     searx_instances = {
@@ -88,13 +92,17 @@ def dont_hurt_instance(query):
         "https://searx.tuxcloud.net/",
         "https://metasearch.nl/",
         "https://searx.pwoss.org/",
+        "https://privatesearch.app/",
+        "https://procurx.pt/",
+        "https://searx.devol.it/",
+        "https://searx.ninja/",
     }
     overloaded_instance = set()
     while True:
         instance = random.choice(tuple(searx_instances))
         print(f"Using {colors.BOLD}{instance}{colors.RESET}")
         data, code = request(
-            f"{instance}search?q={urllib.parse.quote_plus(query)}&format=json"
+            f"{instance}search?q={urllib.parse.quote_plus(query)}&categories={category.lower()}&format=json"
         )
         if code == 429:
             overloaded_instance.add(instance)
@@ -106,13 +114,8 @@ def dont_hurt_instance(query):
     return data, code
 
 
-def search(query, show_description, instance=None):
-    if instance is not None:
-        data, code = request(
-            f"{instance}search?q={urllib.parse.quote_plus(query)}&format=json"
-        )
-    else:
-        data, code = dont_hurt_instance(query)
+def search(query, show_description, category):
+    data, code = dont_hurt_instance(query, category)
     print(f"""Found {colors.BOLD}{len(data["results"])}{colors.RESET} results\n""")
 
     if len(data["corrections"]) > 0:
@@ -121,7 +124,7 @@ def search(query, show_description, instance=None):
     for res in data["results"]:
         print(f"""{colors.BOLD}{colors.YELLOW}{res["title"]}{colors.RESET}""")
         if show_description and res["content"] != "":
-            print(f"""   {colors.GREEN}{res["content"]:4}{colors.RESET}""")
+            print(f"""\t{colors.GREEN}{res["content"]:4}{colors.RESET}""")
         print(
             f"{colors.BOLD}►{colors.RESET} ",
             f"""{colors.CYAN}{res["url"]}{colors.RESET}""",
@@ -139,6 +142,13 @@ if __name__ == "__main__":
         help="Search query",
     )
     parser.add_argument(
+        "-c",
+        "--category",
+        type=str,
+        default="general",
+        help="Search Category",
+    )
+    parser.add_argument(
         "-s",
         "--show-description",
         action="store_true",
@@ -152,4 +162,4 @@ if __name__ == "__main__":
         query = str(input("\nSearch 🔍️ : "))
     else:
         query = args.query
-    search(query, args.show_description)
+    search(query, args.show_description, args.category)
