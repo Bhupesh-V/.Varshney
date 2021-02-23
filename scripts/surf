@@ -38,16 +38,16 @@ HEADERS = {
 
 USAGE = """surf\n
 (Assuimng surf is in your current working directory)
-1. Just run the script, without any arguments
+1. Just run the script, without any arguments:
    $ ./surf
 
-2. Show link description
+2. Show link description:
    $ ./surf -s
 
-3. Provide search query as parameter
+3. Provide search query as parameter:
    $ ./surf -sq "how to change the world"
 
-4. You can also pipe data to surf ¯\_(ツ)_/¯
+4. You can also pipe data to surf ¯\_(ツ)_/¯:
    $ echo "search this" | ./surf
 
 5. Use -c to specify search category:
@@ -59,11 +59,9 @@ USAGE = """surf\n
 
 
 class colors:
-    RED = "\033[31m"
-    BLUE = "\033[34m"
     CYAN = "\033[1;36m"
-    GREEN = "\033[32m"
-    YELLOW = "\033[33m"
+    GREEN = "\033[40;38;5;154m"
+    ORANGE_BG = "\033[30;48;5;214m"
     RESET = "\033[m"
     BOLD = "\033[;1m"
 
@@ -100,7 +98,6 @@ def dont_hurt_instance(query, category):
     overloaded_instance = set()
     while True:
         instance = random.choice(tuple(searx_instances))
-        print(f"Using {colors.BOLD}{instance}{colors.RESET}")
         data, code = request(
             f"{instance}search?q={urllib.parse.quote_plus(query)}&categories={category.lower()}&format=json"
         )
@@ -110,23 +107,25 @@ def dont_hurt_instance(query, category):
             searx_instances = searx_instances - overloaded_instance
             continue
         elif code == 200 and len(data["results"]) > 0:
+            print(
+                f"""Found {colors.BOLD}{len(data["results"])}{colors.RESET} results on {colors.BOLD}{instance}{colors.RESET}\n"""
+            )
             break
-    return data, code
+    return data
 
 
 def search(query, show_description, category):
-    data, code = dont_hurt_instance(query, category)
-    print(f"""Found {colors.BOLD}{len(data["results"])}{colors.RESET} results\n""")
+    data = dont_hurt_instance(query, category)
 
     if len(data["corrections"]) > 0:
         print(f"""Did you mean {colors.BOLD}{data["corrections"]}{colors.RESET}?\n""")
 
     for res in data["results"]:
-        print(f"""{colors.BOLD}{colors.YELLOW}{res["title"]}{colors.RESET}""")
+        print(f"""{colors.BOLD}{colors.ORANGE_BG} {res["title"]} {colors.RESET}""")
         if show_description and res["content"] != "":
             print(f"""\t{colors.GREEN}{res["content"]:4}{colors.RESET}""")
         print(
-            f"{colors.BOLD}►{colors.RESET} ",
+            f"{colors.BOLD}► ",
             f"""{colors.CYAN}{res["url"]}{colors.RESET}""",
         )
 
