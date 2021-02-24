@@ -15,6 +15,7 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'voldikss/vim-floaterm'
 Plug 'itchyny/lightline.vim'
 Plug 'mhartington/oceanic-next'
+Plug 'cormacrelf/vim-colors-github'
 " Plug 'vim-airline/vim-airline'
 call plug#end()
 
@@ -48,13 +49,16 @@ inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
 " Efficiently browse vim manuals using helpg
 nnoremap <kPlus> :cn<CR>
 nnoremap <kMinus> :cp<CR>
-" Map C-m to :make
-" nnoremap <A-m> :make<bar>cw<CR>
+" Map A-m to :make
 inoremap <A-m> <Esc>:make! <bar> botright cw<CR>
 nnoremap <silent> <A-m> :make! <bar> botright cw<CR>
 " Search selected text when in visual mode by pressing /
 vmap / y/<C-R>"<CR>
 nnoremap <S-t> :FloatermToggle<CR>
+nnoremap <leader>b :!bkp %<CR>
+" Opening Splits
+nnoremap <leader>v :vsp<CR>
+nnoremap <leader>h :sp<CR>
 " Map keys in terminal mode
 " listen up, CapsLock is already mapped to Esc via xmodmap
 " So there is no need of this, but sometimes xmod starts behaving weirdly
@@ -86,6 +90,11 @@ nnoremap <S-l> :call OpenLink()<CR>
 nnoremap t :call ToggleComment()<CR>
 nnoremap <F10> :call PrettyMe()<CR>
 inoremap <F10> :call PrettyMe()<CR>
+" Use vim-floaterm to show search results
+xnoremap <leader>f <esc>:call SendQueryToFloatTerm()<CR>   
+xnoremap <leader>s :<c-u>call SearchInternet()<CR>
+" Open vim terminal with surf command
+nnoremap <leader>c <esc>:e term://surf -s<CR>i
 "}}}
 
 " Disable Arrow keys for good {{{
@@ -116,7 +125,7 @@ func Eatchar(pat)
     return (c =~ a:pat) ? '' : c
 endfunc
 
-colorscheme sonokai
+colorscheme ayu
 
 " Common Settings {{{
 set number 
@@ -152,11 +161,17 @@ let g:loaded_tarPlugin=1
 let g:loaded_tar=1
 
 let g:deoplete#enable_at_startup=1
+"}}}
+
+call deoplete#custom#option('auto_complete_delay', 100)
+
+" lightline config {{{1
 let g:lightline = {
             \ 'colorscheme': 'ayu_dark',
+            \ 'separator': { 'left': '', 'right': '' },
+            \ 'subseparator': { 'left': '', 'right': '' },
             \ }
-call deoplete#custom#option('auto_complete_delay', 100)
-"}}}
+" }}}
 
 " Custom Global Highlights {{{
 "
@@ -195,6 +210,9 @@ let g:airline#extensions#tabline#formatter = 'unique_tail'
 " NERDTree config {{{
 let NERDTreeMinimalUI = 1  " Disable ? etc
 let NERDTreeShowHidden=1  "Show hidden files (aka dotfiles)
+let NERDTreeMapActivateNode='<space>'
+let NERDTreeIgnore=['\.git$']
+let g:NERDTreeWinSize=20
 "}}}
 
 " floaterm config {{{
@@ -297,6 +315,7 @@ function! OpenLink()
     let links = []
     try
         call substitute(getline('.'), 'http[s]\?:\/\/[^) \"]*', '\=add(links, submatch(0))', 'g')
+        echo "Opening " . links[0]
         exe "silent! !xdg-open " . links[0]
     catch E684
         echo "No link found :("
@@ -406,25 +425,43 @@ function! OpenNonTextFiles()
     endif
 endfunction
 
-let g:browser = "chromium-browser"
-let g:search_engine = "github"
-xnoremap <leader>s :<c-u>call SearchInternet()<CR>
-function! SearchInternet()
+function! GetVisualSelection()
     " Thanks: https://stackoverflow.com/a/6271254/8209510
     let [line_start, column_start] = getpos("'<")[1:2]
     let [line_end, column_end] = getpos("'>")[1:2]
     let lines = getline(line_start, line_end)
     let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
     let lines[0] = lines[0][column_start - 1:]
+    return join(lines, "\n")
+endfunction
+
+function! SendQueryToFloatTerm()
+    let selection = GetVisualSelection()
+    exe ":FloatermSend surf -sq \"" . selection . "\""
+    exe ":FloatermToggle"
+endfunction
+
+let g:browser = "chromium-browser"
+let g:search_engine = "duckduckgo"
+" Open browser & search engine with currently selected text
+function! SearchInternet()
+    let selection = GetVisualSelection()
     let urlsafe = ""
     let search_engines = {
                 \ 'google': "google.com/search?q=",
                 \ 'duckduckgo': "duckduckgo.com/?q=",
-                \ 'duckduckgo-lite': "lite.duckduckgo.com/lite/?q=",
                 \ 'github': "github.com/search?q=",
-                \ 'stackoverflow': "stackoverflow.com/search?q="
+                \ 'stackoverflow': "stackoverflow.com/search?tab=votes&q="
                 \}
-    for char in split(join(lines, "\n"), '.\zs')
+    let choices = {
+                \'g':search_engines["google"],
+                \'d':search_engines["duckduckgo"],
+                \'s':search_engines["stackoverflow"],
+                \'h':search_engines["github"]
+                \}
+    echo "Choose Search Engine:\n[g]oogle\n[d]uckduckgo\n[s]stackoverflow\ngit[h]ub\nChoice [g/d/s/h]: "
+    let user_choice = nr2char(getchar())
+    for char in split(selection, '.\zs')
         if matchend(char, '[-_.~a-zA-Z0-9]') >= 0
             let urlsafe = urlsafe . char
         else
@@ -432,8 +469,8 @@ function! SearchInternet()
             let urlsafe = urlsafe . "%" . printf("%02x", decimal)
         endif
     endfor
-    echo "Opening Browser with [". g:search_engine . "] & query: ". join(lines, "\n")
-    exe "silent!" . system(g:browser . " " . search_engines[g:search_engine] . urlsafe) 
+    echo "\nOpening Browser with [". choices[user_choice] . "] & query: ". selection
+    exe "silent!" . system(g:browser . " " . choices[user_choice] . urlsafe) 
     normal! gv
 endfunction
 

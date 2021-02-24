@@ -23,10 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import urllib.request
 import urllib.parse
 import json
-import pprint
 import random
 import argparse
 import readline
+from pathlib import Path
 from sys import stdin
 from os import isatty
 
@@ -35,9 +35,12 @@ HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",
 }
 
+instance_cache = Path.home() / ".searx_instances"
 
 USAGE = """surf\n
 (Assuimng surf is in your current working directory)
+   > For better experience, add surf to your PATH or move it to $HOME/.local/bin
+
 1. Just run the script, without any arguments:
    $ ./surf
 
@@ -50,15 +53,24 @@ USAGE = """surf\n
 4. You can also pipe data to surf ¯\_(ツ)_/¯:
    $ echo "search this" | ./surf
 
-5. Use -c to specify search category:
+5. Use -c to specify search category (default: general):
    $ surf -c "videos" -sq "how to make a pizza"
-   Default category is "general". Other categories include: "news", "files", "images", "map"
+   Other categories include: "news", "files", "images", "map"
 
-   > For better experience, add surf to your PATH or move it to $HOME/.local/bin
+6. Update instance cache:
+   $ surf -usq "when is doomsday"
+
+Help/Bug Report: varshneybhupesh@gmail.com
    """
+
+read_cache = lambda cache: set(cache.read_text().splitlines())
 
 
 class colors:
+    """
+    Define your fav colors here
+    """
+
     CYAN = "\033[1;36m"
     GREEN = "\033[40;38;5;154m"
     ORANGE_BG = "\033[30;48;5;214m"
@@ -66,35 +78,51 @@ class colors:
     BOLD = "\033[;1m"
 
 
-def request(url, data=None, method=None):
+def request(url):
+    # Send a GET to url
     req = urllib.request.Request(url, headers=HEADERS)
-    # print(req.headers)
     try:
-        with urllib.request.urlopen(req) as response:
-            res = json.loads(response.read().decode("utf-8"))
+        response = urllib.request.urlopen(req)
+        res = json.loads(response.read().decode("utf-8"))
     except urllib.error.URLError as e:
         return e.reason, e.code
     return res, response.code
 
 
+def update_instances_cache():
+    """
+    Check https://searx.space/ for exact count
+    surf ignores instances based on paramters like
+    - HTTP Status Codes
+    - Any reported Errors
+    - Fishy Behaviour (e.g using analytics for user tracking)
+    """
+    print("Updating cache ...")
+    data = request("https://searx.space/data/instances.json")
+    instances = data[0]["instances"]
+    with open(instance_cache, "w") as cache:
+        for server in instances:
+            if (
+                instances[server]["http"]["status_code"] == 200
+                and instances[server]["http"]["error"] is None
+                and not instances[server]["comments"]
+            ):
+                cache.write(f"{i}\n")
+    return read_cache(instance_cache)
+
+
+def get_instances():
+    # read searx instances cache
+    if instance_cache.is_file():
+        return read_cache(instance_cache)
+    print("Searx Instances cache not found!")
+    return update_instances_cache()
+
+
 def dont_hurt_instance(query, category):
     # searx is fighting to block bot traffic, we need to be nice
-    # but we also need search results
-    searx_instances = {
-        "https://searx.nevrlands.de/",
-        "https://searx.olymp.to/",
-        "https://search.mdosch.de/",
-        "https://dynabyte.ca/",
-        "https://searx.fmac.xyz/",
-        "https://searx.bar/",
-        "https://searx.tuxcloud.net/",
-        "https://metasearch.nl/",
-        "https://searx.pwoss.org/",
-        "https://privatesearch.app/",
-        "https://procurx.pt/",
-        "https://searx.devol.it/",
-        "https://searx.ninja/",
-    }
+    # but we also need search results in case the user searches more frequently
+    searx_instances = get_instances()
     overloaded_instance = set()
     while True:
         instance = random.choice(tuple(searx_instances))
@@ -103,10 +131,10 @@ def dont_hurt_instance(query, category):
         )
         if code == 429:
             overloaded_instance.add(instance)
-            print(f"Oh Snap! {instance} says {data} :(")
+            print(f"Oh Snap! {urllib.parse.urlparse(instance).netloc} says {data} :(")
             searx_instances = searx_instances - overloaded_instance
             continue
-        elif code == 200 and len(data["results"]) > 0:
+        if code == 200 and len(data["results"]) > 0:
             print(
                 f"""Found {colors.BOLD}{len(data["results"])}{colors.RESET} results on {colors.BOLD}{instance}{colors.RESET}\n"""
             )
@@ -154,7 +182,18 @@ if __name__ == "__main__":
         default=False,
         help="Show link description",
     )
+    parser.add_argument(
+        "-u",
+        "--udpate-cache",
+        action="store_true",
+        default=False,
+        help="Update searx instances cache",
+    )
     args = parser.parse_args()
+
+    if args.udpate_cache:
+        update_instances_cache()
+
     if is_pipe:
         query = stdin.read()
     elif not args.query:
