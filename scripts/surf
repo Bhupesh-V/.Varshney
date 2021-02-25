@@ -57,6 +57,9 @@ USAGE = """surf\n
 
 6. Update instance cache:
    $ ./surf -udq "when is doomsday"
+
+7. Show only top N results:
+   $ ./surf -t 5 -dq "check if key exists in map"
    """
 
 
@@ -150,7 +153,7 @@ def dont_hurt_instance(query, category):
             )
             searx_instances = searx_instances - overloaded_instance
             continue
-        if code == 200 and len(data["results"]) > 0:
+        elif code == 200 and len(data["results"]) > 0:
             print(
                 f"""Found {colors.BOLD}{len(data["results"])}{colors.RESET} results on {colors.BOLD}{current_instance}{colors.RESET}\n"""
             )
@@ -158,16 +161,24 @@ def dont_hurt_instance(query, category):
     return data
 
 
-def search(query, show_description, category):
-    data = dont_hurt_instance(query, category)
+def search(query, args):
+    data = dont_hurt_instance(query, args.category)
 
-    if len(data["corrections"]) > 0:
-        print(f"""Did you mean {colors.BOLD}{data["corrections"]}{colors.RESET}?\n""")
+    if len(data["corrections"]) == 2:
+        print(
+            f"""Did you mean {colors.BOLD}{data["corrections"][1]}{colors.RESET}?\n"""
+        )
 
-    for res in data["results"]:
+    if args.top is not None:
+        top_results_count = args.top
+        print(f"Showing only top {top_results_count} results\n")
+    else:
+        top_results_count = len(data["results"])
+
+    for res in data["results"][:top_results_count]:
         print(f"""{colors.BOLD}{colors.TITLE_STYLE} {res["title"]} {colors.RESET}""")
-        if show_description and res["content"] != "":
-            print(f"""\t{colors.GREEN}{res["content"]:4}{colors.RESET}""")
+        if args.show_description and "content" in res:
+            print(f"""\t{colors.GREEN}{res["content"]}{colors.RESET}""")
         print(
             f"{colors.BOLD}► ",
             f"""{colors.CYAN}{res["url"]}{colors.RESET}""",
@@ -191,6 +202,12 @@ if __name__ == "__main__":
         type=str,
         default="general",
         help="Search Category",
+    )
+    parser.add_argument(
+        "-t",
+        "--top",
+        type=int,
+        help="Show only top N results",
     )
     parser.add_argument(
         "-d",
@@ -217,4 +234,4 @@ if __name__ == "__main__":
         query = str(input("\nSearch 🔍️ : "))
     else:
         query = args.query
-    search(query, args.show_description, args.category)
+    search(query, args)
