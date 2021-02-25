@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import urllib.request
 import urllib.parse
 import json
-import random
-import argparse
+import random, platform
+import argparse, textwrap
 import readline
 from pathlib import Path
 from sys import stdin
@@ -35,35 +35,46 @@ HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",
 }
 
-instance_cache = Path.home() / ".searx_instances"
-
 USAGE = """surf\n
-(Assuimng surf is in your current working directory)
+(Assuming surf is in your current working directory)
    > For better experience, add surf to your PATH or move it to $HOME/.local/bin
 
 1. Just run the script, without any arguments:
    $ ./surf
 
 2. Show link description:
-   $ ./surf -s
+   $ ./surf -d
 
 3. Provide search query as parameter:
-   $ ./surf -sq "how to change the world"
+   $ ./surf -dq "how to change the world"
 
 4. You can also pipe data to surf ¯\_(ツ)_/¯:
    $ echo "search this" | ./surf
 
 5. Use -c to specify search category (default: general):
-   $ surf -c "videos" -sq "how to make a pizza"
+   $ ./surf -c "videos" -sq "how to make a pizza"
    Other categories include: "news", "files", "images", "map"
 
 6. Update instance cache:
-   $ surf -usq "when is doomsday"
-
-Help/Bug Report: varshneybhupesh@gmail.com
+   $ ./surf -udq "when is doomsday"
    """
 
+
 read_cache = lambda cache: set(cache.read_text().splitlines())
+
+
+def get_cache_path():
+    # searx instances cache path
+    user_home = Path.home()
+    cache_name = ".searx_instances"
+    os_name = platform.system()
+
+    if os_name == "Linux":
+        return user_home / ".cache" / cache_name
+    elif os_name == "Darwin":
+        return user_home / "Library" / "Caches" / cache_name
+    elif os_name == "Windows":
+        return user_home / "AppData" / "Local" / "Temp" / cache_name
 
 
 class colors:
@@ -73,7 +84,8 @@ class colors:
 
     CYAN = "\033[1;36m"
     GREEN = "\033[40;38;5;154m"
-    ORANGE_BG = "\033[30;48;5;214m"
+    # gray bg + orange fg
+    TITLE_STYLE = "\033[;1m\033[38;5;208m\033[48;5;238m"
     RESET = "\033[m"
     BOLD = "\033[;1m"
 
@@ -92,7 +104,7 @@ def request(url):
 def update_instances_cache():
     """
     Check https://searx.space/ for exact count
-    surf ignores instances based on paramters like
+    surf additionally ignores instances based on parameters like
     - HTTP Status Codes
     - Any reported Errors
     - Fishy Behaviour (e.g using analytics for user tracking)
@@ -100,19 +112,20 @@ def update_instances_cache():
     print("Updating cache ...")
     data = request("https://searx.space/data/instances.json")
     instances = data[0]["instances"]
-    with open(instance_cache, "w") as cache:
+    with open(get_cache_path(), "w") as cache:
         for server in instances:
             if (
                 instances[server]["http"]["status_code"] == 200
                 and instances[server]["http"]["error"] is None
                 and not instances[server]["comments"]
             ):
-                cache.write(f"{i}\n")
-    return read_cache(instance_cache)
+                cache.write(f"{server}\n")
+    return read_cache(get_cache_path())
 
 
 def get_instances():
     # read searx instances cache
+    instance_cache = get_cache_path()
     if instance_cache.is_file():
         return read_cache(instance_cache)
     print("Searx Instances cache not found!")
@@ -126,17 +139,20 @@ def dont_hurt_instance(query, category):
     overloaded_instance = set()
     while True:
         instance = random.choice(tuple(searx_instances))
+        current_instance = urllib.parse.urlparse(instance).netloc
         data, code = request(
             f"{instance}search?q={urllib.parse.quote_plus(query)}&categories={category.lower()}&format=json"
         )
         if code == 429:
             overloaded_instance.add(instance)
-            print(f"Oh Snap! {urllib.parse.urlparse(instance).netloc} says {data} :(")
+            print(
+                f"Oh Snap! {colors.BOLD}{current_instance}{colors.RESET} says {data} :("
+            )
             searx_instances = searx_instances - overloaded_instance
             continue
         if code == 200 and len(data["results"]) > 0:
             print(
-                f"""Found {colors.BOLD}{len(data["results"])}{colors.RESET} results on {colors.BOLD}{instance}{colors.RESET}\n"""
+                f"""Found {colors.BOLD}{len(data["results"])}{colors.RESET} results on {colors.BOLD}{current_instance}{colors.RESET}\n"""
             )
             break
     return data
@@ -149,7 +165,7 @@ def search(query, show_description, category):
         print(f"""Did you mean {colors.BOLD}{data["corrections"]}{colors.RESET}?\n""")
 
     for res in data["results"]:
-        print(f"""{colors.BOLD}{colors.ORANGE_BG} {res["title"]} {colors.RESET}""")
+        print(f"""{colors.BOLD}{colors.TITLE_STYLE} {res["title"]} {colors.RESET}""")
         if show_description and res["content"] != "":
             print(f"""\t{colors.GREEN}{res["content"]:4}{colors.RESET}""")
         print(
@@ -162,6 +178,7 @@ if __name__ == "__main__":
     is_pipe = not isatty(stdin.fileno())
     parser = argparse.ArgumentParser(description="Surf Internet on Command line")
     parser.usage = USAGE
+    parser.epilog = """Help/Bug Report: varshneybhupesh@gmail.com"""
     parser.add_argument(
         "-q",
         "--query",
@@ -176,7 +193,7 @@ if __name__ == "__main__":
         help="Search Category",
     )
     parser.add_argument(
-        "-s",
+        "-d",
         "--show-description",
         action="store_true",
         default=False,
@@ -184,14 +201,14 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "-u",
-        "--udpate-cache",
+        "--update-cache",
         action="store_true",
         default=False,
-        help="Update searx instances cache",
+        help="Update searx instances cache list",
     )
     args = parser.parse_args()
 
-    if args.udpate_cache:
+    if args.update_cache:
         update_instances_cache()
 
     if is_pipe:
