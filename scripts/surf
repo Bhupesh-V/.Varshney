@@ -23,16 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import urllib.request
 import urllib.parse
 import json
-import random, platform
-import argparse, textwrap
+import platform
+import argparse
 import readline
+from random import choice
 from pathlib import Path
 from sys import stdin
 from os import isatty
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
-    "Content-Type": "application/x-www-form-urlencoded",
+    "Content-Type": "application/json",
 }
 
 USAGE = """surf\n
@@ -58,12 +59,18 @@ USAGE = """surf\n
 6. Update instance cache:
    $ ./surf -udq "when is doomsday"
 
-7. Show only top N results:
+7. Show only top N results (--top):
    $ ./surf -t 5 -dq "check if key exists in map"
    """
 
+# TODO: Use a priority based approach (account response time) while selecting a random instance #
+# TODO: Add option to use only 1 user-specified instance (--searx) #
+# TODO: Add option to show all instances in cache #
+# TODO: Automatically append "go" if the instance supports results from google #
 
-read_cache = lambda cache: set(cache.read_text().splitlines())
+
+def read_cache(cache):
+    return set(cache.read_text().splitlines())
 
 
 def get_cache_path():
@@ -74,10 +81,9 @@ def get_cache_path():
 
     if os_name == "Linux":
         return user_home / ".cache" / cache_name
-    elif os_name == "Darwin":
+    if os_name == "Darwin":
         return user_home / "Library" / "Caches" / cache_name
-    elif os_name == "Windows":
-        return user_home / "AppData" / "Local" / "Temp" / cache_name
+    return user_home / "AppData" / "Local" / "Temp" / cache_name
 
 
 class colors:
@@ -88,18 +94,20 @@ class colors:
     CYAN = "\033[1;36m"
     GREEN = "\033[40;38;5;154m"
     # gray bg + orange fg
-    TITLE_STYLE = "\033[;1m\033[38;5;208m\033[48;5;238m"
+    TITLE_STYLE = "\033[;1m\033[38;5;220m\033[48;5;238m"
     RESET = "\033[m"
     BOLD = "\033[;1m"
 
 
 def request(url):
-    # Send a GET to url
+    """Send a GET to url"""
     req = urllib.request.Request(url, headers=HEADERS)
     try:
-        response = urllib.request.urlopen(req)
-        res = json.loads(response.read().decode("utf-8"))
+        with urllib.request.urlopen(req) as response:
+            res = json.loads(response.read().decode("utf-8"))
     except urllib.error.URLError as e:
+        return e.reason, e.code
+    except urllib.error.HTTPError as e:
         return e.reason, e.code
     return res, response.code
 
@@ -127,7 +135,9 @@ def update_instances_cache():
 
 
 def get_instances():
-    # read searx instances cache
+    """
+    read searx instances cache
+    """
     instance_cache = get_cache_path()
     if instance_cache.is_file():
         return read_cache(instance_cache)
@@ -141,10 +151,10 @@ def dont_hurt_instance(query, category):
     searx_instances = get_instances()
     overloaded_instance = set()
     while True:
-        instance = random.choice(tuple(searx_instances))
+        instance = choice(tuple(searx_instances))
         current_instance = urllib.parse.urlparse(instance).netloc
         data, code = request(
-            f"{instance}search?q={urllib.parse.quote_plus(query)}&categories={category.lower()}&format=json"
+            f"""{instance}search?q={urllib.parse.quote_plus(query)}&categories={category.lower()}&format=json"""
         )
         if code == 429:
             overloaded_instance.add(instance)
