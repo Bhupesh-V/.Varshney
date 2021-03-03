@@ -29,7 +29,7 @@ import readline
 from random import choice
 from pathlib import Path
 from sys import stdin
-from os import isatty
+from os import isatty, getenv
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
@@ -80,7 +80,8 @@ def get_cache_path():
     os_name = platform.system()
 
     if os_name == "Linux":
-        return user_home / ".cache" / cache_name
+        xdg_cache_home = Path(getenv('XDG_CACHE_HOME', user_home / ".cache"))
+        return xdg_cache_home / cache_name
     if os_name == "Darwin":
         return user_home / "Library" / "Caches" / cache_name
     return user_home / "AppData" / "Local" / "Temp" / cache_name
