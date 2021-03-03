@@ -25,7 +25,6 @@ import urllib.parse
 import json
 import platform
 import argparse
-import readline
 from random import choice
 from pathlib import Path
 from sys import stdin
