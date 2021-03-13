@@ -120,7 +120,7 @@ def update_instances_cache():
     - Any reported Errors
     - Fishy Behaviour (e.g using analytics for user tracking)
     """
-    print("Updating cache ...")
+    print("Updating cache ...", end="\r")
     data = request("https://searx.space/data/instances.json")
     instances = data[0]["instances"]
     with open(get_cache_path(), "w") as cache:
@@ -150,6 +150,7 @@ def dont_hurt_instance(query, category):
     # but we also need search results in case the user searches more frequently
     searx_instances = get_instances()
     overloaded_instance = set()
+    print("Pinging a random instance ...", end="\r")
     while True:
         instance = choice(tuple(searx_instances))
         current_instance = urllib.parse.urlparse(instance).netloc
