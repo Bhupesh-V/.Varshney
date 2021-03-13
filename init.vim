@@ -15,7 +15,7 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'voldikss/vim-floaterm'
 Plug 'itchyny/lightline.vim'
 Plug 'mhartington/oceanic-next'
-Plug 'cormacrelf/vim-colors-github'
+Plug 'arzg/vim-colors-xcode'
 " Plug 'vim-airline/vim-airline'
 call plug#end()
 
@@ -44,8 +44,18 @@ nnoremap <Tab> <C-w><C-w>
 " Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
 " Use j/k to select from completion menu
-inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
-inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
+" inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
+" inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
+inoremap <silent><expr> <TAB>
+            \ pumvisible() ? "\<C-n>" :
+            \ <SID>check_back_space() ? "\<TAB>" :
+            \ deoplete#manual_complete()
+function! s:check_back_space() abort "{{{
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+"}}}
+
 " Efficiently browse vim manuals using helpg
 nnoremap <kPlus> :cn<CR>
 nnoremap <kMinus> :cp<CR>
@@ -92,9 +102,10 @@ nnoremap <F10> :call PrettyMe()<CR>
 inoremap <F10> :call PrettyMe()<CR>
 " Use vim-floaterm to show search results
 xnoremap <leader>f <esc>:call SendQueryToFloatTerm()<CR>   
+xnoremap <leader>t <esc>:split <bar> call SendQueryToTerm()<CR>
 xnoremap <leader>s :<c-u>call SearchInternet()<CR>
 " Open vim terminal with surf command
-nnoremap <leader>c <esc>:e term://surf -s<CR>i
+nnoremap <leader>c <esc>
 "}}}
 
 " Disable Arrow keys for good {{{
@@ -135,6 +146,7 @@ set expandtab
 set showcmd
 " set completefunc=UltiSnips#ListSnippets()
 set title
+set autoread
 set cursorline
 set iskeyword+=-
 set dictionary+=/usr/share/dict/words
@@ -218,6 +230,9 @@ let g:NERDTreeWinSize=20
 " floaterm config {{{
 
 let g:floaterm_title = "😎️"
+let g:floaterm_autoinsert = v:false
+
+
 hi FloatermBorder cterm=bold gui=bold guibg=NONE guifg=orange
 " }}}
 
@@ -249,7 +264,7 @@ augroup END
 " Set Indent level based on FileType
 augroup FileIndentLevel
     autocmd!
-    autocmd FileType cpp,yaml,html setlocal shiftwidth=2 tabstop=2 softtabstop=2
+    autocmd FileType htmldjango,cpp,yaml,html,css setlocal shiftwidth=2 tabstop=2 softtabstop=2
     autocmd FileType go,python,vim,sh setlocal tabstop=4 sts=4 shiftwidth=4
 augroup END
 
@@ -277,6 +292,7 @@ au FileType qf call AdjustWindowHeight(3, 10)
 function! AdjustWindowHeight(minheight, maxheight)
     exe max([min([line("$"), a:maxheight]), a:minheight]) . "wincmd _"
 endfunction
+
 "}}}
 
 " My Plugins
@@ -291,6 +307,14 @@ function! Toggle_transparent()
         set background=dark
     endif
 endfunction
+
+function! OpenURLUnderCursor()
+  let s:uri = expand('<cWORD>')
+  let s:uri = substitute(s:uri, '?', '\\?', '')
+  let s:uri = shellescape(s:uri, 1)
+  echo s:uri
+endfunction
+" nnoremap gx :call OpenURLUnderCursor()<CR>
 
 " Run commands inside the editor & paste output in next line
 function! AddCmdOuput()
@@ -437,8 +461,14 @@ endfunction
 
 function! SendQueryToFloatTerm()
     let selection = GetVisualSelection()
-    exe ":FloatermSend surf -sq \"" . selection . "\""
-    exe ":FloatermToggle"
+    exe "FloatermNew --height=0.6 --width=0.9 --wintype=float --disposable surf -dq \"" . selection . "\""
+    " exe ":FloatermSend surf -dq \"" . selection . "\""
+    " exe ":FloatermToggle"
+endfunction
+
+function! SendQueryToTerm()
+    let selection = GetVisualSelection()
+    exe ":term surf -dq \"" . selection . "\""
 endfunction
 
 let g:browser = "chromium-browser"
