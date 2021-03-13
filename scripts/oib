@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+
+# A utility to open a texfile as a HTML page so that I can use grammarly web extension -_-
+
+from sys import stdin
+from string import Template
+from pathlib import Path
+import os
+import sys
+import http.server
+import socketserver
+import webbrowser
+
+TEMPLATE = Template(
+    """
+<style>
+textarea {
+    display: block;
+    max-width: 100%;
+    min-width: 100%;
+    padding: calc(.75em - 1px);
+    resize: vertical;
+    height: 100%;
+    font-size: medium;
+    font-family: Arial;
+}
+</style>
+
+<textarea>
+$text
+</textarea>
+
+"""
+)
+
+
+def serve(path):
+    PORT = 8000
+    Handler = http.server.SimpleHTTPRequestHandler
+    try:
+        socketserver.TCPServer.allow_reuse_address = True
+        with socketserver.TCPServer(("", PORT), Handler) as httpd:
+            print("Serving at port", PORT)
+            httpd.serve_forever()
+    except KeyboardInterrupt:
+        os.remove(path)
+        print("\nClosing server ... Bye")
+        sys.exit()
+
+
+if __name__ == "__main__":
+    is_pipe = not os.isatty(stdin.fileno())
+    textpad_filename = "temp.html"
+    textpad_filepath = Path.home() / textpad_filename
+    if is_pipe:
+        content = stdin.read()
+
+    with open(textpad_filepath, "w") as fw:
+        fw.write(TEMPLATE.substitute(text=content))
+    webbrowser.open(f"http://127.0.0.1:8000/{textpad_filename}")
+    serve(textpad_filepath)
