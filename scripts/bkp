@@ -7,10 +7,10 @@
 # 1. Make sure you have a Personal Access Token with Gist Scope
 # 2. Create a file named .env.json in your home directory with contents:
 # {"GITHUB_TOKEN": "<your-token>" }
-# 3. Run script: python backup_as_gist.py <file-to-backup>
+# 3. Run script: ./bkp <file-to-backup>
 
 import urllib.request
-import json, sys
+import json, sys, os
 import argparse
 from datetime import datetime
 from pathlib import Path
@@ -33,6 +33,9 @@ def request(url, data=None, method=None):
     if method == "PATCH":
         req = urllib.request.Request(url, data=data, headers=HEADERS)
         req.get_method = lambda: "PATCH"
+    elif method == "DELETE":
+        req = urllib.request.Request(url, headers=HEADERS)
+        req.get_method = lambda: "DELETE"
     elif method == "POST":
         req = urllib.request.Request(url, data=data, headers=HEADERS)
     else:
@@ -76,6 +79,18 @@ def read_token():
         exit()
 
 
+def delete_gist(filepath):
+    userfile = Path(filepath)
+    gist_id = get_backup(userfile.name)
+
+    print("🚮️ Purging Gist ...")
+    res, code = request(f"{base_url}/gists/{gist_id}", method="DELETE")
+
+    print(res, code)
+    if code == 204:
+        print("Backup Successfully Deleted")
+
+
 def controller(filepath):
     userfile = Path(filepath)
     content["files"] = {userfile.name: {"content": userfile.read_text()}}
@@ -87,7 +102,7 @@ def controller(filepath):
             f"{base_url}/gists/{gist_id}", json.dumps(content).encode("utf-8"), "PATCH"
         )
     else:
-        print(f"No backup found for file: {filepath}")
+        print(f"No backup found for file: {os.path.basename(filepath)}")
         print("Creating Backup ...")
         res, code = request(
             f"{base_url}/gists", json.dumps(content).encode("utf-8"), "POST"
@@ -101,11 +116,28 @@ def controller(filepath):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Backup text files as a GitHub Gist")
     parser.add_argument("filepath", type=str, help="Absolute file path")
-    parser.add_argument("-s", "--show-url", action="store_true", default=False, help="Show github gist url")
+    parser.add_argument(
+        "-s",
+        "--show-url",
+        action="store_true",
+        default=False,
+        help="Show github gist url",
+    )
+    parser.add_argument(
+        "-d",
+        "--delete",
+        action="store_true",
+        default=False,
+        help="Delete Gist",
+    )
     args = parser.parse_args()
 
     read_token()
-    data = controller(args.filepath)
+
+    if args.delete:
+        delete_gist(args.filepath)
+    else:
+        data = controller(args.filepath)
+
     if args.show_url:
         print(f"""Gist url: {data["html_url"]}""")
-

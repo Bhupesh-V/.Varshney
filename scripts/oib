@@ -13,22 +13,28 @@ import webbrowser
 
 TEMPLATE = Template(
     """
-<style>
-textarea {
-    display: block;
-    max-width: 100%;
-    min-width: 100%;
-    padding: calc(.75em - 1px);
-    resize: vertical;
-    height: 100%;
-    font-size: medium;
-    font-family: Arial;
-}
-</style>
-
-<textarea>
-$text
-</textarea>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+    textarea {
+      display: block;
+      max-width: 100%;
+      min-width: 100%;
+      padding: calc(.75em - 1px);
+      resize: vertical;
+      height: 100%;
+      font-size: medium;
+      font-family: Arial;
+    }
+    </style>
+  </head>
+  <body>
+  <textarea>
+  $text
+  </textarea>
+  </body>
+</html>
 
 """
 )
