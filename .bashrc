@@ -1,7 +1,3 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
-
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -10,10 +6,11 @@ esac
 
 # Gib me all the colors 
 export TERM=xterm-256color
+export PATH="$HOME/Documents/.Varshney/scripts:$PATH"
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
-HISTCONTROL=ignoreboth
+HISTCONTROL=ignoreboth:erasedups
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
@@ -188,11 +185,20 @@ source ~/scd-completions.bash
 export CDPATH=".:/home/bhupesh"
 export DOT_REPO=https://github.com/Bhupesh-V/.Varshney DOT_DEST=Documents
 
+# Make grep output sexy
+# Default: ‘ms=01;31:mc=01;31:sl=:cx=:fn=35:ln=32:bn=32:se=36’
+# Read: https://www.gnu.org/software/grep/manual/grep.html#index-GREP_005fCOLORS-environment-variable
+#
+# Search word = bold orange fg
+# filename = bold green fg
+# line no = bold blue fg
+export GREP_COLORS='ms=1;38;5;214:fn=1;38;5;154:ln=1;38;5;69'
+
 # set options for less
 export LESS='--ignore-case --status-column --LONG-PROMPT --RAW-CONTROL-CHARS --HILITE-UNREAD --tabs=4 --no-init --window=-4'
 # or the short version
 # export LESS='-F -i -J -M -R -W -x4 -X -z-4'
-# Set colors for less. Borrowed from https://wiki.archlinux.org/index.php/Color_output_in_console#less .
+# Borrowed from https://wiki.archlinux.org/index.php/Color_output_in_console#less
 export LESS_TERMCAP_mb=$'\E[1;31m'     # begin bold
 export LESS_TERMCAP_md=$'\E[1;36m'     # begin blink
 export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink

@@ -4,6 +4,7 @@ alias gia='git add -A'
 alias gib='git branch'
 alias gich='git checkout'
 alias gis='git status'
+alias gir='git restore'
 alias gisc='git commit -m'
 # Add your staged changes to the previous commit
 # while preserving your commit message
@@ -21,7 +22,8 @@ alias gb="go build"
 alias gr="go run"
 alias gd="go doc -all"
 alias gg="go get"
-alias gt="go test"
+alias gt="go test ./... -v -coverpkg=./... -coverprofile=coverage.out"
+alias gtc="go tool cover -html=coverage.out"
 alias n="nvim"
 alias p='python3'
 alias b=bash
@@ -31,12 +33,11 @@ alias update='sudo apt-get update'
 alias upgrade='sudo apt-get upgrade'
 alias cd="vcd"
 alias serve="python3 -m http.server"
-alias lk="grep -nir --exclude-dir={.git,.github}"
-alias sys="watch -ct -n0 \$HOME/Documents/.Varshney/scripts/sys.sh"
+# alias lk="grep -nir --exclude-dir={_site,.git,.github} | awk -f ~/Documents/.Varshney/scripts/pretty-grep.awk"
+alias sys="watch -ct -n0 sys"
 alias bb="jekyll serve --watch"
-alias md="\$HOME/Documents/.Varshney/scripts/md.sh"
-alias bkp="\$HOME/Documents/.Varshney/scripts/backup_as_gist.py"
-alias gif="\$HOME/Documents/.Varshney/scripts/convert-to-gif.sh"
 alias lc="\$HOME/Documents/.Varshney/scripts/last-modify.sh"
 alias lt="ls --human-readable --size -1 -S --classify"
 alias browse="xdg-open 2>/dev/null"
+# Quickly add things to a todo-list. Usage: remember milk
+alias todo="xargs -I TODO  echo \"[ ] TODO\" >> ~/todo <<<"
