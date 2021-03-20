@@ -154,7 +154,20 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
    ```
    wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/surf && chmod +x surf && mv surf $HOME/.local/bin/
    ```
+9. [**oib (open in browser)**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/oib)
+   > A utility to open a text-file as a HTML page so that I can use grammarly web extension `-_-`
 
+   Install
+   ```
+   wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/oib && chmod +x oib && mv oib $HOME/.local/bin/
+   ```
+10. [**git-feed**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/git-feed)
+   > A python utility to generate a feed of recently committed files inside a git repository
+
+   Install
+   ```
+   wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/git-feed && chmod +x git-feed && mv git-feed $HOME/.local/bin/
+   ```
 
 ### [`.bash_aliases`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bash_aliases)
 
