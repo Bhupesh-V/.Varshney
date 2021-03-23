@@ -6,6 +6,8 @@ BEGIN {
   FS=":"
   file=""
   filestarted=0
+  GREEN_FG="\033[1;38;5;154m"
+  RESET="\033[m"
 }
 
 # $0 : the entire line
@@ -20,10 +22,9 @@ BEGIN {
     filestarted=0;
   }
   if(filestarted != 0){
-    print "|"
+    print GREEN_FG "|" RESET
   }
   out=substr($0, length($1 ":" $2 ": "))
-  linum=sprintf("%-4s", $2)
-  print linum " " out
+  print $2 " " out
   filestarted=1;
 }
