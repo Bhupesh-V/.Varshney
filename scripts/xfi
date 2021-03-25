@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# This script helps ignore unnecessary dir paths while using find
+
+EXCLUDE_DIRS=(
+    "! -path /*.git/*"
+    "! -path /*go/*"
+    "! -path /*.bundle/*"
+    "! -path /*.cache/*"
+    "! -path /*.local/*"
+    "! -path /*.themes/*"
+    "! -path /*.config/*"
+    "! -path /*.codeintel/*"
+    "! -path /*python2.7/*"
+    "! -path /*python3.6/*"
+    "! -path /*__pycache__/*"
+)
+find $HOME -type f ${EXCLUDE_DIRS[@]} | fzf --height 40% --reverse
