@@ -1,4 +1,4 @@
-# /usr/bin/env python3
+#!/usr/bin/env python3
 
 # Find total contributors on all repositories of a github user (WIP)
 

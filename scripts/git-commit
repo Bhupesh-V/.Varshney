@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+gitmoji_path="$HOME/.config/gitmojis.csv"
+
+emoji=$(cat $gitmoji_path | fzf --prompt="Choose gitmoji: " --height 40% --reverse | awk '{print $1}')
+printf "Emoji: %s\n" "$emoji"
+
+read -erp "Enter Commit Title: " title
+echo -e "Enter Commit Message (Ctrl+d when done):"
+msg=$(</dev/stdin)
+echo
+read -erp "Issue / PR ref #: " issue_ref
+if [[ "$issue_ref" ]]; then
+    git commit -m "$emoji $title (#$issue_ref)" -m "$msg"
+else
+    git commit -m "$emoji $title" -m "$msg"
+fi
