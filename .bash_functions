@@ -184,11 +184,11 @@ hg() {
 }
 
 eye() {
-    # custom file viewer
+    # custom text file viewer
     filename=$(basename -- "$1")
     extension="${filename##*.}"
     if [[ $extension == "md" ]]; then
-        glow "$1"
+        glow -w "$COLUMNS" "$1"
     elif [[ $extension == "json" ]]; then
         python3 -m json.tool "$1"
     else
@@ -242,11 +242,22 @@ hl () {
 }
 
 fino() {
-    file "$1"
-    printf "Size: %s" "$(du -h "$1" | awk '{print $1}')"
+    declare filepath=${1:-$(</dev/stdin)};
+    if [[ -f "$filepath" ]]; then
+        echo -e "$(basename "$filepath")"
+        info=$(file "$filepath" | awk -F ":" '{print $2}')
+        echo -e "$info"
+        ls -alh "$filepath" | awk '{print $1 "\nSize: " $5 "\nLast Modify: " $6 " " $7 " " $8}'
+    fi
     # printf "Created: %s" "$(sudo debugfs -R "stat <$(ls -i "$1" | awk '{ print $1}')>" /dev/sda1 | grep 'crtime')"
 }
+export -f fino
 
 lk() {
-    grep -wnir --color=always --exclude-dir={_site,.git,.github} $@ | awk -f ~/Documents/.Varshney/scripts/pretty-grep.awk
+    grep -wnirI --color=always --exclude='*.gitignore' --exclude-dir={_site,.git,.github} "$@" | awk '{$1=$1};1' | awk -f ~/Documents/.Varshney/scripts/pretty-grep.awk
+}
+
+fcd() {
+    cd "$(locate -ei "$HOME" | fzf --preview "[[ -d {} ]] && tree -C {} | head -200" --height 40% --reverse)"
+    # cd "$(find ~ -maxdepth 5 -not -path '*/\.git/*' -type d | fzf --preview 'tree -C {} | head -200' --height 40% --reverse)"
 }

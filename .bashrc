@@ -12,7 +12,7 @@ export PATH="$HOME/Documents/.Varshney/scripts:$PATH"
 # See bash(1) for more options
 HISTCONTROL=ignoreboth:erasedups
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
+HISTSIZE=2000
 HISTFILESIZE=2000
 
 shopt -s autocd
@@ -29,7 +29,7 @@ shopt -s checkwinsize
 
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
-#shopt -s globstar
+# shopt -s globstar
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -66,13 +66,42 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 # color definitions
 RESET="\e[0m"
 BOLD_BLACK_FG="\e[1;30m"
-# ARROW_FG="\e[38;5;214m"
-# ARROW_BG="\e[48;5;214m"
 GRAY_BG="\e[48;5;234m"
 GRAY_FG="\e[38;5;234m"
 BOLD_L_YELLOW=$'\e[1;38;5;11m'
 BOLD_RED_FG=$'\e[1;38;5;9m'
 BOLD_GREEN_FG=$'\e[1;32m'
+BOLD_BLUE_FG=$'\e[1;38;5;111m'
+BOLD_ORANGE_FG="\e[1;38;5;208m"
+
+git_status() {
+    status=$(git status --porcelain 2> /dev/null)
+    untracked=$(echo "$status" | grep -c "??\s")
+    modified=$(echo "$status" | grep -c "M\s")
+    tracked=$(echo "$status" | grep -c "A\s")
+    deleted=$(echo "$status" | grep -c "D\s")
+
+    delete_symbol="🗶 "
+    tracked_symbol="⨁"
+    modified_symbol="🗘"
+    GIT_STATUS_PROMPT=""
+
+# GIT_STATUS_PROMPT+="${GRAY_BG}"
+    if [[ $untracked != 0 ]]; then
+        GIT_STATUS_PROMPT+=" ${BOLD_BLUE_FG}${tracked_symbol} ${untracked}"
+    fi
+    if [[ $tracked != 0 ]]; then
+        GIT_STATUS_PROMPT+=" ${BOLD_GREEN_FG}${tracked_symbol} ${tracked}"
+    fi
+    if [[ $modified != 0 ]]; then
+        GIT_STATUS_PROMPT+=" ${BOLD_L_YELLOW}${modified_symbol} ${modified}"
+    fi
+    if [[ $deleted != 0 ]]; then
+        GIT_STATUS_PROMPT+=" ${BOLD_RED_FG}${delete_symbol}${deleted}"
+    fi
+    GIT_STATUS_PROMPT+=" ${RESET}"
+    echo -e "${GIT_STATUS_PROMPT}"
+}
 
 random_emoji() {
 	# add a random emoticon (mostly face emojis)
@@ -81,7 +110,7 @@ random_emoji() {
 
 get_git_branch() {
     curr_branch=$(git branch 2> /dev/null | awk '/*/ {print $2}')
-    [ "$curr_branch" ] && printf "%s" "($(tput bold)$(tput setaf 208)$curr_branch$(tput sgr0))"
+    [ "$curr_branch" ] && printf "($BOLD_ORANGE_FG%s$RESET)" "$curr_branch"
 }
 
 pc_uptime() {
@@ -109,7 +138,7 @@ custom_prompt() {
     ARROW_BG="\e[48;5;${color_themes[$index]}m"
 	last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "\[$BOLD_RED_FG\]✘")
     arrp="\[$GRAY_BG\] $last_command_status $(random_emoji) \[$GRAY_FG\]\[$ARROW_BG\]\[$ARROW_BG\]\[$BOLD_BLACK_FG\] $(virtualenv_ps1) \[$RESET\]\[$ARROW_FG\]\[$RESET\]"
-    PS1="\[$BOLD_L_YELLOW\]\[$RIGHT_PROMPT\]\[$RESET\]\[$BOLD_GREEN_FG\]\w\[$RESET\] $(get_git_branch)\n$arrp "
+    PS1="\[$BOLD_L_YELLOW\]\[$RIGHT_PROMPT\]\[$RESET\]\[$BOLD_GREEN_FG\]\w\[$RESET\] $(get_git_branch)$(git_status)\n$arrp "
 }
 
 if [ "$color_prompt" = yes ]; then
@@ -188,11 +217,8 @@ export DOT_REPO=https://github.com/Bhupesh-V/.Varshney DOT_DEST=Documents
 # Make grep output sexy
 # Default: ‘ms=01;31:mc=01;31:sl=:cx=:fn=35:ln=32:bn=32:se=36’
 # Read: https://www.gnu.org/software/grep/manual/grep.html#index-GREP_005fCOLORS-environment-variable
-#
-# Search word = bold orange fg
-# filename = bold green fg
-# line no = bold blue fg
-export GREP_COLORS='ms=1;38;5;214:fn=1;38;5;154:ln=1;38;5;69'
+# Also: https://bhupesh-v.github.io/making-grep-searches-sexier/
+export GREP_COLORS='ms=1;38;5;214:fn=1;38;5;154:ln=1;38;5;111'
 
 # set options for less
 export LESS='--ignore-case --status-column --LONG-PROMPT --RAW-CONTROL-CHARS --HILITE-UNREAD --tabs=4 --no-init --window=-4'

@@ -1,12 +1,12 @@
 [user]
-	email = varshneybhupesh@gmail.com
-	name = Bhupesh-V
+        email = varshneybhupesh@gmail.com
+        name = Bhupesh-V
 [commit]
-	template = /home/bhupesh/.gitmessage
+        template = /home/bhupesh/.gitmessage
 [core]
-	editor = nano
+        editor = nano
 [credential]
-	helper = store
+        helper = store
 [alias]
         wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
         # find file creation date
@@ -21,4 +21,5 @@
         chglg = "!f() { git log --since=2weeks --pretty=format:\"- [%h]($(git config --get remote.origin.url)/commit/%H) _%s_ (%cr) by (%an)\" | grep -v Merge > CHANGELOG.md;}; f"
 
 [color]
-  diff = always
+        diff = auto
+        ui = auto
