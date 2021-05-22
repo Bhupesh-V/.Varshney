@@ -261,3 +261,23 @@ fcd() {
     cd "$(locate -ei "$HOME" | fzf --preview "[[ -d {} ]] && tree -C {} | head -200" --height 40% --reverse)"
     # cd "$(find ~ -maxdepth 5 -not -path '*/\.git/*' -type d | fzf --preview 'tree -C {} | head -200' --height 40% --reverse)"
 }
+
+todo() {
+    if [[ $# -gt 1 ]]; then
+        local key="$1"
+        case "$key" in
+            --remove|-r)
+                grep -v -- "$2" ~/todo.md > tmpfile && mv tmpfile ~/todo.md
+                ;;
+            *)
+                printf "%s\n" "ERROR: Unrecognized argument $key"
+                exit 1
+                ;;
+        esac
+
+    elif [[ -z "$1" ]]; then
+        cat ~/todo.md 
+    else
+        xargs -I TODO  echo " - [ ] TODO" >> ~/todo.md <<< "$1"
+    fi
+}

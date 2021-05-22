@@ -41,7 +41,5 @@ alias lt="ls --human-readable --size -1 -S --classify"
 alias browse="xdg-open > /dev/null 2>&1"
 # open a random file from current dir
 alias amaze="find . -type f -print0 | shuf -z -n 1 | xargs -0 browse > /dev/null 2>&1"
-# Quickly add things to a todo-list. Usage: remember milk
-alias todo="xargs -I TODO  echo \" - [ ] TODO\" >> ~/todo.md <<<"
 alias bro="locate -ei "$HOME" | fzf --prompt='Open File: ' --preview '(eye {} || tree -C {}) 2> /dev/null | head -200' --pointer='🡆' --header='Choose file to open' --height 40% --reverse --color 'fg:#E6E1CF,fg+:#ddeeff,bg:#2B292E,bg+:#3D3B40,prompt:#A9DC76,pointer:#FF6188,header:#AB9DF2,query:#FFD866,hl+:#FFEE99' | xargs browse"
 
