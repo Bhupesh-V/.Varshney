@@ -1,11 +1,16 @@
 call plug#begin()
+Plug '907th/vim-auto-save'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'jacoborus/tender.vim'
 Plug 'kyoz/purify', { 'rtp': 'vim' }
 Plug 'sainnhe/sonokai'
 Plug 'drewtempelmeyer/palenight.vim'
+Plug 'franbach/miramare'
+Plug 'arzg/vim-colors-xcode'
+Plug 'NLKNguyen/papercolor-theme'
 Plug 'ayu-theme/ayu-vim'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'junegunn/goyo.vim'
@@ -14,8 +19,10 @@ Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'voldikss/vim-floaterm'
 Plug 'itchyny/lightline.vim'
-Plug 'mhartington/oceanic-next'
-Plug 'arzg/vim-colors-xcode'
+" Plug 'fatih/vim-go'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Plug 'vim-airline/vim-airline'
 call plug#end()
 
@@ -69,6 +76,7 @@ nnoremap <leader>b :!bkp %<CR>
 " Opening Splits
 nnoremap <leader>v :vsp<CR>
 nnoremap <leader>h :sp<CR>
+nnoremap <leader>z :Files<CR>
 " Map keys in terminal mode
 " listen up, CapsLock is already mapped to Esc via xmodmap
 " So there is no need of this, but sometimes xmod starts behaving weirdly
@@ -136,7 +144,8 @@ func Eatchar(pat)
     return (c =~ a:pat) ? '' : c
 endfunc
 
-colorscheme ayu
+set background=dark
+colorscheme PaperColor
 
 " Common Settings {{{
 set number 
