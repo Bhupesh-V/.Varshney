@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-selection=$(rofi -i -width 1000 -dmenu -p "Choose Snippet: " 2> /dev/null $@ < $HOME/Documents/.Varshney/snippets/links.txt)
-echo -n "$selection" | xclip -selection clipboard
-sleep 0.1
-xclip -o -sel clip
+# Use rofi to use text snippets
+
+# sudo apt install -y rofi xdotool xclip
+
+SNIPPET_FILE="$HOME/Documents/.Varshney/snippets/links.txt"
+selection=$(rofi -i -width 1000 -dmenu -p "Choose Snippet: " 2> /dev/null $@ < "$SNIPPET_FILE")
+echo -n "$selection" | xclip -selection c
+# xclip -o
+current_wid=$(xdo id)
+xdotool key --window "$current_wid" --clearmodifiers ctrl+v
