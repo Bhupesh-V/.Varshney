@@ -76,7 +76,7 @@ nnoremap <leader>b :!bkp %<CR>
 " Opening Splits
 nnoremap <leader>v :vsp<CR>
 nnoremap <leader>h :sp<CR>
-nnoremap <leader>z :Files<CR>
+nnoremap <leader>z :Files ~<CR>
 " Map keys in terminal mode
 " listen up, CapsLock is already mapped to Esc via xmodmap
 " So there is no need of this, but sometimes xmod starts behaving weirdly
@@ -147,6 +147,8 @@ endfunc
 set background=dark
 colorscheme PaperColor
 
+call deoplete#custom#option('auto_complete_delay', 100)
+
 " Common Settings {{{
 set number 
 " set rnu
@@ -184,7 +186,10 @@ let g:loaded_tar=1
 let g:deoplete#enable_at_startup=1
 "}}}
 
-call deoplete#custom#option('auto_complete_delay', 100)
+" FZF Config {{{
+command! -bang -nargs=? -complete=dir Files
+            \ call fzf#vim#files(<q-args>, {'source': 'locate -ei "$HOME"', 'options': ['--preview', 'cat {}', '--prompt', 'Open File: ', '--pointer', '🡆']}, <bang>0)
+" }}}
 
 " lightline config {{{1
 let g:lightline = {
@@ -318,10 +323,10 @@ function! Toggle_transparent()
 endfunction
 
 function! OpenURLUnderCursor()
-  let s:uri = expand('<cWORD>')
-  let s:uri = substitute(s:uri, '?', '\\?', '')
-  let s:uri = shellescape(s:uri, 1)
-  echo s:uri
+    let s:uri = expand('<cWORD>')
+    let s:uri = substitute(s:uri, '?', '\\?', '')
+    let s:uri = shellescape(s:uri, 1)
+    echo s:uri
 endfunction
 " nnoremap gx :call OpenURLUnderCursor()<CR>
 
