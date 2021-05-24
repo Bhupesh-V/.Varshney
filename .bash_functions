@@ -258,7 +258,7 @@ lk() {
 }
 
 fcd() {
-    cd "$(locate -ei "$HOME" | fzf --preview "[[ -d {} ]] && tree -C {} | head -200" --height 40% --reverse)"
+    cd "$(locate -ei "$HOME" | fzf --preview "[[ -d {} ]] && tree -C {} || head -200" --height 40% --reverse)"
     # cd "$(find ~ -maxdepth 5 -not -path '*/\.git/*' -type d | fzf --preview 'tree -C {} | head -200' --height 40% --reverse)"
 }
 
@@ -278,6 +278,6 @@ todo() {
     elif [[ -z "$1" ]]; then
         cat ~/todo.md 
     else
-        xargs -I TODO  echo " - [ ] TODO" >> ~/todo.md <<< "$1"
+        xargs -I TODO  echo "- [ ] TODO" >> ~/todo.md <<< "$1"
     fi
 }
