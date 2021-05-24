@@ -1,9 +1,15 @@
 call plug#begin()
+" Must have plugins
 Plug '907th/vim-auto-save'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'tpope/vim-surround'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'itchyny/lightline.vim'
+Plug 'voldikss/vim-floaterm'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+" Colorschemes
 Plug 'jacoborus/tender.vim'
 Plug 'kyoz/purify', { 'rtp': 'vim' }
 Plug 'sainnhe/sonokai'
@@ -14,14 +20,12 @@ Plug 'NLKNguyen/papercolor-theme'
 Plug 'ayu-theme/ayu-vim'
 Plug 'danilo-augusto/vim-afterglow'
 Plug 'junegunn/goyo.vim'
+" Python Specific
 Plug 'psf/black', { 'branch': 'stable' }
+" Go Specific
+" Plug 'fatih/vim-go'
 Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'voldikss/vim-floaterm'
-Plug 'itchyny/lightline.vim'
-" Plug 'fatih/vim-go'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
 " Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Plug 'vim-airline/vim-airline'
 call plug#end()
@@ -147,7 +151,6 @@ endfunc
 set background=dark
 colorscheme PaperColor
 
-call deoplete#custom#option('auto_complete_delay', 100)
 
 " Common Settings {{{
 set number 
@@ -183,12 +186,24 @@ let g:loaded_zip=1
 let g:loaded_tarPlugin=1
 let g:loaded_tar=1
 
-let g:deoplete#enable_at_startup=1
+" Enable AutoSave on Vim startup (vim-auto-save plugin)
+let g:auto_save = 1
+" Load my aliases
+" Sample: https://github.com/Bhupesh-V/.Varshney/blob/master/.vim_bash_env
+let $BASH_ENV = "~/.vim_bash_env"
+" Toggle transparent mode
+let g:is_transparent = 0
+
 "}}}
+
+" deoplete config {{{
+call deoplete#custom#option('auto_complete_delay', 100)
+let g:deoplete#enable_at_startup=1
+" }}}
 
 " FZF Config {{{
 command! -bang -nargs=? -complete=dir Files
-            \ call fzf#vim#files(<q-args>, {'source': 'locate -ei "$HOME"', 'options': ['--preview', 'cat {}', '--prompt', 'Open File: ', '--pointer', '🡆']}, <bang>0)
+            \ call fzf#vim#files(<q-args>, {'source': 'locate -ei "$HOME"', 'options': ['--preview', '[[ -d {} ]] && tree -C {} || cat {}', '--prompt', 'Open File: ', '--pointer', '🡆']}, <bang>0)
 " }}}
 
 " lightline config {{{1
@@ -241,7 +256,7 @@ let NERDTreeIgnore=['\.git$']
 let g:NERDTreeWinSize=20
 "}}}
 
-" floaterm config {{{
+" Floaterm config {{{
 
 let g:floaterm_title = "😎️"
 let g:floaterm_autoinsert = v:false
@@ -257,14 +272,6 @@ let g:UltiSnipsListSnippets="<c-l>"
 " let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 let g:UltiSnipsSnippetDirectories=["UltiSnips", "vim-snippets", $HOME.'/Documents/.Varshney/snippets/']
 " }}}
-
-let g:auto_save = 1  " enable AutoSave on Vim startup (vim-auto-save plugin)
-" Load my aliases
-" Make sure a .vim_env_bash file exists
-" Sample: https://github.com/Bhupesh-V/.Varshney/blob/master/.vim_bash_env
-let $BASH_ENV = "~/.vim_bash_env"
-" Toggle transparent mode
-let g:is_transparent = 0
 
 " Auto Commands {{{
 
@@ -309,7 +316,7 @@ endfunction
 
 "}}}
 
-" My Plugins
+" My Plugins {{{
 
 " Toggle transparent mode (make sure this is always below colorscheme setting
 function! Toggle_transparent()
@@ -517,6 +524,7 @@ function! SearchInternet()
     exe "silent!" . system(g:browser . " " . choices[user_choice] . urlsafe) 
     normal! gv
 endfunction
+" }}}
 
 if (has("termguicolors"))
     set termguicolors
