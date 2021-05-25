@@ -17,6 +17,25 @@ def request(url, data=None, method=None):
 endsnippet
 
 
+snippet flask "Flask Starter app.py" b
+from flask import Flask, render_template
+
+app = Flask(__name__, instance_relative_config=True)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+    # return "Hello, World!"
+
+@app.route('/post', methods=['POST'])
+def post():
+    return render_template("post.html")
+
+
+if __name__ == "__main__":
+    app.run()
+endsnippet
+
 snippet prf "Print Statement f-string" b
 print(f"${1}")
 endsnippet

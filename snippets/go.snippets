@@ -1,5 +1,4 @@
-# Prettify/Indent JSON
-snippet json
+snippet json "Prettify/Indent JSON" b
 // import "encoding/json"
 func Indent(v interface{}) string {
 	b, err := json.MarshalIndent(v, "", "  ")
@@ -23,7 +22,7 @@ func In(item $1, list []$2) bool {
 endsnippet
 
 # Insert a CLI Flag
-snippet flag
+snippet flag "Insert a CLI flag"
 flag.StringVar(&${1:var}, "${2:flag}", "${3:defaultValue}", "${4:description}")
 endsnippet
 
@@ -36,5 +35,61 @@ import (
 
 func main() {
     $0
+}
+endsnippet
+
+snippet post "Go HTTP POST Request" b
+// import bytes
+// impor net/http
+body := bytes.NewReader(payloadBytes)
+req, err := http.NewRequest("POST", "${1:URL}", body)
+if err != nil {
+	fmt.Println(err)
+}
+// req.Header.Set("Content-Type", "application/json")
+
+resp, err := http.DefaultClient.Do(req)
+if err != nil {
+	fmt.Println(err)
+}
+defer resp.Body.Close()
+endsnippet
+
+
+snippet get "Go HTTP GET Request" b
+req, err := http.NewRequest("GET", "${1:URL}", nil)
+// req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36")
+resp, err := http.DefaultClient.Do(req)
+if err != nil {
+	// err.Error()
+	return
+}
+endsnippet
+
+
+snippet rjson "Read JSON from File to Go Map" b
+// import os
+// import "encoding/json"
+func readJSONToken(fileName string, filter func(map[string]interface{}) bool) []map[string]interface{} {
+	file, _ := os.Open(fileName)
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+
+	filteredData := []map[string]interface{}{}
+
+	// Read the array open bracket
+	decoder.Token()
+
+	data := map[string]interface{}{}
+	for decoder.More() {
+		decoder.Decode(&data)
+
+		if filter(data) {
+			filteredData = append(filteredData, data)
+		}
+	}
+
+	return filteredData
 }
 endsnippet
