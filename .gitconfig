@@ -2,22 +2,22 @@
         email = varshneybhupesh@gmail.com
         name = Bhupesh-V
 [commit]
-        template = /home/bhupesh/.gitmessage
+        template = $HOME/.gitmessage
 [core]
         editor = nano
 [credential]
         helper = store
 [alias]
         wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
-        # find file creation date
-        # Usage: git cake <filepath>
+        # find file creation date: git cake <filepath>
         cake = log --date=format:'%d %b %Y' --diff-filter=A --name-only --pretty='%n%C(yellow bold)🎂️ %ad%Creset by (%C(blue bold)%h%Creset)'
-        # find commits that changed a file
-        # Usage: git his <filepath>
+        # find commits that changed a file: git his <filepath>
         his = log --follow --color=always --date=format:'%d %b, %Y' --pretty=format:'(%Cgreen%h%Creset)[%ad] %C(blue bold)%s%Creset'
-        # search code in commit history
-        # Usage: git wot :function_name:filepath
+        # search code in commit history: git wot :function_name:filepath
         wot = log --date=format:'%d %b, %Y' --pretty='%n%C(yellow bold)📅️ %ad%Creset by (%C(green bold)%an%Creset) %C(cyan bold)%h%Creset' --graph -L
+        # top 10 most edited files
+        top10 = ! git log --pretty=format: --name-only | sort | uniq -c | sort -rg | head -10
+        # generate changelog from commit messages
         chglg = "!f() { git log --since=2weeks --pretty=format:\"- [%h]($(git config --get remote.origin.url)/commit/%H) _%s_ (%cr) by (%an)\" | grep -v Merge > CHANGELOG.md;}; f"
 
 [color]
