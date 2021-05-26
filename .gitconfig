@@ -5,6 +5,7 @@
         template = $HOME/.gitmessage
 [core]
         editor = nano
+	excludesFile = ~/.gitignore_global
 [credential]
         helper = store
 [alias]
