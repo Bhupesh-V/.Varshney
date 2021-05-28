@@ -9,6 +9,8 @@ Plug 'itchyny/lightline.vim'
 Plug 'voldikss/vim-floaterm'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+Plug 'natebosch/vim-lsc'
+Plug 'nacro90/numb.nvim'
 " Colorschemes
 Plug 'jacoborus/tender.vim'
 Plug 'kyoz/purify', { 'rtp': 'vim' }
@@ -24,10 +26,9 @@ Plug 'junegunn/goyo.vim'
 Plug 'psf/black', { 'branch': 'stable' }
 " Go Specific
 " Plug 'fatih/vim-go'
-Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
-" Plug 'vim-airline/vim-airline'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+" Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 call plug#end()
 
 " Key Mappings {{{
@@ -40,6 +41,10 @@ noremap <F5> :source $MYVIMRC<CR>
 
 " Write & quit on all tabs, windows
 noremap <F9> :wqa<CR>
+
+" Visual inner line (without whitespaces)
+vnoremap il :<C-U>normal ^vg_<CR>
+omap il :normal vil<CR>
 " Disable spell & start :terminal
 nnoremap <F3> :set nospell <bar> :term<CR>
 " Insert Date (dd mm, yyyy)
@@ -57,15 +62,6 @@ nnoremap <S-Tab> :bn<CR>
 " Use j/k to select from completion menu
 " inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
 " inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
-inoremap <silent><expr> <TAB>
-            \ pumvisible() ? "\<C-n>" :
-            \ <SID>check_back_space() ? "\<TAB>" :
-            \ deoplete#manual_complete()
-function! s:check_back_space() abort "{{{
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
-"}}}
 
 " Efficiently browse vim manuals using helpg
 nnoremap <kPlus> :cn<CR>
@@ -81,6 +77,8 @@ nnoremap <leader>b :!bkp %<CR>
 nnoremap <leader>v :vsp<CR>
 nnoremap <leader>h :sp<CR>
 nnoremap <leader>z :Files ~<CR>
+nnoremap <leader>fh :History<CR>
+nnoremap <leader>ft :Tags<CR>
 " Map keys in terminal mode
 " listen up, CapsLock is already mapped to Esc via xmodmap
 " So there is no need of this, but sometimes xmod starts behaving weirdly
@@ -133,6 +131,7 @@ map <Down> <Nop>
 iabbr @@    varshneybhupesh@gmail.com
 iabbr webs  https://bhupesh-v.github.io
 
+
 " Auto pair brackets and stuff
 " Lmao bye bye plugins
 iabbr <silent> ( ()<Left><C-R>=Eatchar('\s')<CR>
@@ -159,7 +158,7 @@ set autoindent smartindent
 set expandtab
 set showcmd
 " set completefunc=UltiSnips#ListSnippets()
-set title
+" set title
 set autoread
 set cursorline
 set iskeyword+=-
@@ -196,9 +195,61 @@ let g:is_transparent = 0
 
 "}}}
 
+" vim-lsc config {{{
+let g:lsc_server_commands = {}
+let g:lsc_server_commands = {
+            \ 'python': 'pylsp',
+            \  "go": {
+            \    "command": "gopls serve",
+            \    "log_level": -1,
+            \    "suppress_stderr": v:true,
+            \  },
+            \}
+
+" Use all the defaults (recommended):
+let g:lsc_auto_map = v:true
+
+" Apply the defaults with a few overrides:
+let g:lsc_auto_map = {'defaults': v:true, 'FindReferences': '<leader>r'}
+
+" Setting a value to a blank string leaves that command unmapped:
+let g:lsc_auto_map = {'defaults': v:true, 'FindImplementations': ''}
+
+" ... or set only the commands you want mapped without defaults.
+" Complete default mappings are:
+let g:lsc_auto_map = {
+            \ 'GoToDefinition': '<C-]>',
+            \ 'GoToDefinitionSplit': ['<C-W>]', '<C-W><C-]>'],
+            \ 'FindReferences': 'gr',
+            \ 'NextReference': '<C-n>',
+            \ 'PreviousReference': '<C-p>',
+            \ 'FindImplementations': 'gI',
+            \ 'FindCodeActions': 'ga',
+            \ 'Rename': 'gR',
+            \ 'ShowHover': v:true,
+            \ 'DocumentSymbol': 'go',
+            \ 'WorkspaceSymbol': 'gS',
+            \ 'SignatureHelp': 'gm',
+            \ 'Completion': 'omnifunc',
+            \}
+" }}}
+
+" numb config {{{
+lua require('numb').setup()
+" }}}
+
 " deoplete config {{{
-call deoplete#custom#option('auto_complete_delay', 100)
-let g:deoplete#enable_at_startup=1
+" call deoplete#custom#option('auto_complete_delay', 100)
+" let g:deoplete#enable_at_startup=1
+" inoremap <silent><expr> <TAB>
+" \ pumvisible() ? "\<C-n>" :
+" \ <SID>check_back_space() ? "\<TAB>" :
+" \ deoplete#manual_complete()
+" function! s:check_back_space() abort "{{{
+" let col = col('.') - 1
+" return !col || getline('.')[col - 1]  =~ '\s'
+" endfunction
+"}}}
 " }}}
 
 " FZF Config {{{

@@ -162,12 +162,12 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
    wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/oib && chmod +x oib && mv oib $HOME/.local/bin/
    ```
 10. [**git-feed**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/git-feed)
-   > A python utility to generate a feed of recently committed files inside a git repository
+    > A python utility to generate a feed of recently committed files inside a git repository
 
-   Install
-   ```
-   wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/git-feed && chmod +x git-feed && mv git-feed $HOME/.local/bin/
-   ```
+    Install
+    ```
+    wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/git-feed && chmod +x git-feed && mv git-feed $HOME/.local/bin/
+    ```
 
 ### [`.bash_aliases`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bash_aliases)
 
