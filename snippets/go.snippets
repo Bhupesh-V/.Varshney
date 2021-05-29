@@ -93,3 +93,57 @@ func readJSONToken(fileName string, filter func(map[string]interface{}) bool) []
 	return filteredData
 }
 endsnippet
+
+snippet rfile "Read entire file"
+content, err := os.ReadFile("${1:filepath}")     // the file is inside the local directory
+    if err != nil {
+        fmt.Println("Err")
+    }
+    fmt.Println(string(content))
+endsnippet
+
+snippet rcfile "Read file in chunks" b
+file, err := os.Open("${1:filepath}")
+  if err != nil {
+      fmt.Println("Error opening file!!!")
+  }
+  defer file.Close()
+
+  // declare chunk size
+  const maxSz = 4
+
+  // create buffer
+  b := make([]byte, maxSz)
+
+  for {
+      // read content to buffer
+      readTotal, err := file.Read(b)
+      if err != nil {
+          if err != io.EOF {
+              fmt.Println(err)
+          }
+          break
+      }
+      // print content from buffer
+      fmt.Println(string(b[:readTotal]))
+  }
+endsnippet
+
+snippet rfilel "Read file line by line / word by word" b
+file, err := os.Open("text.txt")
+if err != nil {
+    fmt.Println(err)
+}
+defer file.Close()
+
+// import bufio
+scanner := bufio.NewScanner(file)
+// scanner.Split(bufio.ScanWords)    // use scanwords
+for scanner.Scan() {
+    fmt.Println(scanner.Text())
+}
+
+if err := scanner.Err(); err != nil {
+    fmt.Println(err)
+}
+endsnippet
