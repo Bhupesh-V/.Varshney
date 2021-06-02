@@ -11,6 +11,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'natebosch/vim-lsc'
 Plug 'nacro90/numb.nvim'
+Plug 'junegunn/goyo.vim'
 " Colorschemes
 Plug 'jacoborus/tender.vim'
 Plug 'kyoz/purify', { 'rtp': 'vim' }
@@ -21,11 +22,10 @@ Plug 'arzg/vim-colors-xcode'
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'ayu-theme/ayu-vim'
 Plug 'danilo-augusto/vim-afterglow'
-Plug 'junegunn/goyo.vim'
+Plug 'lifepillar/vim-gruvbox8'
 " Python Specific
 Plug 'psf/black', { 'branch': 'stable' }
 " Go Specific
-" Plug 'fatih/vim-go'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 " Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
 " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -73,12 +73,13 @@ nnoremap <silent> <A-m> :make! <bar> botright cw<CR>
 vmap / y/<C-R>"<CR>
 nnoremap <S-t> :FloatermToggle<CR>
 nnoremap <leader>b :!bkp %<CR>
-" Opening Splits
 nnoremap <leader>v :vsp<CR>
 nnoremap <leader>h :sp<CR>
+nnoremap <leader>n :enew<CR>
 nnoremap <leader>z :Files ~<CR>
 nnoremap <leader>fh :History<CR>
 nnoremap <leader>ft :Tags<CR>
+nnoremap <leader>fs :Snippets<CR>
 " Map keys in terminal mode
 " listen up, CapsLock is already mapped to Esc via xmodmap
 " So there is no need of this, but sometimes xmod starts behaving weirdly
@@ -114,8 +115,6 @@ inoremap <F10> :call PrettyMe()<CR>
 xnoremap <leader>f <esc>:call SendQueryToFloatTerm()<CR>   
 xnoremap <leader>t <esc>:split <bar> call SendQueryToTerm()<CR>
 xnoremap <leader>s :<c-u>call SearchInternet()<CR>
-" Open vim terminal with surf command
-nnoremap <leader>c <esc>
 "}}}
 
 " Disable Arrow keys for good {{{
@@ -148,7 +147,7 @@ func Eatchar(pat)
 endfunc
 
 set background=dark
-colorscheme PaperColor
+colorscheme gruvbox8_hard
 
 
 " Common Settings {{{
@@ -196,7 +195,7 @@ let g:is_transparent = 0
 "}}}
 
 " vim-lsc config {{{
-let g:lsc_server_commands = {}
+set shortmess-=F
 let g:lsc_server_commands = {
             \ 'python': 'pylsp',
             \  "go": {
@@ -259,7 +258,7 @@ command! -bang -nargs=? -complete=dir Files
 
 " lightline config {{{1
 let g:lightline = {
-            \ 'colorscheme': 'ayu_dark',
+            \ 'colorscheme': 'one',
             \ 'separator': { 'left': '', 'right': '' },
             \ 'subseparator': { 'left': '', 'right': '' },
             \ }
@@ -341,8 +340,8 @@ augroup FileIndentLevel
 augroup END
 
 " Map Caps Lock to Esc (must be X.Org compliant)
-" au VimEnter * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
-" au VimLeave * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Caps_Lock'
+au VimEnter * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
+au VimLeave * silent! !xmodmap -e 'clear Lock' -e 'keycode 0x42 = Caps_Lock'
 
 " Set window title on every buffer switch
 " autocmd bufenter * let &titlestring = "bhupesh on " . buffer_name("%")
