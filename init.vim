@@ -12,6 +12,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'natebosch/vim-lsc'
 Plug 'nacro90/numb.nvim'
 Plug 'junegunn/goyo.vim'
+" Plug 'ryanoasis/vim-devicons'
 " Colorschemes
 Plug 'jacoborus/tender.vim'
 Plug 'kyoz/purify', { 'rtp': 'vim' }
@@ -21,12 +22,12 @@ Plug 'franbach/miramare'
 Plug 'arzg/vim-colors-xcode'
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'ayu-theme/ayu-vim'
-Plug 'danilo-augusto/vim-afterglow'
 Plug 'lifepillar/vim-gruvbox8'
+Plug 'crusoexia/vim-monokai'
+Plug 'kaicataldo/material.vim', { 'branch': 'main' }
 " Python Specific
 Plug 'psf/black', { 'branch': 'stable' }
 " Go Specific
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 " Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
 " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 call plug#end()
@@ -130,7 +131,6 @@ map <Down> <Nop>
 iabbr @@    varshneybhupesh@gmail.com
 iabbr webs  https://bhupesh-v.github.io
 
-
 " Auto pair brackets and stuff
 " Lmao bye bye plugins
 iabbr <silent> ( ()<Left><C-R>=Eatchar('\s')<CR>
@@ -147,7 +147,9 @@ func Eatchar(pat)
 endfunc
 
 set background=dark
-colorscheme gruvbox8_hard
+" let g:tokyonight_style = 'night' " available: night, storm
+" let g:tokyonight_enable_italic = 1
+colorscheme PaperColor
 
 
 " Common Settings {{{
@@ -173,7 +175,9 @@ set lazyredraw
 " set shada="NONE"
 set completeopt-=preview
 set noshowmode
+set encoding=UTF-8
 
+" let g:python3_host_prog = '/usr/bin/python3'
 let g:loaded_python_provider=0
 let g:loaded_ruby_provider = 0
 let g:loaded_node_provider = 0
@@ -191,6 +195,8 @@ let g:auto_save = 1
 let $BASH_ENV = "~/.vim_bash_env"
 " Toggle transparent mode
 let g:is_transparent = 0
+" Enable syntax highlight in markdown fenced code-blocks
+let g:markdown_fenced_languages = ['python', 'go', 'sh']
 
 "}}}
 
@@ -225,7 +231,7 @@ let g:lsc_auto_map = {
             \ 'FindImplementations': 'gI',
             \ 'FindCodeActions': 'ga',
             \ 'Rename': 'gR',
-            \ 'ShowHover': v:true,
+            \ 'ShowHover': 'K',
             \ 'DocumentSymbol': 'go',
             \ 'WorkspaceSymbol': 'gS',
             \ 'SignatureHelp': 'gm',
@@ -577,5 +583,6 @@ endfunction
 " }}}
 
 if (has("termguicolors"))
+    let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
     set termguicolors
 endif

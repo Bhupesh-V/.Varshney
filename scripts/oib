@@ -57,7 +57,7 @@ def serve(path):
 if __name__ == "__main__":
     is_pipe = not os.isatty(stdin.fileno())
     textpad_filename = "temp.html"
-    textpad_filepath = Path.home() / textpad_filename
+    textpad_filepath = Path.cwd() / textpad_filename
     if is_pipe:
         content = stdin.read()
 
