@@ -258,7 +258,7 @@ lk() {
 }
 
 fcd() {
-    cd "$(locate -ei "$HOME" | fzf --preview "[[ -d {} ]] && tree -C {} || head -200" --height 40% --reverse)"
+    cd "$(xfi | fzf --preview "[[ -d {} ]] && tree -C {} || head -200" --height 40% --reverse)"
     # cd "$(find ~ -maxdepth 5 -not -path '*/\.git/*' -type d | fzf --preview 'tree -C {} | head -200' --height 40% --reverse)"
 }
 

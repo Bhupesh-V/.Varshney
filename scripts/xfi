@@ -3,8 +3,8 @@
 # This script helps ignore unnecessary dir paths while using find
 
 EXCLUDE_DIRS=(
-    ! -path /*.git/*
-    ! -path /*go/*
+    "! -path /*.git/*"
+    "! -path /*go/*"
     "! -path /*.bundle/*"
     "! -path /*.cache/*"
     "! -path /*.local/*"

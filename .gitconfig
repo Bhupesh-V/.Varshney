@@ -24,3 +24,5 @@
 [color]
         diff = auto
         ui = auto
+[help]
+	autocorrect = 7

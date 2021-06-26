@@ -110,7 +110,7 @@ random_emoji() {
 }
 
 get_git_branch() {
-    curr_branch=$(git branch 2> /dev/null | awk '/*/ {print $2}')
+    curr_branch=$(git branch 2> /dev/null | grep \\* | cut -d ' ' -f2)
     [ "$curr_branch" ] && printf "($BOLD_ORANGE_FG%s$RESET)" "$curr_branch"
 }
 
@@ -233,4 +233,7 @@ export LESS_TERMCAP_so=$'\E[01;44;33m' # begin reverse video
 export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
 export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
-. "$HOME/.cargo/env"
+
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:$HOME/go/bin
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

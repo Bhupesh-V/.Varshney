@@ -19,6 +19,7 @@ alias gd="go doc -all"
 alias gg="go get"
 alias gt="go test ./... -v -coverpkg=./... -coverprofile=coverage.out"
 alias gtc="go tool cover -html=coverage.out"
+alias dc="docker-compose"
 alias p='python3'
 alias venv="python3 -m venv"
 alias pdb="python3 -m pdb"
@@ -35,5 +36,5 @@ alias lt="ls --human-readable --size -1 -S --classify"
 alias browse="xdg-open > /dev/null 2>&1"
 # open a random file from current dir
 alias amaze="find . -type f -print0 | shuf -z -n 1 | xargs -0 browse > /dev/null 2>&1"
-alias bro="locate -ei "$HOME" | fzf --prompt='Open File: ' --preview '(eye {} || tree -C {}) 2> /dev/null || cat {}' --pointer='🡆' --header='Choose file to open' --height 40% --reverse --color 'fg:#E6E1CF,fg+:#ddeeff,bg:#2B292E,bg+:#3D3B40,prompt:#A9DC76,pointer:#FF6188,header:#AB9DF2,query:#FFD866,hl+:#FFEE99' | xargs -I FILEP browse \"FILEP\""
+alias bro="locate -eip "$HOME" | fzf --prompt='Search File: ' --preview '(eye {} || tree -C {}) 2> /dev/null || cat {}' --pointer='🡆' --height 60% --reverse --color 'fg:#E6E1CF,fg+:#ddeeff,prompt:#A9DC76,pointer:#FF6188,header:#AB9DF2,query:#FFD866,hl+:#FFEE99' | xargs -I FILEP browse \"FILEP\""
 
