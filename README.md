@@ -15,7 +15,7 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 
 ## My setup 🖥
 
-- **OS**: Ubuntu 18.04
+- **OS**: Ubuntu 20.04
 - **DE**: Mate
 - **SHELL**: bash
 - **Editor**: NeoVim
