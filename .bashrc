@@ -8,6 +8,7 @@ esac
 export TERM=xterm-256color
 export PATH="$HOME/Documents/.Varshney/scripts:$PATH"
 export PATH="$HOME/Documents/ugit:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options

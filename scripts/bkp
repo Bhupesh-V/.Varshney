@@ -10,7 +10,8 @@
 # 3. Run script: ./bkp <file-to-backup>
 
 import urllib.request
-import json, sys, os
+import json
+import os
 import argparse
 from datetime import datetime
 from pathlib import Path

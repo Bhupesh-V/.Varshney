@@ -13,7 +13,7 @@
         # find file creation date: git cake <filepath>
         cake = log --date=format:'%d %b %Y' --diff-filter=A --name-only --pretty='%n%C(yellow bold)🎂️ %ad%Creset by (%C(blue bold)%h%Creset)'
         # find commits that changed a file: git his <filepath>
-        his = log --follow --color=always --date=format:'%d %b, %Y' --pretty=format:'(%Cgreen%h%Creset)[%ad] %C(blue bold)%s%Creset'
+        his = log --follow --color=always --date=format:'%d %b, %Y' --pretty=format:'(%C(blue bold)%h%Creset)[%ad - %cn] %C(yellow bold)%s%Creset'
         # search code in commit history: git wot :function_name:filepath
         wot = log --date=format:'%d %b, %Y' --pretty='%n%C(yellow bold)📅️ %ad%Creset by (%C(green bold)%an%Creset) %C(cyan bold)%h%Creset' --graph -L
         # top 10 most edited files

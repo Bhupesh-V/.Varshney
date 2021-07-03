@@ -16,6 +16,14 @@ def request(url, data=None, method=None):
     return res, response.code
 endsnippet
 
+snippet valid_date "Validate Date"
+def is_valid(date):
+    try:
+        if isinstance(parse(date), datetime.datetime):
+            return True
+    except ValueError:
+        return False
+endsnippet
 
 snippet flask "Flask Starter app.py" b
 from flask import Flask, render_template

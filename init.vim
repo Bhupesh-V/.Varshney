@@ -9,13 +9,10 @@ Plug 'itchyny/lightline.vim'
 Plug 'voldikss/vim-floaterm'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'natebosch/vim-lsc'
 Plug 'nacro90/numb.nvim'
 Plug 'junegunn/goyo.vim'
-" Plug 'ryanoasis/vim-devicons'
 " Colorschemes
 Plug 'jacoborus/tender.vim'
-Plug 'kyoz/purify', { 'rtp': 'vim' }
 Plug 'sainnhe/sonokai'
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'franbach/miramare'
@@ -24,12 +21,10 @@ Plug 'NLKNguyen/papercolor-theme'
 Plug 'ayu-theme/ayu-vim'
 Plug 'lifepillar/vim-gruvbox8'
 Plug 'crusoexia/vim-monokai'
-Plug 'kaicataldo/material.vim', { 'branch': 'main' }
-" Python Specific
+" Miscellaneous
 Plug 'psf/black', { 'branch': 'stable' }
-" Go Specific
-" Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
-" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/nvim-compe'
 call plug#end()
 
 " Key Mappings {{{
@@ -61,8 +56,8 @@ nnoremap <Tab> <C-w><C-w>
 " Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
 " Use j/k to select from completion menu
-" inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
-" inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
+inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
+inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
 
 " Efficiently browse vim manuals using helpg
 nnoremap <kPlus> :cn<CR>
@@ -146,11 +141,8 @@ func Eatchar(pat)
     return (c =~ a:pat) ? '' : c
 endfunc
 
+colorscheme gruvbox8_hard
 set background=dark
-" let g:tokyonight_style = 'night' " available: night, storm
-" let g:tokyonight_enable_italic = 1
-colorscheme PaperColor
-
 
 " Common Settings {{{
 set number 
@@ -200,71 +192,62 @@ let g:markdown_fenced_languages = ['python', 'go', 'sh']
 
 "}}}
 
-" vim-lsc config {{{
-set shortmess-=F
-let g:lsc_server_commands = {
-            \ 'python': 'pylsp',
-            \  "go": {
-            \    "command": "gopls serve",
-            \    "log_level": -1,
-            \    "suppress_stderr": v:true,
-            \  },
-            \}
+" Nvim LSP Setup {{{
 
-" Use all the defaults (recommended):
-let g:lsc_auto_map = v:true
+nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> gD <cmd>lua vim.lsp.buf.declaration()<CR>
+nnoremap <silent> gr <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> gi <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> K <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> <C-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> <C-n> <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
+nnoremap <silent> <C-p> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 
-" Apply the defaults with a few overrides:
-let g:lsc_auto_map = {'defaults': v:true, 'FindReferences': '<leader>r'}
+autocmd BufWritePre *go,*.py lua vim.lsp.buf.formatting_sync(nil, 100)
 
-" Setting a value to a blank string leaves that command unmapped:
-let g:lsc_auto_map = {'defaults': v:true, 'FindImplementations': ''}
+lua require'lspconfig'.gopls.setup{}
+lua require'lspconfig'.pyls.setup{}
 
-" ... or set only the commands you want mapped without defaults.
-" Complete default mappings are:
-let g:lsc_auto_map = {
-            \ 'GoToDefinition': '<C-]>',
-            \ 'GoToDefinitionSplit': ['<C-W>]', '<C-W><C-]>'],
-            \ 'FindReferences': 'gr',
-            \ 'NextReference': '<C-n>',
-            \ 'PreviousReference': '<C-p>',
-            \ 'FindImplementations': 'gI',
-            \ 'FindCodeActions': 'ga',
-            \ 'Rename': 'gR',
-            \ 'ShowHover': 'K',
-            \ 'DocumentSymbol': 'go',
-            \ 'WorkspaceSymbol': 'gS',
-            \ 'SignatureHelp': 'gm',
-            \ 'Completion': 'omnifunc',
-            \}
+let g:compe = {}
+let g:compe.enabled = v:true
+let g:compe.autocomplete = v:true
+let g:compe.debug = v:false
+let g:compe.min_length = 1
+let g:compe.preselect = 'enable'
+let g:compe.throttle_time = 80
+let g:compe.source_timeout = 200
+let g:compe.resolve_timeout = 800
+let g:compe.incomplete_delay = 400
+let g:compe.max_abbr_width = 100
+let g:compe.max_kind_width = 100
+let g:compe.max_menu_width = 100
+let g:compe.documentation = v:true
+
+let g:compe.source = {}
+let g:compe.source.path = v:true
+let g:compe.source.buffer = v:true
+let g:compe.source.calc = v:true
+let g:compe.source.nvim_lsp = v:true
+let g:compe.source.nvim_lua = v:true
+let g:compe.source.vsnip = v:true
+let g:compe.source.ultisnips = v:true
+let g:compe.source.luasnip = v:true
+let g:compe.source.emoji = v:true
+
 " }}}
 
 " numb config {{{
 lua require('numb').setup()
 " }}}
 
-" deoplete config {{{
-" call deoplete#custom#option('auto_complete_delay', 100)
-" let g:deoplete#enable_at_startup=1
-" inoremap <silent><expr> <TAB>
-" \ pumvisible() ? "\<C-n>" :
-" \ <SID>check_back_space() ? "\<TAB>" :
-" \ deoplete#manual_complete()
-" function! s:check_back_space() abort "{{{
-" let col = col('.') - 1
-" return !col || getline('.')[col - 1]  =~ '\s'
-" endfunction
-"}}}
-" }}}
-
 " FZF Config {{{
 command! -bang -nargs=? -complete=dir Files
-            \ call fzf#vim#files(<q-args>, {'source': 'locate -ei "$HOME"', 'options': ['--preview', '[[ -d {} ]] && tree -C {} || cat {}', '--prompt', 'Open File: ', '--pointer', '🡆']}, <bang>0)
+            \ call fzf#vim#files(<q-args>, {'source': 'xfi', 'options': ['--preview', '[[ -d {} ]] && tree -C {} || cat {}', '--prompt', 'Open File: ', '--pointer', '🡆']}, <bang>0)
 " }}}
 
 " lightline config {{{1
 let g:lightline = {
-            \ 'colorscheme': 'one',
+            \ 'colorscheme': 'wombat',
             \ 'separator': { 'left': '', 'right': '' },
             \ 'subseparator': { 'left': '', 'right': '' },
             \ }
@@ -298,10 +281,10 @@ let g:netrw_browsex_viewer= "xdg-open"
 "}}}
 
 " Airline Settings {{{
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#left_sep = ''
-let g:airline#extensions#tabline#formatter = 'unique_tail'
+" let g:airline_powerline_fonts = 1
+" let g:airline#extensions#tabline#enabled = 1
+" let g:airline#extensions#tabline#left_sep = ''
+" let g:airline#extensions#tabline#formatter = 'unique_tail'
 "}}}
 
 " NERDTree config {{{
@@ -327,6 +310,14 @@ let g:UltiSnipsListSnippets="<c-l>"
 " let g:UltiSnipsJumpForwardTrigger="<c-j>"
 " let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 let g:UltiSnipsSnippetDirectories=["UltiSnips", "vim-snippets", $HOME.'/Documents/.Varshney/snippets/']
+" }}}
+
+" vim-devicons config {{{
+" loading the plugin
+let g:webdevicons_enable = 1
+" adding to vim-airline's statusline
+let g:webdevicons_enable_airline_statusline = 1
+let g:WebDevIconsOS = 'Linux'
 " }}}
 
 " Auto Commands {{{
