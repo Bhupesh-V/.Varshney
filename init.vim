@@ -21,10 +21,15 @@ Plug 'NLKNguyen/papercolor-theme'
 Plug 'ayu-theme/ayu-vim'
 Plug 'lifepillar/vim-gruvbox8'
 Plug 'crusoexia/vim-monokai'
+Plug 'https://git.sr.ht/~novakane/kosmikoa.nvim'
 " Miscellaneous
 Plug 'psf/black', { 'branch': 'stable' }
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-compe'
+Plug 'ray-x/lsp_signature.nvim'
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 call plug#end()
 
 " Key Mappings {{{
@@ -58,7 +63,6 @@ nnoremap <S-Tab> :bn<CR>
 " Use j/k to select from completion menu
 inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
 inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
-
 " Efficiently browse vim manuals using helpg
 nnoremap <kPlus> :cn<CR>
 nnoremap <kMinus> :cp<CR>
@@ -144,6 +148,7 @@ endfunc
 colorscheme gruvbox8_hard
 set background=dark
 
+
 " Common Settings {{{
 set number 
 " set rnu
@@ -160,6 +165,7 @@ set wildignorecase
 set wildignore+=*/.git/*,*/site-packages/*,*/lib/*,*/bin/*,*.pyc
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg,*.avi,*.mp4,*.mkv,*.pdf,*.odt
 set path+=**
+set shortmess+=c
 set foldcolumn=2
 " set noswapfile
 set lazyredraw
@@ -173,6 +179,7 @@ set encoding=UTF-8
 let g:loaded_python_provider=0
 let g:loaded_ruby_provider = 0
 let g:loaded_node_provider = 0
+let g:loaded_ruby_provider = 0
 
 let g:loaded_zipPlugin=1
 let g:loaded_zip=1
@@ -192,7 +199,14 @@ let g:markdown_fenced_languages = ['python', 'go', 'sh']
 
 "}}}
 
-" Nvim LSP Setup {{{
+" LSP Setup {{{
+
+" Setup Guide: https://bhupesh.gitbook.io/notes/vim/configuring-lsp-neovim-guide
+
+set completeopt=menuone,noselect
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> gD <cmd>lua vim.lsp.buf.declaration()<CR>
@@ -205,8 +219,22 @@ nnoremap <silent> <C-p> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 
 autocmd BufWritePre *go,*.py lua vim.lsp.buf.formatting_sync(nil, 100)
 
-lua require'lspconfig'.gopls.setup{}
-lua require'lspconfig'.pyls.setup{}
+lua <<EOF
+require'lspconfig'.gopls.setup {
+  on_attach = function(client)
+    -- [[ other on_attach code ]]
+    require 'lsp_signature'.on_attach(client)
+  end,
+}
+
+require'lspconfig'.pyls.setup{
+  on_attach = function(client)
+    require 'lsp_signature'.on_attach(client)
+  end,
+}
+require'lspconfig'.bashls.setup{}
+require'lsp_signature'.on_attach()
+EOF
 
 let g:compe = {}
 let g:compe.enabled = v:true

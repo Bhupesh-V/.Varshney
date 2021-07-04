@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-# A utility to open a texfile as a HTML page so that I can use grammarly web extension -_-
+"""
+A utility to open a texfile as an HTML page
+(to use Grammarly web extension)
+"""
 
 from sys import stdin
 from string import Template

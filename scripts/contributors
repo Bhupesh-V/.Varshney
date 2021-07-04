@@ -11,7 +11,8 @@
 
 import urllib.parse
 import urllib.request
-import json, sys
+import json
+import sys
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
@@ -24,7 +25,7 @@ def parse_link_header(link_header):
     if header_links[1] == ' rel="next"':
         next_page = header_links[0]
         # yo why tf response headers are normal ?
-        next_page = next_page[1 : len(next_page) - 1]
+        next_page = next_page[1: len(next_page) - 1]
     else:
         next_page = None
 
@@ -136,5 +137,5 @@ if __name__ == "__main__":
     user = sys.argv[1]
     print(f"Fetching {user}'s repositories ...")
     repositories = find_user_repos(user)
-    print(f"Fetching contributors ...")
+    print("Fetching contributors ...")
     find_contributors(repositories, user)
