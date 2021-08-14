@@ -134,6 +134,12 @@ def update_instances_cache():
     return read_cache(get_cache_path())
 
 
+def list_instances():
+    with open(get_cache_path(), "r") as cache:
+        for server in cache:
+            print(f"{server}", end="")
+
+
 def get_instances():
     """
     read searx instances cache
@@ -173,6 +179,7 @@ def dont_hurt_instance(query, category):
 
 
 def search(query, args):
+    print(f"Searching for {colors.BOLD}{query}{colors.RESET}")
     data = dont_hurt_instance(query, args.category)
 
     if len(data["corrections"]) == 2:
@@ -234,10 +241,22 @@ if __name__ == "__main__":
         default=False,
         help="Update searx instances cache list",
     )
+    parser.add_argument(
+        "-l",
+        "--list-instances",
+        action="store_true",
+        default=False,
+        help="List all available searx instances",
+    )
     args = parser.parse_args()
 
     if args.update_cache:
         update_instances_cache()
+        exit()
+    if args.list_instances:
+        list_instances()
+        exit()
+
 
     if is_pipe:
         query = stdin.read()

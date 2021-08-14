@@ -4,7 +4,7 @@ Plug '907th/vim-auto-save'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'tpope/vim-surround'
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'preservim/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'itchyny/lightline.vim'
 Plug 'voldikss/vim-floaterm'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -26,10 +26,16 @@ Plug 'https://git.sr.ht/~novakane/kosmikoa.nvim'
 Plug 'psf/black', { 'branch': 'stable' }
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-compe'
+Plug 'dart-lang/dart-vim-plugin'
+Plug 'glepnir/lspsaga.nvim'
 Plug 'ray-x/lsp_signature.nvim'
-Plug 'nvim-lua/popup.nvim'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
+" Plug 'RRethy/vim-illuminate'
+" Plug 'nvim-lua/popup.nvim'
+" Plug 'nvim-lua/plenary.nvim'
+" Plug 'nvim-telescope/telescope.nvim'
+Plug 'jparise/vim-graphql'
+Plug 'sunjon/shade.nvim'
+Plug 'savq/melange'
 call plug#end()
 
 " Key Mappings {{{
@@ -61,8 +67,8 @@ nnoremap <Tab> <C-w><C-w>
 " Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
 " Use j/k to select from completion menu
-inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
-inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
+" inoremap <expr> j pumvisible() ? "\<C-N>" : "j"
+" inoremap <expr> k pumvisible() ? "\<C-P>" : "k"
 " Efficiently browse vim manuals using helpg
 nnoremap <kPlus> :cn<CR>
 nnoremap <kMinus> :cp<CR>
@@ -80,6 +86,13 @@ nnoremap <leader>z :Files ~<CR>
 nnoremap <leader>fh :History<CR>
 nnoremap <leader>ft :Tags<CR>
 nnoremap <leader>fs :Snippets<CR>
+
+" Keep things centered while searching stuff
+" Coconut oil
+nnoremap n nzzzv
+nnoremap N Nzzzv
+nnoremap J mzJ`z
+
 " Map keys in terminal mode
 " listen up, CapsLock is already mapped to Esc via xmodmap
 " So there is no need of this, but sometimes xmod starts behaving weirdly
@@ -111,7 +124,7 @@ nnoremap <S-l> :call OpenLink()<CR>
 nnoremap t :call ToggleComment()<CR>
 nnoremap <F10> :call PrettyMe()<CR>
 inoremap <F10> :call PrettyMe()<CR>
-" Use vim-floaterm to show search results
+" Use vim-floaterm to show search results only in visual mode
 xnoremap <leader>f <esc>:call SendQueryToFloatTerm()<CR>   
 xnoremap <leader>t <esc>:split <bar> call SendQueryToTerm()<CR>
 xnoremap <leader>s :<c-u>call SearchInternet()<CR>
@@ -145,7 +158,7 @@ func Eatchar(pat)
     return (c =~ a:pat) ? '' : c
 endfunc
 
-colorscheme gruvbox8_hard
+colorscheme kosmikoa
 set background=dark
 
 
@@ -166,7 +179,7 @@ set wildignore+=*/.git/*,*/site-packages/*,*/lib/*,*/bin/*,*.pyc
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg,*.avi,*.mp4,*.mkv,*.pdf,*.odt
 set path+=**
 set shortmess+=c
-set foldcolumn=2
+set foldcolumn=0
 " set noswapfile
 set lazyredraw
 " set thesaurus+=/home/bhupesh/mthesaur.txt
@@ -209,30 +222,32 @@ inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
-nnoremap <silent> gD <cmd>lua vim.lsp.buf.declaration()<CR>
+nnoremap <silent> gD <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> gr <cmd>lua vim.lsp.buf.references()<CR>
 nnoremap <silent> gi <cmd>lua vim.lsp.buf.implementation()<CR>
 nnoremap <silent> K <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <silent> <C-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
 nnoremap <silent> <C-n> <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
 nnoremap <silent> <C-p> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
+nnoremap <silent> <space>f <cmd>lua vim.lsp.buf.formatting()<CR>
 
-autocmd BufWritePre *go,*.py lua vim.lsp.buf.formatting_sync(nil, 100)
+autocmd BufWritePre *.py lua vim.lsp.buf.formatting_sync(nil, 100)
+autocmd BufWritePre *.go lua vim.lsp.buf.formatting_sync(nil, 100)
 
 lua <<EOF
 require'lspconfig'.gopls.setup {
-  on_attach = function(client)
-    -- [[ other on_attach code ]]
+    on_attach = function(client)
     require 'lsp_signature'.on_attach(client)
-  end,
+end,
 }
 
 require'lspconfig'.pyls.setup{
-  on_attach = function(client)
+    on_attach = function(client)
     require 'lsp_signature'.on_attach(client)
-  end,
+end,
 }
 require'lspconfig'.bashls.setup{}
+require'lspconfig'.dartls.setup{}
 require'lsp_signature'.on_attach()
 EOF
 
@@ -264,21 +279,43 @@ let g:compe.source.emoji = v:true
 
 " }}}
 
+" lspsaga setup {{{
+
+" lsp provider to find the cursor word definition and reference
+nnoremap <silent> gh <cmd>lua require'lspsaga.provider'.lsp_finder()<CR>
+" preview definition
+nnoremap <silent> gd <cmd>lua require'lspsaga.provider'.preview_definition()<CR>
+" show hover doc
+nnoremap <silent> K <cmd>lua require('lspsaga.hover').render_hover_doc()<CR>
+" scroll down hover doc or scroll in definition preview
+nnoremap <silent> <C-f> <cmd>lua require('lspsaga.action').smart_scroll_with_saga(1)<CR>
+" scroll up hover doc
+nnoremap <silent> <C-b> <cmd>lua require('lspsaga.action').smart_scroll_with_saga(-1)<CR>
+" code action
+nnoremap <silent><leader>ca <cmd>lua require('lspsaga.codeaction').code_action()<CR>
+vnoremap <silent><leader>ca :<C-U>lua require('lspsaga.codeaction').range_code_action()<CR>
+
+" }}}
+
 " numb config {{{
 lua require('numb').setup()
 " }}}
 
 " FZF Config {{{
 command! -bang -nargs=? -complete=dir Files
-            \ call fzf#vim#files(<q-args>, {'source': 'xfi', 'options': ['--preview', '[[ -d {} ]] && tree -C {} || cat {}', '--prompt', 'Open File: ', '--pointer', '🡆']}, <bang>0)
+            \ call fzf#vim#files(<q-args>, {'source': 'xfi', 'options': ['--preview', '[[ -d {} ]] && tree -C {} || ~/.config/nvim/plugged/fzf.vim/bin/preview.sh {}', '--prompt', 'Open File: ', '--pointer', '🡆']}, <bang>0)
 " }}}
 
 " lightline config {{{1
 let g:lightline = {
-            \ 'colorscheme': 'wombat',
+            \ 'colorscheme': 'ayu',
             \ 'separator': { 'left': '', 'right': '' },
             \ 'subseparator': { 'left': '', 'right': '' },
             \ }
+
+" Disable lineinfo and percent
+let g:lightline.active = {
+            \ 'right': [ [ 'fileformat', 'fileencoding', 'filetype' ] ] }
 " }}}
 
 " Custom Global Highlights {{{
@@ -321,6 +358,11 @@ let NERDTreeShowHidden=1  "Show hidden files (aka dotfiles)
 let NERDTreeMapActivateNode='<space>'
 let NERDTreeIgnore=['\.git$']
 let g:NERDTreeWinSize=20
+function! DisableST()
+    return " "
+endfunction
+au BufEnter NvimTree setlocal statusline=%!DisableST()
+
 "}}}
 
 " Floaterm config {{{
