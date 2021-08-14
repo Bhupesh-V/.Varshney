@@ -20,6 +20,8 @@
         top10 = ! git log --pretty=format: --name-only | sort | uniq -c | sort -rg | head -10
         # generate changelog from commit messages
         chglg = "!f() { git log --since=2weeks --pretty=format:\"- [%h]($(git config --get remote.origin.url)/commit/%H) _%s_ (%cr) by (%an)\" | grep -v Merge > CHANGELOG.md;}; f"
+        # git stash list with relative time
+        sl = stash list --pretty=format:'%C(bold green)(%cr)%C(reset) %C(bold blue)%gd%C(reset) - %s%n'
 
 [color]
         diff = auto
