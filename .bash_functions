@@ -281,3 +281,13 @@ todo() {
         xargs -I TODO  echo "- [ ] TODO" >> ~/todo.md <<< "$1"
     fi
 }
+
+
+unix2time() {
+    if [[ $1 != '' ]]; then
+        date --date="@$1"
+    else
+        date +'%s'
+        date --date="@$(date +'%s')"
+    fi
+}

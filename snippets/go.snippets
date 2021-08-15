@@ -161,3 +161,8 @@ if err != nil {
     log.Fatal("Error during Unmarshal(): ", err)
 }
 endsnippet
+
+
+snippet ctime "Current Time in Readable foramt"
+fmt.Printf("Current Time: %v\n", time.Now().Format(time.RFC850))
+endsnippet
