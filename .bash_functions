@@ -242,6 +242,7 @@ hl () {
 }
 
 fino() {
+    # get data if piped
     declare filepath=${1:-$(</dev/stdin)};
     if [[ -f "$filepath" ]]; then
         echo -e "$(basename "$filepath")"
@@ -283,11 +284,20 @@ todo() {
 }
 
 
-unix2time() {
-    if [[ $1 != '' ]]; then
-        date --date="@$1"
-    else
-        date +'%s'
-        date --date="@$(date +'%s')"
-    fi
+epoch() {
+    # script to ouput current unix epoch and convert to readable datetime
+
+    # TODO: check if gdate is available on Mac if not use date
+    # case "$(uname)" in
+    # Linux ) echo "on Linux" ;;
+    # Darwin ) echo "on Mac" ;;
+    # esac
+    case "$1" in
+        now)
+            date +'%s'
+            [ $(uname) == "Darwin" ] && date -r $(date -u +%s) || date --date="@$(date -u +%s)" ;;
+        *)
+            [ -z $1 ] && echo "argument missing, 'epoch <unix-timestamp>'" && return
+            [ $(uname) == "Darwin" ] && date -r "$1" || date --date="@$1";;
+    esac
 }
