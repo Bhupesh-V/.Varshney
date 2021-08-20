@@ -296,6 +296,11 @@ epoch() {
         now)
             date +'%s'
             [ $(uname) == "Darwin" ] && date -r $(date -u +%s) || date --date="@$(date -u +%s)" ;;
+        later)
+            # e.g epoch later "10 days"
+            [ -z "$2" ] && echo "argument missing, 'epoch later <modifier>'" && return
+            date -d "$2"
+            date -u +%s -d "$2";;
         *)
             [ -z $1 ] && echo "argument missing, 'epoch <unix-timestamp>'" && return
             [ $(uname) == "Darwin" ] && date -r "$1" || date --date="@$1";;
