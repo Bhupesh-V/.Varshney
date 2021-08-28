@@ -7,6 +7,8 @@
 # 1. Make sure you have a Personal Access Token with Gist Scope
 # 2. Create a file named .env.json in your home directory with contents:
 # {"GITHUB_TOKEN": "<your-token>" }
+# Alternatively you can check if a .git-credentials file exists in your $HOME.
+# The script will automatically read it from there
 # 3. Run script: ./bkp <file-to-backup>
 
 import urllib.request
@@ -68,6 +70,7 @@ def get_backup(filename):
 
 def read_token():
     env_path = Path.home() / ".env.json"
+    credentials_file = Path.home() / ".git-credentials"
     if env_path.is_file():
         secrets = json.loads(env_path.read_text())
         if "GITHUB_TOKEN" in secrets:
@@ -75,8 +78,15 @@ def read_token():
         else:
             print("GITHUB_TOKEN not found in .env.json")
             exit()
+    elif credentials_file.is_file():
+        print("Reading token from .git-credentials")
+        token_string = Path(credentials_file).read_text()
+        # or use regex
+        # token = re.search('[^https://].*:(.*)@', token_string).group(1)
+        token = token_string.split(":")[2].split("@")[0]
+        HEADERS["Authorization"] = f"token {token}"
     else:
-        print("No .env.json file found in home directory")
+        print("No .env.json or .git-credentials file found in home directory")
         exit()
 
 
