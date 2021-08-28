@@ -18,6 +18,11 @@ EXCLUDE_DIRS=(
     "! -path /*.vscode/*"
     "! -path /*.themes/*"
     "! -path /*.icons/*"
+    "! -path /*.dartServer/*"
+    "! -path /*.gradle/*"
+    "! -path /*.pub-cache/*"
+    "! -path /*flutter/*"
+    "! -path /*node_modules/*"
 )
 # additionally ignore snap/ cuz its getting expanded
-find $HOME ${EXCLUDE_DIRS[@]} ! -path "/*snap/*"
+find $HOME ${EXCLUDE_DIRS[@]} ! -path "/*snap/*" ! -path "/*Library/*"
