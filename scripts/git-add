@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# FZF Wrapper over git to interactively stage files
+
+readarray -t choices < <(git ls-files --other --modified --exclude-standard | fzf \
+  --prompt="Stage Files: " \
+  --height 40% --reverse --multi \
+  --header="Choose files to stage (TAB to select multiple files)"
+)
+
+git add "${choices[@]}"
+
