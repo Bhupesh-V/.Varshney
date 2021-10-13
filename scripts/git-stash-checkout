@@ -28,7 +28,11 @@ else
         echo "Please select atleast 1 file "
     else
         # git checkout <stash> -- <filepath1> <filepath2>
-        # is this the correct way?
-        git checkout "$stash" -- "${files[@]}"
+        # git checkout "$stash" -- "${files[@]}"
+
+        # better way
+        # Merge the changes on top of current version
+        # https://stackoverflow.com/questions/15264553/how-to-unstash-only-certain-files/50370632#50370632
+        git diff "$stash"^1 "$stash" -- "${files[@]}" | git apply
     fi
 fi
