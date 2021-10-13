@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+# FZF + Git script to interactively recover one or more files from stash
+
+# preliminary check to see if we have stash or not
+have_stash=$(git stash list)
+[ -z "$have_stash" ] && echo "Stash is empty!" && exit
+
+# get the stash
+stash=$(git --no-pager stash list --pretty=format:'%C(bold blue)%gd%C(reset)%C(bold green) (%cr)%C(reset) - %s' --color | fzf \
+    --prompt="Choose stash: " \
+    --preview "echo {} | cut -d' ' -f1 | xargs -I{} git stash show --color -p {}" \
+    --bind 'j:down,k:up,ctrl-j:preview-down,ctrl-k:preview-up,ctrl-space:toggle-preview' --preview-window right:60% \
+    --ansi --height 60% --reverse | \
+    awk '{print $1}'
+)
+
+if [[ -z "$stash" ]]; then
+    printf "%s\n" "Please select a stash"
+else
+    # get the file from stash
+    readarray -t files < <(git stash show -p "$stash" --name-only |  fzf \
+        --prompt="Choose file(s): " \
+        --height 40% --reverse --multi \
+        --header="Choose files to recover from stash (TAB to select multiple files)"
+    )
+    if [[ -z "$files" ]]; then
+        echo "Please select atleast 1 file "
+    else
+        # git checkout <stash> -- <filepath1> <filepath2>
+        # is this the correct way?
+        git checkout "$stash" -- "${files[@]}"
+    fi
+fi
