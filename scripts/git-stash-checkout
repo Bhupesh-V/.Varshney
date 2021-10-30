@@ -2,6 +2,8 @@
 
 # FZF + Git script to interactively recover one or more files from stash
 
+# Doesnt preview/checkout untracked files stored in stash
+
 # preliminary check to see if we have stash or not
 have_stash=$(git stash list)
 [ -z "$have_stash" ] && echo "Stash is empty!" && exit
