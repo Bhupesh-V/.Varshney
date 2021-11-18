@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+# Script to ouput current unix epoch and convert to readable datetime
+
+case "$(uname)" in
+    Linux ) converter="date" ;;
+    Darwin ) converter="gdate" ;;
+esac
+
+case "$1" in
+    now)
+        date +'%s'
+        [ $(uname) == "Darwin" ] && date -r $(date -u +%s) || date --date="@$(date -u +%s)" ;;
+    later)
+        # e.g epoch later "10 days"
+        [ -z "$2" ] && echo "argument missing, 'epoch later <modifier>'" && return
+        $converter -d "$2"
+        $converter -u +%s -d "$2";;
+    *)
+        [ -z $1 ] && echo "argument missing, 'epoch <unix-timestamp>'" && return
+        [ $(uname) == "Darwin" ] && date -r "$1" || date --date="@$1";;
+esac
+
