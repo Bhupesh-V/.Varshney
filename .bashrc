@@ -83,9 +83,9 @@ git_status() {
     tracked=$(echo "$status" | grep -c "A\s")
     deleted=$(echo "$status" | grep -c "D\s")
 
-    delete_symbol="🗶 "
+    delete_symbol="✖ "
     tracked_symbol="⨁"
-    modified_symbol="🗘"
+    modified_symbol="⬤"
     GIT_STATUS_PROMPT=""
 
 # GIT_STATUS_PROMPT+="${GRAY_BG}"
