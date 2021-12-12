@@ -75,6 +75,7 @@ def get_user_prs(username):
 
 
 def generate_report(repos, prs):
+    totalPRs = 0
     with open(f"{user}-pull-requests.md", "w") as file:
         file.write(
             f"## [{user}](https://github.com/{user})'s open source contributions 🌟\n\n"
@@ -82,6 +83,7 @@ def generate_report(repos, prs):
         file.write("<ol>")
         for pr in prs:
             if pr["repository_url"] not in repos:
+                totalPRs = totalPRs + 1
                 created_date = datetime.strptime(
                     pr["created_at"], "%Y-%m-%dT%H:%M:%SZ"
                 ).strftime("%d %b, %Y")
@@ -94,6 +96,7 @@ def generate_report(repos, prs):
                 file.write("</li>")
         file.write("</ol>\n\n")
 
+    print(f"Total PRs: {totalPRs}")
     print(f"Saving context in {user}-pull-requests.md ✅")
 
 
