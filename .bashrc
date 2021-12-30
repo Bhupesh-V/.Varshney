@@ -7,6 +7,7 @@ esac
 # Gib me all the colors 
 export TERM=xterm-256color
 export PATH="$HOME/Documents/.Varshney/scripts:$PATH"
+export PATH="$HOME/Documents/.Varshney/scripts/git:$PATH"
 export PATH="$HOME/Documents/ugit:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 

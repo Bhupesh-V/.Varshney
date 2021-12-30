@@ -226,7 +226,7 @@ pj() {
     # prettify json using python3
     if [[ -z "$1" ]]; then
         echo "No file path"
-        exit 1
+        return
     fi
     pretty_json=$(python3 -m json.tool "$1") && echo "$pretty_json" > "$1"
 }
@@ -259,7 +259,7 @@ lk() {
 }
 
 fcd() {
-    cd "$(xfi | fzf --preview "[[ -d {} ]] && tree -C {} || head -200" --height 40% --reverse)"
+    cd "$(xfi | fzf --cycle --preview "[[ -d {} ]] && tree -C {} || head -200" --height 40% --reverse)"
     # cd "$(find ~ -maxdepth 5 -not -path '*/\.git/*' -type d | fzf --preview 'tree -C {} | head -200' --height 40% --reverse)"
 }
 
