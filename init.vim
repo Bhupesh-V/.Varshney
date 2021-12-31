@@ -36,6 +36,9 @@ Plug 'ray-x/lsp_signature.nvim'
 Plug 'jparise/vim-graphql'
 Plug 'sunjon/shade.nvim'
 Plug 'savq/melange'
+Plug 'ryanoasis/vim-devicons'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'lewis6991/gitsigns.nvim'
 call plug#end()
 
 " Key Mappings {{{
@@ -88,11 +91,13 @@ nnoremap <leader>ft :Tags<CR>
 nnoremap <leader>fs :Snippets<CR>
 
 " Keep things centered while searching stuff
-" Coconut oil
+" Coconut oily
 nnoremap n nzzzv
 nnoremap N Nzzzv
 nnoremap J mzJ`z
 
+nnoremap j jzz
+nnoremap k kzz
 " Map keys in terminal mode
 " listen up, CapsLock is already mapped to Esc via xmodmap
 " So there is no need of this, but sometimes xmod starts behaving weirdly
@@ -139,10 +144,6 @@ map <Down> <Nop>
 
 "}}}
 
-" Abbreviations
-iabbr @@    varshneybhupesh@gmail.com
-iabbr webs  https://bhupesh-v.github.io
-
 " Auto pair brackets and stuff
 " Lmao bye bye plugins
 iabbr <silent> ( ()<Left><C-R>=Eatchar('\s')<CR>
@@ -158,7 +159,7 @@ func Eatchar(pat)
     return (c =~ a:pat) ? '' : c
 endfunc
 
-colorscheme kosmikoa
+colorscheme ayu
 set background=dark
 
 
@@ -221,10 +222,11 @@ set completeopt=menuone,noselect
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
-nnoremap <silent> gD <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> gd <cmd>vsplit \| lua vim.lsp.buf.definition()<CR>
+" nnoremap <silent> gD <cmd>lua vim.lsp.buf.definition()<CR>
 nnoremap <silent> gr <cmd>lua vim.lsp.buf.references()<CR>
 nnoremap <silent> gi <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> gc <cmd>lua vim.lsp.buf.code_action()<CR>
 nnoremap <silent> K <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <silent> <C-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
 nnoremap <silent> <C-n> <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
@@ -241,11 +243,6 @@ require'lspconfig'.gopls.setup {
 end,
 }
 
-require'lspconfig'.pyls.setup{
-    on_attach = function(client)
-    require 'lsp_signature'.on_attach(client)
-end,
-}
 require'lspconfig'.bashls.setup{}
 require'lspconfig'.dartls.setup{}
 require'lsp_signature'.on_attach()
@@ -272,9 +269,9 @@ let g:compe.source.buffer = v:true
 let g:compe.source.calc = v:true
 let g:compe.source.nvim_lsp = v:true
 let g:compe.source.nvim_lua = v:true
-let g:compe.source.vsnip = v:true
+" let g:compe.source.vsnip = v:true
 let g:compe.source.ultisnips = v:true
-let g:compe.source.luasnip = v:true
+" let g:compe.source.luasnip = v:true
 let g:compe.source.emoji = v:true
 
 " }}}
@@ -301,6 +298,10 @@ vnoremap <silent><leader>ca :<C-U>lua require('lspsaga.codeaction').range_code_a
 lua require('numb').setup()
 " }}}
 
+" gitsigns config {{{
+lua require('gitsigns').setup()
+" }}}
+
 " FZF Config {{{
 command! -bang -nargs=? -complete=dir Files
             \ call fzf#vim#files(<q-args>, {'source': 'xfi', 'options': ['--preview', '[[ -d {} ]] && tree -C {} || ~/.config/nvim/plugged/fzf.vim/bin/preview.sh {}', '--prompt', 'Open File: ', '--pointer', '🡆']}, <bang>0)
@@ -311,7 +312,16 @@ let g:lightline = {
             \ 'colorscheme': 'ayu',
             \ 'separator': { 'left': '', 'right': '' },
             \ 'subseparator': { 'left': '', 'right': '' },
+            \ 'component_function': { 'filetype': 'GetFiletype', 'fileformat': 'GetFileformat'},
             \ }
+
+function! GetFiletype()
+    return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+endfunction
+
+function! GetFileformat()
+    return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
+endfunction
 
 " Disable lineinfo and percent
 let g:lightline.active = {
@@ -386,7 +396,6 @@ let g:UltiSnipsSnippetDirectories=["UltiSnips", "vim-snippets", $HOME.'/Document
 " loading the plugin
 let g:webdevicons_enable = 1
 " adding to vim-airline's statusline
-let g:webdevicons_enable_airline_statusline = 1
 let g:WebDevIconsOS = 'Linux'
 " }}}
 
