@@ -21,7 +21,10 @@ Plug 'NLKNguyen/papercolor-theme'
 Plug 'ayu-theme/ayu-vim'
 Plug 'lifepillar/vim-gruvbox8'
 Plug 'crusoexia/vim-monokai'
+Plug 'savq/melange'
 Plug 'https://git.sr.ht/~novakane/kosmikoa.nvim'
+Plug 'rebelot/kanagawa.nvim'
+Plug 'mangeshrex/uwu.vim'
 " Miscellaneous
 Plug 'psf/black', { 'branch': 'stable' }
 Plug 'neovim/nvim-lspconfig'
@@ -35,8 +38,9 @@ Plug 'ray-x/lsp_signature.nvim'
 " Plug 'nvim-telescope/telescope.nvim'
 Plug 'jparise/vim-graphql'
 Plug 'sunjon/shade.nvim'
-Plug 'savq/melange'
 Plug 'ryanoasis/vim-devicons'
+Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
+" Git Stuff
 Plug 'nvim-lua/plenary.nvim'
 Plug 'lewis6991/gitsigns.nvim'
 call plug#end()
@@ -374,6 +378,30 @@ endfunction
 au BufEnter NvimTree setlocal statusline=%!DisableST()
 
 "}}}
+
+" wilder config {{{
+" Key bindings can be changed, see below
+call wilder#setup({'modes': [':', '/', '?']})
+
+hi PmenuSel guifg=#16e085 guibg=#253340
+
+call wilder#set_option('renderer', wilder#popupmenu_renderer(wilder#popupmenu_border_theme({
+      \ 'highlighter': wilder#basic_highlighter(),
+      \ 'highlights': {
+      \   'accent': wilder#make_hl('WilderAccent', 'Pmenu', [{}, {}, {'foreground': '#16e085', 'bold': v:true}]),
+      \   'selected_accent': wilder#make_hl('WilderSelectedAccent', 'PmenuSel', [{}, {}, {'foreground': '#16e085', 'bold': v:true }]),
+      \   'border': 'Normal',
+      \ },
+      \ 'border': 'rounded',
+      \ 'left': [
+      \   ' ', wilder#popupmenu_devicons(),
+      \ ],
+      \ 'right': [
+      \   ' ', wilder#popupmenu_scrollbar(),
+      \ ],
+      \ })))
+
+" }}}
 
 " Floaterm config {{{
 
