@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+# Script to connect to bluetooth devices
+
+
+device=$(bluetoothctl paired-devices | fzf \
+  --prompt="Choose Device: " \
+  --height 40% --reverse --multi \
+  --header="Choose a device to connect to"
+)
+
+bluetoothctl connect $(echo $device | awk '{print $2}')
