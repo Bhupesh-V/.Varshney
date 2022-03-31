@@ -17,13 +17,13 @@ git_file=$(git ls-files | fzf \
   --header="Choose a file to find pull requests that change this file"
 )
 
-all_open_prs=$(gh pr list --json number,title,url)
+all_open_prs=$(gh pr list --json number,title,url,files)
 total_prs=$(echo "$all_open_prs" | jq length)
 
 printf "%s\n\n" "Hold tight while we look for PRs ✋👀 that modify $(tput bold)$git_file$(tput sgr0)"
-for (( c=0; c<$total_prs; c++ )); do
+for (( c=0; c<total_prs; c++ )); do
     pr_number=$(echo "$all_open_prs" | jq .["$c"].number)
-    readarray -t changed_files < <(gh pr view "$pr_number" --json files --jq '.files.[].path')
+    readarray -t changed_files < <(echo "$all_open_prs" | jq .["$c"].files[].path | tr -d '"')
     if [[ " ${changed_files[*]} " =~ " ${git_file} " ]]; then
         echo "Found PR #$pr_number which changes the file path $(tput bold)$git_file$(tput sgr0)"
         echo -e "Title: $(tput bold)$(echo "$all_open_prs" | jq .["$c"].title | tr -d '"')$(tput sgr0)"
