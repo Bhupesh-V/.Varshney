@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+# FZF Wrapper over github CLI to interactively view diff on PRs
+
+
+# 1. Get local file path from the user
+# 2. Find all open PRs
+# 3. For files changed in each PR find PR which changes the user provided file path
+# 4. Output the PR (id, url) and its diff
+
+# TODO: handle how to print diff for a single file?
+# TODO: how to provide permalink to diff on the pull-request (limited by github's API)
+
+# Color definitions
+BOLD=$(tput bold)
+RESET=$(tput sgr0)
+BLUE_FG=$(tput setaf 87)
+ORANGE_FG=$(tput setaf 202)
+
+if [[ "$1" != "" ]]; then
+  git_file=$1
+else
+  git_file=$(git ls-files | fzf \
+    --prompt="Choose File: " \
+    --height 40% --reverse \
+    --header="Choose a file to find pull requests that change this file"
+  )
+fi
+
+printf "%s\n\n" "Hold tight while we look for PRs ✋👀 that modify $BOLD$git_file$RESET"
+all_open_prs=$(gh pr list --json number,title,url,files,author)
+total_prs=$(echo "$all_open_prs" | jq length)
+
+prs_count=0
+
+for (( pri=0; pri<total_prs; pri++ )); do
+    pr_number=$(echo "$all_open_prs" | jq .["$pri"].number)
+    readarray -t changed_files < <(echo "$all_open_prs" | jq .["$pri"].files[].path | tr -d '"')
+    if [[ "${changed_files[*]}" =~ ${git_file} ]]; then
+        printf "%s " "$ORANGE_FG$BOLD$(echo "$all_open_prs" | jq .["$pri"].title | tr -d '"')$RESET ($BOLD$pr_number$RESET)"
+        printf "%s\n" "by $BOLD$(echo "$all_open_prs" | jq .["$pri"].author.login | tr -d '"')$RESET"
+        printf "%s\n\n" "PR Link: $BLUE_FG$BOLD$(echo "$all_open_prs" | jq .["$pri"].url | tr -d '"')$RESET"
+        prs_count=$((prs_count+1))
+    fi
+done
+
+if [[ $prs_count == 0 ]];then
+  printf "%s\n" "Oops!, No pull requests found that modify this file path"
+else
+  printf "%s\n" "Found $BOLD$prs_count$RESET pull requests that modify $BOLD$git_file$RESET"
+fi
