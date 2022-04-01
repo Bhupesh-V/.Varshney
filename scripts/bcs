@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# FZF Wrapper to connect to devices using bluetoothctl
+
+# TODO: check if bluetooh service is running if not, start it
+
+choice=$(bluetoothctl devices | fzf \
+  --prompt="Choose Device: " \
+  --height 40% --reverse --multi)
+ 
+device=$(echo $choice | awk '{print $2}')
+
+bluetoothctl connect "$device"
