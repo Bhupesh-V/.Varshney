@@ -10,6 +10,7 @@
 
 # TODO: handle how to print diff for a single file?
 # TODO: how to provide permalink to diff on the pull-request (limited by github's API)
+# TODO: support for fetching closed PRs with (gh pr list --state all --limit 40), figure out pagination
 
 # Color definitions
 BOLD=$(tput bold)
@@ -28,23 +29,24 @@ else
 fi
 
 printf "%s\n\n" "Hold tight while we look for PRs ✋👀 that modify $BOLD$git_file$RESET"
-all_open_prs=$(gh pr list --json number,title,url,files,author)
+all_open_prs=$(gh pr list --json number,title,url,files,author,baseRefName,headRefName)
 total_prs=$(echo "$all_open_prs" | jq length)
 
 prs_count=0
 
 for (( pri=0; pri<total_prs; pri++ )); do
-    pr_number=$(echo "$all_open_prs" | jq .["$pri"].number)
-    readarray -t changed_files < <(echo "$all_open_prs" | jq .["$pri"].files[].path | tr -d '"')
+    readarray -t changed_files < <(echo "$all_open_prs" | jq .["$pri"].files[].path)
     if [[ "${changed_files[*]}" =~ ${git_file} ]]; then
-        printf "%s " "$ORANGE_FG$BOLD$(echo "$all_open_prs" | jq .["$pri"].title | tr -d '"')$RESET ($BOLD$pr_number$RESET)"
-        printf "%s\n" "by $BOLD$(echo "$all_open_prs" | jq .["$pri"].author.login | tr -d '"')$RESET"
-        printf "%s\n\n" "PR Link: $BLUE_FG$BOLD$(echo "$all_open_prs" | jq .["$pri"].url | tr -d '"')$RESET"
+        pr_branch=$(echo "$all_open_prs" | jq -r .["$pri"].headRefName)
+        base_branch=$(echo "$all_open_prs" | jq -r .["$pri"].baseRefName)
+        printf "%s " "$ORANGE_FG$BOLD$(echo "$all_open_prs" | jq -r .["$pri"].title)$RESET ($BOLD$pr_branch ➜ $base_branch$RESET)"
+        printf "%s\n" "by $BOLD$(echo "$all_open_prs" | jq -r .["$pri"].author.login)$RESET"
+        printf "%s\n\n" "PR Link: $BLUE_FG$BOLD$(echo "$all_open_prs" | jq -r .["$pri"].url)$RESET"
         prs_count=$((prs_count+1))
     fi
 done
 
-if [[ $prs_count == 0 ]];then
+if [[ $prs_count == 0 ]]; then
   printf "%s\n" "Oops!, No pull requests found that modify this file path"
 else
   printf "%s\n" "Found $BOLD$prs_count$RESET pull requests that modify $BOLD$git_file$RESET"
