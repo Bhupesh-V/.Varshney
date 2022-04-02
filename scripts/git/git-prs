@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# FZF Wrapper over github CLI to interactively view diff on PRs
+# FZF Wrapper over github CLI to interactively view PRs that modify a filepath
 
 
 # 1. Get local file path from the user
@@ -8,46 +8,69 @@
 # 3. For files changed in each PR find PR which changes the user provided file path
 # 4. Output the PR (id, url) and its diff
 
-# TODO: handle how to print diff for a single file?
 # TODO: how to provide permalink to diff on the pull-request (limited by github's API)
-# TODO: support for fetching closed PRs with (gh pr list --state all --limit 40), figure out pagination
+# TODO: support for fetching closed/merged PRs as well (gh pr list --state all --limit 40), figure out pagination, merging json data
 
 # Color definitions
 BOLD=$(tput bold)
 RESET=$(tput sgr0)
 BLUE_FG=$(tput setaf 87)
-ORANGE_FG=$(tput setaf 202)
-
-if [[ "$1" != "" ]]; then
-  git_file=$1
-else
-  git_file=$(git ls-files | fzf \
-    --prompt="Choose File: " \
-    --height 40% --reverse \
-    --header="Choose a file to find pull requests that change this file"
-  )
-fi
-
-printf "%s\n\n" "Hold tight while we look for PRs ✋👀 that modify $BOLD$git_file$RESET"
-all_open_prs=$(gh pr list --json number,title,url,files,author,baseRefName,headRefName)
-total_prs=$(echo "$all_open_prs" | jq length)
+ORANGE_FG=$(tput setaf 190)
 
 prs_count=0
+show_diff=0
 
-for (( pri=0; pri<total_prs; pri++ )); do
-    readarray -t changed_files < <(echo "$all_open_prs" | jq .["$pri"].files[].path)
-    if [[ "${changed_files[*]}" =~ ${git_file} ]]; then
-        pr_branch=$(echo "$all_open_prs" | jq -r .["$pri"].headRefName)
-        base_branch=$(echo "$all_open_prs" | jq -r .["$pri"].baseRefName)
-        printf "%s " "$ORANGE_FG$BOLD$(echo "$all_open_prs" | jq -r .["$pri"].title)$RESET ($BOLD$pr_branch ➜ $base_branch$RESET)"
-        printf "%s\n" "by $BOLD$(echo "$all_open_prs" | jq -r .["$pri"].author.login)$RESET"
-        printf "%s\n\n" "PR Link: $BLUE_FG$BOLD$(echo "$all_open_prs" | jq -r .["$pri"].url)$RESET"
-        prs_count=$((prs_count+1))
-    fi
-done
 
-if [[ $prs_count == 0 ]]; then
-  printf "%s\n" "Oops!, No pull requests found that modify this file path"
+if [[ "$1" == "--diff" ]]; then
+  show_diff=1
+elif [[ "$1" == "" ]];then
+  show_diff=0
 else
-  printf "%s\n" "Found $BOLD$prs_count$RESET pull requests that modify $BOLD$git_file$RESET"
+  printf "%s\n" "Invalid argument $1. Did you mean '--diff'?" && exit
 fi
+
+
+git_file=$(git ls-files | fzf \
+  --prompt="Choose File: " \
+  --height 40% --reverse \
+  --header="Choose a file to find pull requests on github that modify it"
+)
+
+printf "%s\n\n" "Hold tight while we look for PRs ✋👀 that modify $BOLD$git_file$RESET"
+
+all_open_prs=$(gh pr list --json number,title,url,files,author,baseRefName,headRefName)
+total_prs=$(jq length <<< "$all_open_prs")
+
+
+get_diff() {
+  if [[ $show_diff = 1 ]];then
+    printf "%s\n" "Getting diff for PR #$2"
+    # filepath with escaped slashes
+    clean_filepath=${1//\//\\/}
+    gh pr diff --color always "$2" | sed -n "1,/diff --git a\/$clean_filepath/d;/diff/q;p"
+    printf "\n"
+  fi
+}
+
+get_prs(){
+  for (( pri=0; pri<total_prs; pri++ )); do
+      readarray -t changed_files < <(echo "$all_open_prs" | jq .["$pri"].files[].path)
+      if [[ "${changed_files[*]}" =~ ${git_file} ]]; then
+          pr_branch=$(jq -r .["$pri"].headRefName <<< "$all_open_prs")
+          base_branch=$(jq -r .["$pri"].baseRefName <<< "$all_open_prs")
+          printf "%s " "$ORANGE_FG$BOLD$(jq -r .["$pri"].title <<< "$all_open_prs")$RESET ($BOLD$pr_branch ➜ $base_branch$RESET)"
+          printf "%s\n" "by $BOLD$(jq -r .["$pri"].author.login <<< "$all_open_prs")$RESET"
+          printf "%s\n\n" "PR Link: $BLUE_FG$BOLD$(jq -r .["$pri"].url <<< "$all_open_prs")$RESET"
+          prs_count=$((prs_count+1))
+          get_diff "$git_file" "$(jq -r .["$pri"].number <<< "$all_open_prs")"
+      fi
+  done
+  
+  if [[ $prs_count == 0 ]]; then
+    printf "%s\n" "Oops!, No pull requests found that modify this file path"
+  else
+    printf "%s\n" "Found $BOLD$prs_count$RESET pull requests that modify $BOLD$git_file$RESET"
+  fi
+}
+
+get_prs
