@@ -37,7 +37,7 @@ get_diff() {
   printf "%s\n" "Getting diff for PR #$2"
   # filepath with escaped slashes /
   escaped_filepath=${1//\//\\/}
-  gh pr diff --color always "$2" | sed -n "1,/diff --git a\/$escaped_filepath/d;/diff/q;p"
+  gh pr diff --color always "$2" | sed -n "/diff --git a\/$escaped_filepath/d;/diff/q;p"
   printf "\n"
 }
 
