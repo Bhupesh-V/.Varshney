@@ -22,12 +22,16 @@
         chglg = "!f() { git log --since=2weeks --pretty=format:\"- [%h]($(git config --get remote.origin.url)/commit/%H) _%s_ (%cr) by (%an)\" | grep -v Merge > CHANGELOG.md;}; f"
         # git stash list with relative time
         sl = !git --no-pager stash list --pretty=format:'%C(bold blue)%gd%C(reset) %C(bold green) (%cr)%C(reset) - %s'
-	# get changes for only current checked out branch
-        po = !git pull origin $(git branch | grep \\* | cut -d ' ' -f2)
+        # use custom script to browse git stash
         stach = !git-stash-checkout
+        # single line log
+        lo = !git --no-pager log --oneline
 
 [color]
         diff = auto
         ui = auto
 [help]
+        # run correct git command after 0.7 seconds
 	autocorrect = 7
+[init]
+	defaultBranch = main
