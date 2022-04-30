@@ -4,7 +4,7 @@
 
 # Usage
 # Fetch only public gists
-# ./gists -u Bhupesh-V 
+# ./gists -u Bhupesh-V
 # Fetch all gists (including private)
 # ./gists -au Bhupesh-V
 
@@ -12,10 +12,7 @@
 import urllib.parse
 import urllib.request
 import json
-import sys
-import time
 import argparse
-import distutils
 from pathlib import Path
 
 HEADERS = {
@@ -24,21 +21,21 @@ HEADERS = {
     "Content-Type": "application/json",
 }
 
-base_url = "https://api.github.com"
+BASE_URL = "https://api.github.com"
 
 
 def parse_link_header(link_header):
     header_links = link_header.split(",")[0].split(";")
     if header_links[1] == ' rel="next"':
         next_page = header_links[0]
-        next_page = next_page[1: len(next_page) - 1]
+        next_page = next_page[1 : len(next_page) - 1]
     else:
         next_page = None
 
     return next_page
 
 
-def request(url):
+def make_request(url):
     req = urllib.request.Request(url, headers=HEADERS)
     with urllib.request.urlopen(req) as response:
         res = json.loads(response.read().decode("utf-8"))
@@ -49,10 +46,11 @@ def request(url):
 
     return res, next_url
 
-def handle_pagination(url):
+
+def request(url):
     res_list = []
     while True:
-        res, next_url = request(url)
+        res, next_url = make_request(url)
         res_list += res
         if next_url is None:
             break
@@ -60,13 +58,14 @@ def handle_pagination(url):
 
     return res_list
 
+
 def find_all_gists(user, show_all):
     try:
-        gists = handle_pagination(f"{base_url}/users/{user}/gists?per_page=100")
+        gists = request(f"{BASE_URL}/users/{user}/gists?per_page=100")
         if show_all:
             filtered_gists = gists
         else:
-            filtered_gists = [gist for gist in gists if gist['public']]
+            filtered_gists = [gist for gist in gists if gist["public"]]
 
     except urllib.error.HTTPError as e:
         if e.code == 403:
@@ -79,18 +78,20 @@ def find_all_gists(user, show_all):
             return None
     return filtered_gists
 
+
 def show_gists(gists):
     """
     Output all gists in following format
     first filename or gist description, <gist url>
     """
     for gist in gists:
-        if gist['description'] == "":
-            first_filename = list(gist['files'].keys())
+        if gist["description"] == "":
+            first_filename = list(gist["files"].keys())
             print(f"{first_filename[0]},", end="")
         else:
             print(f"{gist['description']},", end="")
         print(f"{gist['html_url']}")
+
 
 def read_token():
     """
@@ -113,7 +114,9 @@ def read_token():
         # token = re.search('[^https://].*:(.*)@', token_string).group(1)
         token = token_string.split(":")[2].split("@")[0]
         if token is None or token == "":
-            print("Error reading token from .git-credentials. Please check if the file has valid content")
+            print(
+                "Error reading token from .git-credentials. Please check if the file has valid content"
+            )
             exit()
         HEADERS["Authorization"] = f"token {token}"
     else:
@@ -124,13 +127,7 @@ def read_token():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="List GitHub gists")
     parser.epilog = """Help/Bug Report: varshneybhupesh@gmail.com"""
-    parser.add_argument(
-        "-u",
-        "--user",
-        type=str,
-        help="Github Username",
-        required=True
-    )
+    parser.add_argument("-u", "--user", type=str, help="Github Username", required=True)
     parser.add_argument(
         "-a",
         "--all",
