@@ -79,7 +79,7 @@ def get_cache_path():
     os_name = platform.system()
 
     if os_name == "Linux":
-        xdg_cache_home = Path(getenv('XDG_CACHE_HOME', user_home / ".cache"))
+        xdg_cache_home = Path(getenv("XDG_CACHE_HOME", user_home / ".cache"))
         return xdg_cache_home / cache_name
     if os_name == "Darwin":
         return user_home / "Library" / "Caches" / cache_name
@@ -256,7 +256,6 @@ if __name__ == "__main__":
     if args.list_instances:
         list_instances()
         exit()
-
 
     if is_pipe:
         query = stdin.read()
