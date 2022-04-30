@@ -3,6 +3,7 @@
 # FZF Wrapper to connect to devices using bluetoothctl
 
 # TODO: check if bluetooh service is running if not, start it
+# TODO: retry mechanism if connection fails
 
 choice=$(bluetoothctl devices | fzf \
   --prompt="Choose Device: " \
