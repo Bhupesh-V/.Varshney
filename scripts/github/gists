@@ -3,15 +3,19 @@
 # Find all gists of a github user
 
 # Usage
-# Best use with FZF
+# Fetch only public gists
+# ./gists -u Bhupesh-V 
+# Fetch all gists (including private)
+# ./gists -au Bhupesh-V
 
-# ./gists Bhupesh-V | fzf | awk -F  "," '{print $2}' | xargs -0 browse > /dev/null 2>&1
 
 import urllib.parse
 import urllib.request
 import json
 import sys
 import time
+import argparse
+import distutils
 from pathlib import Path
 
 HEADERS = {
@@ -56,21 +60,30 @@ def handle_pagination(url):
 
     return res_list
 
-def find_all_gists(user):
+def find_all_gists(user, show_all):
     try:
         gists = handle_pagination(f"{base_url}/users/{user}/gists?per_page=100")
+        if show_all:
+            filtered_gists = gists
+        else:
+            filtered_gists = [gist for gist in gists if gist['public']]
+
     except urllib.error.HTTPError as e:
         if e.code == 403:
             print("GitHub API rate limit exceeded. Only 60 requests/hour")
             exit()
         elif e.code == 404:
-            print("User doesn't exist. Please re-check username")
+            print("User doesn't exist. Please verify username")
             exit()
         else:
-            pass
-    return gists
+            return None
+    return filtered_gists
 
 def show_gists(gists):
+    """
+    Output all gists in following format
+    first filename or gist description, <gist url>
+    """
     for gist in gists:
         if gist['description'] == "":
             first_filename = list(gist['files'].keys())
@@ -80,6 +93,11 @@ def show_gists(gists):
         print(f"{gist['html_url']}")
 
 def read_token():
+    """
+    Read GitHub token either from .git-credentials or .env.json
+    .git-credentials = https://username:TOKEN@github.com
+    .env.json = {"GITHUB_TOKEN":"TOKEN"}
+    """
     env_path = Path.home() / ".env.json"
     credentials_file = Path.home() / ".git-credentials"
     if env_path.is_file():
@@ -90,7 +108,6 @@ def read_token():
             print("GITHUB_TOKEN not found in .env.json")
             exit()
     elif credentials_file.is_file():
-        # Reading token from .git-credentials
         token_string = Path(credentials_file).read_text()
         # or use regex
         # token = re.search('[^https://].*:(.*)@', token_string).group(1)
@@ -105,13 +122,25 @@ def read_token():
 
 
 if __name__ == "__main__":
-    # yeah i will use argparse later
-    if len(sys.argv) < 2:
-        print("Please provide Github username")
-        exit()
+    parser = argparse.ArgumentParser(description="List GitHub gists")
+    parser.epilog = """Help/Bug Report: varshneybhupesh@gmail.com"""
+    parser.add_argument(
+        "-u",
+        "--user",
+        type=str,
+        help="Github Username",
+        required=True
+    )
+    parser.add_argument(
+        "-a",
+        "--all",
+        action="store_true",
+        default=False,
+        help="Fetch all gists",
+    )
+    args = parser.parse_args()
 
     read_token()
-    user = sys.argv[1]
-    gists = find_all_gists(user)
-    # print(json.dumps(gists, indent = 4))
+    gists = find_all_gists(args.user, args.all)
     show_gists(gists)
+    # print(json.dumps(gists, indent = 4))
