@@ -25,6 +25,7 @@ Plug 'savq/melange'
 Plug 'https://git.sr.ht/~novakane/kosmikoa.nvim'
 Plug 'rebelot/kanagawa.nvim'
 Plug 'mangeshrex/uwu.vim'
+Plug 'Rigellute/shades-of-purple.vim'
 " Miscellaneous
 Plug 'psf/black', { 'branch': 'stable' }
 Plug 'neovim/nvim-lspconfig'
@@ -40,6 +41,11 @@ Plug 'jparise/vim-graphql'
 Plug 'sunjon/shade.nvim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'mfussenegger/nvim-lint'
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'folke/trouble.nvim'
+Plug 'jose-elias-alvarez/null-ls.nvim'
+Plug 'WhoIsSethDaniel/toggle-lsp-diagnostics.nvim'
 " Git Stuff
 Plug 'nvim-lua/plenary.nvim'
 Plug 'lewis6991/gitsigns.nvim'
@@ -66,7 +72,7 @@ inoremap <F4> <C-R>=strftime("%d %b, %Y")<CR>
 nnoremap <F4> "=strftime('%d %b, %Y')<CR>P
 " Toggle code-folds
 noremap <space> za
-nnoremap <A-CR> :Goyo<CR>
+nnoremap <A-CR> :Goyo 120<CR>
 " Tab to cycle through open splits
 nnoremap <Tab> <C-w><C-w>
 " Use Enter to switch to command mode
@@ -93,6 +99,7 @@ nnoremap <leader>z :Files ~<CR>
 nnoremap <leader>fh :History<CR>
 nnoremap <leader>ft :Tags<CR>
 nnoremap <leader>fs :Snippets<CR>
+nnoremap <leader>d :ToggleDiag <CR> :TroubleToggle<CR>
 
 " Keep things centered while searching stuff
 " Coconut oily
@@ -122,8 +129,10 @@ vnoremap <S-k> :m '<-2<CR>gv=gv
 " Resizing Windows {{{
 nnoremap <A-h> :vertical resize +3<CR>
 nnoremap <A-l> :vertical resize -3<CR>
-nnoremap <A-k> :resize +3<CR>
-nnoremap <A-j> :resize -3<CR>
+" nnoremap <A-k> :resize +3<CR>
+" nnoremap <A-j> :resize -3<CR>
+noremap <A-k> :norm kV<CR>
+noremap <A-j> :norm jV<CR>
 "}}}
 
 " Custom Function calls {{{
@@ -148,6 +157,21 @@ map <Down> <Nop>
 
 "}}}
 
+let s:hidden_all = 0
+function! ToggleHiddenAll()
+    if s:hidden_all  == 0
+        let s:hidden_all = 1
+        set laststatus=0
+    else
+        let s:hidden_all = 0
+        set laststatus=2
+    endif
+endfunction
+
+nnoremap <silent> <S-h> :call ToggleHiddenAll()<CR>
+
+
+
 " Auto pair brackets and stuff
 " Lmao bye bye plugins
 iabbr <silent> ( ()<Left><C-R>=Eatchar('\s')<CR>
@@ -163,7 +187,7 @@ func Eatchar(pat)
     return (c =~ a:pat) ? '' : c
 endfunc
 
-colorscheme ayu
+colorscheme PaperColor
 set background=dark
 
 
@@ -312,8 +336,13 @@ command! -bang -nargs=? -complete=dir Files
 " }}}
 
 " lightline config {{{1
+" Nice lightline themes
+" one
+" darcula
+" ayu_dark
+" deus
 let g:lightline = {
-            \ 'colorscheme': 'ayu',
+            \ 'colorscheme': 'one',
             \ 'separator': { 'left': '', 'right': '' },
             \ 'subseparator': { 'left': '', 'right': '' },
             \ 'component_function': { 'filetype': 'GetFiletype', 'fileformat': 'GetFileformat'},
@@ -426,6 +455,27 @@ let g:webdevicons_enable = 1
 " adding to vim-airline's statusline
 let g:WebDevIconsOS = 'Linux'
 " }}}
+
+" null-ls.nvim config {{{
+
+lua << EOF
+  require("trouble").setup {
+  }
+EOF
+
+lua << EOF
+require("null-ls").setup({
+    sources = {
+        require("null-ls").builtins.diagnostics.vale,
+    },
+})
+EOF
+
+" }}}
+
+lua <<EOF
+require'toggle_lsp_diagnostics'.init()
+EOF
 
 " Auto Commands {{{
 
@@ -679,6 +729,7 @@ function! SearchInternet()
     normal! gv
 endfunction
 " }}}
+
 
 if (has("termguicolors"))
     let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
