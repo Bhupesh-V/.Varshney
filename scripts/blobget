@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+
+read -p "Enter Video Blob URL: " -r BLOB_URL
+
+read -p "Enter New File name: " -r NEW_FILE
+
+NEW_FILE=${NEW_FILE:-'output'}
+
+ffmpeg -hide_banner -loglevel error -stats -i "$BLOB_URL" -c copy -bsf:a aac_adtstoasc "$NEW_FILE.mp4"
+
