@@ -12,7 +12,6 @@ Plug 'junegunn/fzf.vim'
 Plug 'nacro90/numb.nvim'
 Plug 'junegunn/goyo.vim'
 " Colorschemes
-Plug 'jacoborus/tender.vim'
 Plug 'sainnhe/sonokai'
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'franbach/miramare'
@@ -21,11 +20,9 @@ Plug 'NLKNguyen/papercolor-theme'
 Plug 'ayu-theme/ayu-vim'
 Plug 'lifepillar/vim-gruvbox8'
 Plug 'crusoexia/vim-monokai'
-Plug 'savq/melange'
 Plug 'https://git.sr.ht/~novakane/kosmikoa.nvim'
 Plug 'rebelot/kanagawa.nvim'
-Plug 'mangeshrex/uwu.vim'
-Plug 'Rigellute/shades-of-purple.vim'
+Plug 'catppuccin/nvim', {'as': 'catppuccin'}
 " Miscellaneous
 Plug 'psf/black', { 'branch': 'stable' }
 Plug 'neovim/nvim-lspconfig'
@@ -55,21 +52,24 @@ call plug#end()
 
 vnoremap <C-c> "+y
 imap <C-v> <Esc>"+pi
-nmap <F6> :NERDTreeToggle<CR>
-noremap <F7> :e $MYVIMRC<CR>
-noremap <F5> :source $MYVIMRC<CR>
 
-" Write & quit on all tabs, windows
-noremap <F9> :wqa<CR>
-
-" Visual inner line (without whitespaces)
-vnoremap il :<C-U>normal ^vg_<CR>
-omap il :normal vil<CR>
 " Disable spell & start :terminal
 nnoremap <F3> :set nospell <bar> :term<CR>
 " Insert Date (dd mm, yyyy)
 inoremap <F4> <C-R>=strftime("%d %b, %Y")<CR>
 nnoremap <F4> "=strftime('%d %b, %Y')<CR>P
+noremap <F5> :source $MYVIMRC<CR>
+nmap <F6> :NERDTreeToggle<CR>
+noremap <F7> :e $MYVIMRC<CR>
+noremap <F8> :call Toggle_transparent()<CR>
+" Write & quit on all tabs, windows, the Kill switch
+noremap <F9> :wqa<CR>
+nnoremap <silent> <F10> :call PrettyMe()<CR>
+inoremap <silent> <F10> :call PrettyMe()<CR>
+
+" Visual inner line (without whitespaces)
+vnoremap il :<C-U>normal ^vg_<CR>
+omap il :normal vil<CR>
 " Toggle code-folds
 noremap <space> za
 nnoremap <A-CR> :Goyo 120<CR>
@@ -137,11 +137,8 @@ noremap <A-j> :norm jV<CR>
 
 " Custom Function calls {{{
 nnoremap <S-r> :call AddCmdOuput()<CR>
-noremap <F8> :call Toggle_transparent()<CR>
 nnoremap <S-l> :call OpenLink()<CR>
 nnoremap t :call ToggleComment()<CR>
-nnoremap <F10> :call PrettyMe()<CR>
-inoremap <F10> :call PrettyMe()<CR>
 " Use vim-floaterm to show search results only in visual mode
 xnoremap <leader>f <esc>:call SendQueryToFloatTerm()<CR>   
 xnoremap <leader>t <esc>:split <bar> call SendQueryToTerm()<CR>
@@ -171,7 +168,6 @@ endfunction
 nnoremap <silent> <S-h> :call ToggleHiddenAll()<CR>
 
 
-
 " Auto pair brackets and stuff
 " Lmao bye bye plugins
 iabbr <silent> ( ()<Left><C-R>=Eatchar('\s')<CR>
@@ -187,7 +183,7 @@ func Eatchar(pat)
     return (c =~ a:pat) ? '' : c
 endfunc
 
-colorscheme PaperColor
+colorscheme ayu
 set background=dark
 
 
@@ -272,6 +268,7 @@ end,
 }
 
 require'lspconfig'.bashls.setup{}
+require'lspconfig'.pyright.setup{}
 require'lspconfig'.dartls.setup{}
 require'lsp_signature'.on_attach()
 EOF
@@ -364,7 +361,7 @@ let g:lightline.active = {
 " Custom Global Highlights {{{
 "
 " Make current line bold
-" highlight CursorLine cterm=bold gui=bold ctermbg=none guibg=none
+highlight CursorLine cterm=bold gui=bold ctermbg=none guibg=none
 " highlight CursorLineNr ctermbg=none guibg=none
 " Bold the markers on fold column
 hi FoldColumn cterm=bold gui=bold
@@ -434,15 +431,14 @@ call wilder#set_option('renderer', wilder#popupmenu_renderer(wilder#popupmenu_bo
 
 " Floaterm config {{{
 
-let g:floaterm_title = "😎️"
+let g:floaterm_title = "bhupesh.me"
 let g:floaterm_autoinsert = v:false
-
 
 hi FloatermBorder cterm=bold gui=bold guibg=NONE guifg=orange
 " }}}
 
 " Ulti-snips config {{{
-let g:UltiSnipsExpandTrigger="<tab>"
+" let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsListSnippets="<c-l>"
 " let g:UltiSnipsJumpForwardTrigger="<c-j>"
 " let g:UltiSnipsJumpBackwardTrigger="<c-k>"
@@ -587,14 +583,15 @@ endfunction
 function! PrettyMe()
     if &filetype == "json"
         " See this: https://bhupesh-v.github.io/prettifying-json-files-using-bash-python-vim/ 
-        exe "!pj %:p"
+        silent exe "!pj %:p"
     elseif &filetype == "python"
-        exe ":Black"
+        silent exe ":Black"
     elseif &filetype == "go"
-        exe ":!gofmt -w -s %"
+        " Add missing imports and lint stuff
+        silent exe ":!goimports -w % && gofmt -w -s %"
     else
         " Indent and Go back to my previous cursor pos
-        exe "norm! gg=G\<C-o>"
+        silent exe "norm! gg=G\<C-o>"
     endif
 endfunction
 
