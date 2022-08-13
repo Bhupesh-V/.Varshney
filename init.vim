@@ -23,6 +23,7 @@ Plug 'crusoexia/vim-monokai'
 Plug 'https://git.sr.ht/~novakane/kosmikoa.nvim'
 Plug 'rebelot/kanagawa.nvim'
 Plug 'catppuccin/nvim', {'as': 'catppuccin'}
+Plug 'joshdick/onedark.vim'
 " Miscellaneous
 Plug 'psf/black', { 'branch': 'stable' }
 Plug 'neovim/nvim-lspconfig'
@@ -32,8 +33,8 @@ Plug 'glepnir/lspsaga.nvim'
 Plug 'ray-x/lsp_signature.nvim'
 " Plug 'RRethy/vim-illuminate'
 " Plug 'nvim-lua/popup.nvim'
-" Plug 'nvim-lua/plenary.nvim'
-" Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.0' }
 Plug 'jparise/vim-graphql'
 Plug 'sunjon/shade.nvim'
 Plug 'ryanoasis/vim-devicons'
@@ -188,7 +189,7 @@ set background=dark
 
 
 " Common Settings {{{
-set number 
+set number
 " set rnu
 set autoindent smartindent
 set expandtab
@@ -233,7 +234,7 @@ let $BASH_ENV = "~/.vim_bash_env"
 " Toggle transparent mode
 let g:is_transparent = 0
 " Enable syntax highlight in markdown fenced code-blocks
-let g:markdown_fenced_languages = ['python', 'go', 'sh']
+let g:markdown_fenced_languages = ['python', 'go', 'sh', 'sql', 'bash']
 
 "}}}
 
@@ -268,7 +269,11 @@ end,
 }
 
 require'lspconfig'.bashls.setup{}
-require'lspconfig'.pyright.setup{}
+require'lspconfig'.pyright.setup {
+    on_attach = function(client)
+    require 'lsp_signature'.on_attach(client)
+end,
+}
 require'lspconfig'.dartls.setup{}
 require'lsp_signature'.on_attach()
 EOF
