@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Script to format JSON files using Python JSON Tool
+
+__pj() {
+    if [[ -z "$1" ]]; then
+        printf "%s\n" "No file path"
+        return
+    fi
+    if [[ "$1" == "." ]]; then
+        for json_file_path in $(find . -name *.json)
+        do
+            pretty_json=$(python3 -m json.tool "$json_file_path") && echo "$pretty_json" > "$json_file_path"
+        done
+    else
+        pretty_json=$(python3 -m json.tool "$1") && echo "$pretty_json" > "$1"
+    fi
+}
+
+__pj "$@"

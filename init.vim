@@ -77,7 +77,7 @@ nnoremap <A-CR> :Goyo 120<CR>
 " Tab to cycle through open splits
 nnoremap <Tab> <C-w><C-w>
 " Use Enter to switch to command mode
-" nnoremap <CR> :
+nnoremap <CR> :
 " Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
 " Use j/k to select from completion menu
@@ -102,12 +102,10 @@ nnoremap <leader>ft :Tags<CR>
 nnoremap <leader>fs :Snippets<CR>
 nnoremap <leader>d :ToggleDiag <CR> :TroubleToggle<CR>
 
-" Keep things centered while searching stuff
-" Coconut oily
+" Keep cursor centered while searching stuff
 nnoremap n nzzzv
 nnoremap N Nzzzv
 nnoremap J mzJ`z
-
 nnoremap j jzz
 nnoremap k kzz
 " Map keys in terminal mode
@@ -132,13 +130,14 @@ nnoremap <A-h> :vertical resize +3<CR>
 nnoremap <A-l> :vertical resize -3<CR>
 " nnoremap <A-k> :resize +3<CR>
 " nnoremap <A-j> :resize -3<CR>
+
+" Highlight current line
 noremap <A-k> :norm kV<CR>
 noremap <A-j> :norm jV<CR>
 "}}}
 
 " Custom Function calls {{{
 nnoremap <S-r> :call AddCmdOuput()<CR>
-nnoremap <S-l> :call OpenLink()<CR>
 nnoremap t :call ToggleComment()<CR>
 " Use vim-floaterm to show search results only in visual mode
 xnoremap <leader>f <esc>:call SendQueryToFloatTerm()<CR>   
@@ -534,14 +533,6 @@ function! Toggle_transparent()
     endif
 endfunction
 
-function! OpenURLUnderCursor()
-    let s:uri = expand('<cWORD>')
-    let s:uri = substitute(s:uri, '?', '\\?', '')
-    let s:uri = shellescape(s:uri, 1)
-    echo s:uri
-endfunction
-" nnoremap gx :call OpenURLUnderCursor()<CR>
-
 " Run commands inside the editor & paste output in next line
 function! AddCmdOuput()
     " A one liner for this can be nnoremap <S-r> !!sh<CR>
@@ -554,22 +545,9 @@ function! AddCmdOuput()
         if stridx(cmd_output[0], "command not found") == -1
             call append(line('.'), cmd_output)
         else
-            redraw
+            " redraw
             echo "⚠️  " . getline(".")[0:3] . ".. not found"
         endif
-    endtry
-endfunction
-
-" Open hyper link in current line
-function! OpenLink()
-    let links = []
-    try
-        call substitute(getline('.'), 'http[s]\?:\/\/[^) \"]*', '\=add(links, submatch(0))', 'g')
-        echo "Opening " . links[0]
-        exe "silent! !xdg-open " . links[0]
-    catch E684
-        echo "No link found :("
-        return
     endtry
 endfunction
 

@@ -32,6 +32,7 @@ content = {
 }
 
 
+
 def request(url, data=None, method=None):
     if method == "PATCH":
         req = urllib.request.Request(url, data=data, headers=HEADERS)
@@ -46,16 +47,43 @@ def request(url, data=None, method=None):
     try:
         with urllib.request.urlopen(req) as response:
             res = json.loads(response.read().decode("utf-8"))
+            if response.headers["link"] is not None:
+                next_url = parse_link_header(response.headers["link"])
+            else:
+                next_url = None
     except urllib.error.URLError as e:
         print(e.reason)
         exit()
-    return res, response.code
+    return res, response.code, next_url
 
+
+def parse_link_header(link_header):
+    header_links = link_header.split(",")[0].split(";")
+    if header_links[1] == ' rel="next"':
+        next_page = header_links[0]
+        # yo why tf response headers are normal ?
+        next_page = next_page[1 : len(next_page) - 1]
+    else:
+        next_page = None
+
+    return next_page
+
+
+def handle_pagination(url):
+    res_list = []
+    while True:
+        res, res_code, next_url = request(url)
+        res_list += res
+        if next_url is None:
+            break
+        url = next_url
+
+    return res_list
 
 def get_backup(filename):
     # Get Gist id if we already have a backup
     print("📦 Checking for backup ...")
-    res, _ = request(url=f"{base_url}/gists")
+    res = handle_pagination(url=f"{base_url}/gists")
     for gist in res:
         if filename in gist["files"]:
             updated_date = datetime.strptime(
@@ -109,13 +137,13 @@ def controller(filepath):
 
     if gist_id is not None:
         print("📤 Updating ...")
-        res, code = request(
+        res, code, _ = request(
             f"{base_url}/gists/{gist_id}", json.dumps(content).encode("utf-8"), "PATCH"
         )
     else:
         print(f"No backup found for file: {os.path.basename(filepath)}")
         print("Creating Backup ...")
-        res, code = request(
+        res, code, _ = request(
             f"{base_url}/gists", json.dumps(content).encode("utf-8"), "POST"
         )
     if code == 200 or code == 201:

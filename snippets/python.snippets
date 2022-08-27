@@ -64,3 +64,9 @@ def ${2:functionName}():
 if __name__ == '__main__':
     ${1:functionName}()
 endsnippet
+
+
+snippet jsonreadfile "Read JSON from file" b
+with open("${1}") as file:
+    data = json.loads(file)
+endsnippet
