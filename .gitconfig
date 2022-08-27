@@ -35,3 +35,6 @@
 	autocorrect = 7
 [init]
 	defaultBranch = main
+[gc]
+	reflogExpireUnreachable = 90
+	reflogExpire = 200

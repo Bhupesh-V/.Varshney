@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -x
+
+gcd() {
+    cd "$1" || return
+
+    remote_commit=$(git ls-remote --head --exit-code origin | cut -f 1 | head)
+    local_commit=$(git --no-pager log --pretty=tformat:"%H" -1)
+
+    if [[ "$remote_commit" != "$local_commit" ]]; then
+        printf "%s\n" "Your repository seems to be out of sync with remote"
+        printf "%s\n" "Please take a git pull"
+    fi
+}
+
+gcd "$1"

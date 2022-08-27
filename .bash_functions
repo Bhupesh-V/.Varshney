@@ -129,6 +129,20 @@ scd() {
     # [[ -z "$1" ]] && cd "$HOME" || exit
 }
 
+# gcd() {
+# cd "$1" || return
+ 
+# default_branch=$(git remote show origin | awk '/HEAD/ {print $3}')
+
+# remote_commit=$(git ls-remote --head --exit-code origin "$default_branch" | cut -f 1 | head -1)
+# local_commit=$(git --no-pager log --pretty=tformat:"%H" -1)
+
+# if [[ $remote_commit != $local_commit ]]; then
+# printf "%s\n" "Your repository seems to be out of sync with remote"
+# printf "%s\n" "Please take a git pull"
+        # fi
+        # }
+
 netu() {
     # [net]work [u]sage: check network usage stats
 
@@ -191,8 +205,10 @@ eye() {
         glow -w "$COLUMNS" "$1"
     elif [[ $extension == "json" ]]; then
         python3 -m json.tool "$1"
+    elif [[ $(file --mime "$1" | awk '{print $3}') == "video/mp4;" ]]; then
+        browse "$1"
     else
-        less "$1"
+        batcat "$1"
     fi
 }
 
@@ -220,15 +236,6 @@ h() {
         whatis "$1"
         apropos "$1"
     fi
-}
-
-pj() {
-    # prettify json using python3
-    if [[ -z "$1" ]]; then
-        echo "No file path"
-        return
-    fi
-    pretty_json=$(python3 -m json.tool "$1") && echo "$pretty_json" > "$1"
 }
 
 hl () { 
@@ -305,4 +312,9 @@ epoch() {
             [ -z $1 ] && echo "argument missing, 'epoch <unix-timestamp>'" && return
             [ $(uname) == "Darwin" ] && date -r "$1" || date --date="@$1";;
     esac
+}
+
+pp() {
+    # pretty print $PATH
+    echo "${PATH//:/$'\n'}"
 }

@@ -9,7 +9,7 @@ export TERM=xterm-256color
 export PATH="$HOME/Documents/.Varshney/scripts:$PATH"
 export PATH="$HOME/Documents/.Varshney/scripts/git:$PATH"
 export PATH="$HOME/Documents/.Varshney/scripts/github:$PATH"
-export PATH="$HOME/Documents/ugit:$PATH"
+# export PATH="$HOME/Documents/ugit:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
 # don't put duplicate lines or lines starting with space in the history.
@@ -240,3 +240,5 @@ export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/go/bin
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+export PATH="/home/bhupesh/.deta/bin:$PATH"
