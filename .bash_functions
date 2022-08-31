@@ -318,3 +318,11 @@ pp() {
     # pretty print $PATH
     echo "${PATH//:/$'\n'}"
 }
+
+gga() {
+    gists -au Bhupesh-V | fzf | awk -F  "," '{print $2}' | xargs -0 browse > /dev/null 2>&1
+}
+
+gg() {
+    gists -u Bhupesh-V | fzf | awk -F  "," '{print $2}' | xargs -0 browse > /dev/null 2>&1
+}
