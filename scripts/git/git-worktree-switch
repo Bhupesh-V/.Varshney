@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# FZF Wrapper over git to interactively switch git worktrees
+
+worktree=$(
+    git worktree list | fzf \
+        --prompt="Switch Worktree: " \
+        --height 40% --reverse |
+        awk '{print $1}'
+)
+
+cd "$worktree" || return

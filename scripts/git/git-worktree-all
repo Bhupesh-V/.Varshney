@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+
+# FZF Wrapper over git to interactively work with git worktrees
+
+# Dependencies:
+# 1. FZF
+# 2. Bash>=4
+# 3. Basic Utils: AWK, dirname, basename, grep
+
+# READ BEFORE USE
+#
+# This script assumes the following git worktree flow
+#
+# SOME_DIRECTORY
+# │
+# ├────beepbop (main git repository or main worktree)
+# │    │
+# │    ├────.git (dir)
+# │    │
+# │    └────README.md
+# │
+# └────beepbop-worktrees (all linked worktrees)
+#      │
+#      ├────a1 (linked worktree)
+#      │    │
+#      │    ├────.git (file)
+#      │    │
+#      │    └────README.md
+#      └────a2 (linked worktree)
+#           │
+#           ├────.git (file)
+#           │
+#           └────README.md
+
+# Installation & Usage:
+#
+# $ curl -s https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/git/git-worktree-all -o giw
+#
+# $ source giw
+# 
+# TODO: set $GIT_WORK_TREE env variable
+# TODO: set config for core.worktree
+# TODO: improve commit worktree flow
+# TODO: highligh the main worktree branch?
+
+RESET=$(tput sgr0)
+BOLD=$(tput bold)
+
+create_worktree() {
+    # avoid nesting of worktrees by switching to main worktree 😅
+    switch_to_main_tree
+
+    common_dir=$(dirname "$(pwd)")
+    git_main_dir=$(basename "$(pwd)")
+    new_worktree="$common_dir/$git_main_dir-worktrees/$1"
+
+    all_branches=$(git for-each-ref --format='%(refname:short)')
+
+    if grep -w "$1" <<< $all_branches 1> /dev/null; then
+        git worktree add "$new_worktree" "$1"
+    else
+        git worktree add -b "$1" "$new_worktree"
+    fi
+
+    printf "%s\n" "Switching to worktree, $BOLD$1${RESET}"
+    switch_worktree "$1"
+}
+
+switch_worktree() {
+    # switch current worktree in the terminal
+    worktree=$(git worktree list | grep -m 1 -w "$1" | awk '{print $1}')
+    echo $worktree
+
+    cd "$worktree" || printf "%s\n" "Can't find the linked worktree" && return
+}
+
+switch_to_main_tree() {
+    printf "%s" "Switching to main worktree: " 
+
+    if file .git | grep -w "ASCII text" 1> /dev/null; then
+        linked_tree_path=$(cat .git | awk '{print $2}')
+        # gitdir: SOME_PATH/.git/worktrees/PWD
+        current_linked_tree=$(basename "$(pwd)")
+        main_worktree_path=${linked_tree_path%.git/worktrees/$current_linked_tree}
+        printf "%s\n" "$BOLD$main_worktree_path$RESET"
+
+        cd "$main_worktree_path" || return
+
+        # verify if we are in main worktree
+        if file .git | grep -w ".git: directory" 1> /dev/null; then
+            return
+        else
+            printf "%s\n" "Failed to switch to main worktree"
+            exit 1
+        fi
+    fi
+}
+
+init_worktree_menu() {
+    # choose a worktree source
+    worktree_source=$(printf "%s\n%s" "Commit" "Branch" | fzf \
+        --prompt="Choose worktree source: " \
+        --height 40% --reverse \
+        --header="From where do you want to switch/create a worktree" | awk '{print $1}'
+    )
+
+    [[ -z $worktree_source ]] && return
+
+    if [[ $worktree_source = "Commit" ]]; then
+        commit=$(git log --graph --decorate --pretty=oneline --abbrev-commit | fzf \
+            --prompt="Choose Commit: " \
+            --height 40% --reverse |
+            awk '{print $2}'
+        )
+
+        [[ -z $commit ]] && return
+    elif [[ $worktree_source = "Branch" ]]; then
+        branch=$(git for-each-ref --format='%(refname:short)' | fzf \
+            --prompt="Choose Branch: " \
+            --height 40% --reverse \
+            --header="If a branch doesn't exist, Git will create one" \
+            --bind=enter:replace-query+print-query \
+        )
+
+        [[ -z $branch ]] && return
+    fi
+
+    # find existing worktrees
+    available_worktrees=$(git worktree list | awk '{print $3}' | tr -d "[]")
+
+    if grep -w "$branch" <<< $available_worktrees 1> /dev/null; then
+        switch_worktree "$branch"
+    elif grep -w "$commit" <<< $available_worktrees 1> /dev/null; then
+        switch_worktree "$commit"
+    else
+        printf "%s\n" "Worktree named ${BOLD}$branch${RESET} doesn't exist. Creating one..."
+        create_worktree $branch
+    fi
+}
+
+init_worktree_menu
