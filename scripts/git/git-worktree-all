@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # FZF Wrapper over git to interactively work with git worktrees
+# Automate your git worktrees create & switch lifecycle
 
 # Dependencies:
 # 1. FZF
@@ -47,18 +48,21 @@ BOLD=$(tput bold)
 
 create_worktree() {
     # avoid nesting of worktrees by switching to main worktree 😅
+    # TODO: make this function generic to handle both commit/branch based creation
     switch_to_main_tree
 
     common_dir=$(dirname "$(pwd)")
     git_main_dir=$(basename "$(pwd)")
     new_worktree="$common_dir/$git_main_dir-worktrees/$1"
 
-    all_branches=$(git for-each-ref --format='%(refname:short)')
+    all_branches=$(git for-each-ref --format='%(refname:short)' refs/heads)
 
     if grep -w "$1" <<< $all_branches 1> /dev/null; then
+        # worktree exists with branch $1
         git worktree add "$new_worktree" "$1"
     else
-        git worktree add -b "$1" "$new_worktree"
+        # create a branch if it doesn't exist
+        git worktree add "$new_worktree"
     fi
 
     printf "%s\n" "Switching to worktree, $BOLD$1${RESET}"
@@ -96,51 +100,26 @@ switch_to_main_tree() {
 }
 
 init_worktree_menu() {
-    # choose a worktree source
-    worktree_source=$(printf "%s\n%s" "Commit" "Branch" | fzf \
-        --prompt="Choose worktree source: " \
-        --height 40% --reverse \
-        --header="From where do you want to switch/create a worktree" | awk '{print $1}'
+    # list available branches that have a worktree assoicated with them
+    # in any case the default tree with "main" branch is printed
+
+    worktree=$(git for-each-ref --color=always --format='%(if)%(worktreepath)%(then)%(color:bold)%(refname:short)%(color:bold 208) %(align:63,middle)%(worktreepath)%(end)%(color:reset) [Commit:%(color: bold 154)%(objectname:short)%(color:reset)]%(end)' | column -t | fzf \
+        --prompt="Choose a Worktree or Create One: " \
+        --height 40% --reverse --ansi\
+        --header="If a worktree doesn't exist, git will create it for you. Just type in what you want" \
+        --bind=enter:replace-query+print-query | awk '{print $1}'
     )
 
-    [[ -z $worktree_source ]] && return
+    [[ -z $worktree ]] && return
 
-    # find existing worktrees
+    # find existing worktrees once again
     available_worktrees=$(git worktree list | awk '{print $3}' | tr -d "[]")
 
-    if [[ $worktree_source = "Commit" ]]; then
-        commit=$(git log --color=always --decorate --pretty=oneline --abbrev-commit | fzf \
-            --prompt="Choose Commit: " \
-            --height 40% --reverse --ansi |
-            awk '{print $1}'
-        )
-
-        [[ -z $commit ]] && return
-
-        if grep -w "$commit" <<< $available_worktrees 1> /dev/null; then
-            switch_worktree "$commit"
-        else
-            printf "%s\n" "Worktree with commit ${BOLD}$commit${RESET} doesn't exist. Creating one..."
-            # append "commit" suffix for better understanding
-            create_worktree "commit-$commit"
-        fi
-
-    elif [[ $worktree_source = "Branch" ]]; then
-        branch=$(git for-each-ref --format='%(refname:short)' refs/heads | fzf \
-            --prompt="Choose Branch: " \
-            --height 40% --reverse \
-            --header="If a branch doesn't exist, git will create one" \
-            --bind=enter:replace-query+print-query \
-        )
-
-        [[ -z $branch ]] && return
-
-        if grep -w "$branch" <<< $available_worktrees 1> /dev/null; then
-            switch_worktree "$branch"
-        else
-            printf "%s\n" "Worktree named ${BOLD}$branch${RESET} doesn't exist. Creating one..."
-            create_worktree $branch
-        fi
+    if grep -w "$worktree" <<< $available_worktrees 1> /dev/null; then
+        switch_worktree "$worktree"
+    else
+        printf "%s\n" "Worktree named ${BOLD}$worktree${RESET} doesn't exist. Creating one..."
+        create_worktree $worktree
     fi
 }
 
