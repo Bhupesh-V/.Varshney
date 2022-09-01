@@ -24,7 +24,7 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 
 ## What's Inside 👀
 
-> ~~I am pretty new to this stuff~~ (not anymore), so you won't find any scripts that hack NASA. Anyways hope you find something useful, Good luck 👍
+> ~~I am pretty new to this stuff~~ (not anymore), so you won't find any scripts that hack NASA. Anyways, hope you find something useful, Good luck 👍
 
 - [`scripts`](#scripts)
 - [`bash_functions`](#bash_functions)
@@ -86,7 +86,7 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 1. [**sys**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/sys)
    > A realtime update of your system using common shell commands
    <details><summary>Demo</summary>
-   <img title="sys.sh: get realtime update of your linux system" alt="sys.sh demo gif" src="https://user-images.githubusercontent.com/34342551/96346219-5cb00b00-10b8-11eb-90fb-d21f6ffa7c12.gif">
+   <img title="sys: get realtime update of your linux system" alt="sys.sh demo gif" src="https://user-images.githubusercontent.com/34342551/96346219-5cb00b00-10b8-11eb-90fb-d21f6ffa7c12.gif">
    </details>
 
    Install
@@ -97,7 +97,7 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 2. [**md**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/md)
    > A utility to watch a Markdown file & build its HTML preview using commonmarker
    <details><summary>Demo</summary>
-   <img title="md.sh: utility to watch a Markdown file & build its HTML preview using commonmarker" alt="md.sh demo gif" src="https://user-images.githubusercontent.com/34342551/97805510-a4b85b80-1c7c-11eb-9efe-3eedbb76a70b.gif">
+   <img title="md: utility to watch a Markdown file & build its HTML preview using commonmarker" alt="md.sh demo gif" src="https://user-images.githubusercontent.com/34342551/97805510-a4b85b80-1c7c-11eb-9efe-3eedbb76a70b.gif">
    </details>
 
    Install
@@ -108,9 +108,9 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 3. [**colors**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/colors)
    > A utility to check color capability of your terminal
    <details><summary>Demo</summary>
-   <img title="colors.sh: utility to check color capabilities of your terminal" alt="colors.sh demo png" src="https://user-images.githubusercontent.com/34342551/97805252-f2cc5f80-1c7a-11eb-92be-31ac80ec0719.png">
+   <img title="colors: utility to check color capabilities of your terminal" alt="colors.sh demo png" src="https://user-images.githubusercontent.com/34342551/97805252-f2cc5f80-1c7a-11eb-92be-31ac80ec0719.png">
    </details>
-   
+
    Install
    ```
    wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/colors && chmod +x colors && mv colors $HOME/.local/bin/
@@ -161,134 +161,6 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
    ```
    wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/oib && chmod +x oib && mv oib $HOME/.local/bin/
    ```
-10. [**git-feed**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/git-feed)
-    > A python utility to generate a feed of recently committed files inside a git repository
-
-    Install
-    ```
-    wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/git-feed && chmod +x git-feed && mv git-feed $HOME/.local/bin/
-    ```
-
-### [`.bash_aliases`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bash_aliases)
-
-Some handy aliases under different categories.
-
-1. Git
-   ```bash
-   # Add your staged changes to the previous commit
-   # while preserving your commit message
-   alias giac='git commit --amend -C HEAD'
-   alias gic='git commit'
-   alias gicl='git clone'
-   alias gil='git log --graph --decorate --pretty=oneline --abbrev-commit'
-   alias gim='git merge'
-   alias gid='git diff'
-   # undo last commit (unstage everything)
-   alias giu='git reset HEAD~'
-   # undo last commit (don't unstage everything)
-   alias gius='git reset --soft HEAD^'
-   ```
-
-2. Go
-   ```bash
-   alias gb="go build"
-   alias gr="go run"
-   alias gd="go doc -all"
-   alias gg="go get"
-   alias gt="go test"
-   ```
-
-3. Miscellaneous
-   ```bash
-   # create python virtualenv
-   alias venv="python3 -m venv"
-   # watch realtime system info
-   alias sys="watch -ct -n0 $HOME/Documents/.Varshney/scripts/sys.sh"
-   # python http server
-   alias serve="python3 -m http.server"
-   # grep pattern inside files
-   alias lk="grep -nir --exclude-dir=.git"
-   # search history for commands
-   alias hg="history | grep"
-   ```
-
-
-### [`.bashrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/.bashrc)
-
-My `PS1` is highly customized.
-
-<img align="center" title="My PS1" alt="PS1 prompt demo" src="https://user-images.githubusercontent.com/34342551/90950968-29fce400-e474-11ea-8f11-c375383e4606.png">
-
-Here is how its done
-
-```bash
-# Gib me all the colors 
-export TERM=xterm-256color
-# disable the default virtualenv prompt change
-export VIRTUAL_ENV_DISABLE_PROMPT=1
-
-# color definitions
-RESET="\e[0m"
-BOLD_BLACK_FG="\e[1;30m"
-ORANGE_FG="\e[38;5;214m"
-ORANGE_BG="\e[48;5;214m"
-GRAY_BG="\e[48;5;234m"
-GRAY_FG="\e[38;5;234m"
-BOLD_L_YELLOW=$'\e[1;38;5;11m'
-BOLD_RED_FG=$'\e[1;38;5;9m'
-BOLD_GREEN_FG=$'\e[1;32m'
-
-random_emoji() {
-	# add a random emoticon (mostly face emojis)
-	printf "%b" "\U1F$(shuf -i600-640 -n1)"
-}
-
-get_git_branch() {
-    curr_branch=$(git branch 2> /dev/null | awk '/*/ {print $2}')
-    [ "$curr_branch" ] && printf "%s" "($(tput bold)$(tput setaf 208)$curr_branch$(tput sgr0))"
-}
-
-pc_uptime() {
-    uptime -p | awk '{for (i=2; i<NF; i++) printf $i " "; if (NF >= 1) print $NF; }'
-}
-
-virtualenv_ps1() {
-    [ "$VIRTUAL_ENV" ] && printf "%s" " $(basename "$VIRTUAL_ENV")"
-}
-
-rightprompt() {
-    # display stuff on right side of prompt
-    printf '%*s' $COLUMNS "$(pc_uptime)"
-}
-
-# handles cursor position
-RIGHT_PROMPT="\n\$(tput sc; rightprompt; tput rc)"
-
-custom_prompt() {
-	EXIT="$?"
-	last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "\[$BOLD_RED_FG\]✘")
-    arrp="\[$GRAY_BG\] $last_command_status $(random_emoji) \[$GRAY_FG\]\[$ORANGE_BG\]\[$ORANGE_BG\]\[$BOLD_BLACK_FG\] $(virtualenv_ps1) \[$RESET\]\[$ORANGE_FG\]\[$RESET\]"
-    PS1="\[$BOLD_L_YELLOW\]\[$RIGHT_PROMPT\]\[$RESET\]\[$BOLD_GREEN_FG\]\w\[$RESET\] $(get_git_branch)\n$arrp "
-}
-
-if [ "$color_prompt" = yes ]; then
-    #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-    PROMPT_COMMAND=custom_prompt
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
-unset color_prompt force_color_prompt
-```
-
-
-### [`init.vim` or `.vimrc`](https://github.com/Bhupesh-V/.Varshney/blob/master/init.vim)
-
-![sexy-nvim-setup](https://user-images.githubusercontent.com/34342551/99086457-93ae0980-25ef-11eb-9a08-87d5630206b4.png)
-
-Current colorscheme: `palenight`
-
-> Learn more about vim in my **[my-vim-cheatsheet](https://github.com/Bhupesh-V/til/blob/master/Miscellaneous/my-vim-cheatsheet.md)**
-
 
 #### Keyboard Shortcuts
 
@@ -319,37 +191,15 @@ Current colorscheme: `palenight`
 |  `<space>` |    Toggle Fold at Current line |
 |  `<Tab>` |  Switch Windows |
 
-- Plugins:
-  1. [NERDTree](https://github.com/scrooloose/nerdtree) - for tree like menu
-  2. [vim-auto-save](https://github.com/907th/vim-auto-save) - for auto-saving files (no need to `:w`)
-  3. [vim-airline](https://github.com/vim-airline/vim-airline) - for status bar at bottom
-  4. [black.vim](https://github.com/psf/black/blob/master/plugin/black.vim) - python formatter
-  5. [UltiSnips](https://github.com/SirVer/ultisnips) - code snippet management
-
-- Some of my fav colorschemes:
-  - [ayu](https://github.com/ayu-theme/ayu-vim)
-  - [sonokai](https://github.com/sainnhe/sonokai)
-  - [darcula](https://github.com/doums/darcula)
-  - [purify](https://github.com/kyoz/purify)
-  - [tender.vim](https://github.com/jacoborus/tender.vim)
-  - [palenight](https://github.com/drewtempelmeyer/palenight.vim)
 
 ## Author [![bhupesh-twitter-image](https://kutt.it/bhupeshimself)](https://twitter.com/bhupeshimself)
-**🤓 [Bhupesh Varshney](https://bhupesh-v.github.io)** 
+**🤓 [Bhupesh Varshney](https://bhupesh.me)** 
 
 <img height="200px" src="https://user-images.githubusercontent.com/34342551/101245824-8e973280-3735-11eb-982e-17d59d74891a.png">
 
 ## ☺️ Show your support
 
 Support me by giving a ⭐️ if this project helped you! or just [![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2FBhupesh-V%2F.Varshney%2F)](https://twitter.com/intent/tweet?url=https://github.com/Bhupesh-V/.Varshney&text=.Varshney%20via%20@bhupeshimself)
-
-<a href="https://liberapay.com/bhupesh/donate">
-  <img title="librepay/bhupesh" alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg" width="100">
-</a>
-<a href="https://ko-fi.com/bhupesh">
-  <img title="ko-fi/bhupesh" alt="Support on ko-fi" src="https://user-images.githubusercontent.com/34342551/88784787-12507980-d1ae-11ea-82fe-f55753340168.png" width="185">
-</a>
-
 
 ## 📝 License
 
