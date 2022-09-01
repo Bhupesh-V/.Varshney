@@ -40,8 +40,7 @@
 # 
 # TODO: set $GIT_WORK_TREE env variable
 # TODO: set config for core.worktree
-# TODO: improve commit worktree flow
-# TODO: highligh the main worktree branch?
+# TODO: highlight the main worktree branch?
 
 RESET=$(tput sgr0)
 BOLD=$(tput bold)
@@ -106,35 +105,42 @@ init_worktree_menu() {
 
     [[ -z $worktree_source ]] && return
 
+    # find existing worktrees
+    available_worktrees=$(git worktree list | awk '{print $3}' | tr -d "[]")
+
     if [[ $worktree_source = "Commit" ]]; then
-        commit=$(git log --graph --decorate --pretty=oneline --abbrev-commit | fzf \
+        commit=$(git log --color=always --decorate --pretty=oneline --abbrev-commit | fzf \
             --prompt="Choose Commit: " \
-            --height 40% --reverse |
-            awk '{print $2}'
+            --height 40% --reverse --ansi |
+            awk '{print $1}'
         )
 
         [[ -z $commit ]] && return
+
+        if grep -w "$commit" <<< $available_worktrees 1> /dev/null; then
+            switch_worktree "$commit"
+        else
+            printf "%s\n" "Worktree with commit ${BOLD}$commit${RESET} doesn't exist. Creating one..."
+            # append "commit" suffix for better understanding
+            create_worktree "commit-$commit"
+        fi
+
     elif [[ $worktree_source = "Branch" ]]; then
-        branch=$(git for-each-ref --format='%(refname:short)' | fzf \
+        branch=$(git for-each-ref --format='%(refname:short)' refs/heads | fzf \
             --prompt="Choose Branch: " \
             --height 40% --reverse \
-            --header="If a branch doesn't exist, Git will create one" \
+            --header="If a branch doesn't exist, git will create one" \
             --bind=enter:replace-query+print-query \
         )
 
         [[ -z $branch ]] && return
-    fi
 
-    # find existing worktrees
-    available_worktrees=$(git worktree list | awk '{print $3}' | tr -d "[]")
-
-    if grep -w "$branch" <<< $available_worktrees 1> /dev/null; then
-        switch_worktree "$branch"
-    elif grep -w "$commit" <<< $available_worktrees 1> /dev/null; then
-        switch_worktree "$commit"
-    else
-        printf "%s\n" "Worktree named ${BOLD}$branch${RESET} doesn't exist. Creating one..."
-        create_worktree $branch
+        if grep -w "$branch" <<< $available_worktrees 1> /dev/null; then
+            switch_worktree "$branch"
+        else
+            printf "%s\n" "Worktree named ${BOLD}$branch${RESET} doesn't exist. Creating one..."
+            create_worktree $branch
+        fi
     fi
 }
 
