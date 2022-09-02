@@ -54,14 +54,18 @@ create_worktree() {
     git_main_dir=$(basename "$(pwd)")
     new_worktree="$common_dir/$git_main_dir-worktrees/$1"
 
-    all_branches=$(git for-each-ref --format='%(refname:short)' refs/heads)
+    source_branch=$(git for-each-ref --format='%(refname:short)' refs/heads | fzf\
+        --prompt="Choose a source branch for $1: " \
+        --height 40% --reverse --ansi\
+        --header="Create a worktree from pre-existing branch. (Ctrl+C to use main)" | awk '{print $1}'
+    )
 
-    if grep -w "$1" <<< $all_branches 1> /dev/null; then
-        # worktree exists with branch $1
-        git worktree add "$new_worktree" "$1"
-    else
-        # create a branch if it doesn't exist
+    if [[ -z $source_branch ]]; then
         git worktree add "$new_worktree"
+    else
+        if git branch "$1" "$source_branch"; then
+            git worktree add "$new_worktree" "$1"
+        fi
     fi
 
     find_copy_gitignored_paths "$new_worktree"
@@ -78,9 +82,8 @@ switch_worktree() {
 }
 
 switch_to_main_tree() {
-    printf "%s" "Switching to main worktree: " 
-
     if file .git | grep -w "ASCII text" 1> /dev/null; then
+        printf "%s" "Switching to main worktree: "
         linked_tree_path=$(cat .git | awk '{print $2}')
         # gitdir: SOME_PATH/.git/worktrees/PWD
         current_linked_tree=$(basename "$(pwd)")
@@ -100,21 +103,21 @@ switch_to_main_tree() {
 }
 
 # copy any gitignored paths to a worktree
-# avoid copying paths like python venvs
+# Good for copying paths like .vscode/, .env
 find_copy_gitignored_paths() {
 
     # Get all the files which are tracked
-    tracked_files=$(git ls-files >> /tmp/tracked_files)
-    # Get list of all files, hidden or not
-    all_filepaths=$(find . -maxdepth 1 -mtime -14 -printf '%f\n' > /tmp/all_files)
+    tracked_files=$(git ls-tree --name-only $(git branch --show-current) > /tmp/tracked_files)
+    # Get list of all files in repository, hidden or not
+    all_filepaths=$(find . -mindepth 1 -maxdepth 1 -mtime -14 -not -path "./.git" -printf '%f\n' > /tmp/all_files)
     # Difference b/w these 2 lists
     difference=$(comm -23 <(sort /tmp/all_files) <(sort /tmp/tracked_files))
 
     # Ask the user what they want to copy
     readarray -t choice_paths_to_copy < <(printf "%s" "$difference" | fzf \
-        --prompt="Choose filepaths (Tab for select): " \
+        --prompt="Choose filepaths to copy (TAB to select): " \
         --height 40% --reverse --multi \
-        --header="Looks like you won't find these files in the new worktree (Ctrl+C to skip)"
+        --header="These files are ignored by git while creating a worktree (Ctrl+C to skip)"
     )
 
     [[ -z $choice_paths_to_copy ]] && return
@@ -135,7 +138,7 @@ init_worktree_menu() {
 
     worktree=$(git for-each-ref --color=always --format='%(if)%(worktreepath)%(then)%(color:bold)%(refname:short)%(color:bold 208) %(align:63,middle)%(worktreepath)%(end)%(color:reset) [Commit:%(color: bold 154)%(objectname:short)%(color:reset)]%(end)' | column -t | fzf \
         --prompt="Choose a Worktree or Create One: " \
-        --height 40% --reverse --ansi\
+        --height 40% --reverse --exact --ansi\
         --header="If a worktree doesn't exist, git will create it for you." \
         --bind=enter:replace-query+print-query | awk '{print $1}'
     )
