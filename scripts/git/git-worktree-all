@@ -6,7 +6,7 @@
 # Dependencies:
 # 1. FZF
 # 2. Bash>=4
-# 3. Basic Utils: AWK, dirname, basename, grep
+# 3. Basic Utils: AWK, dirname, basename, grep, column, comm
 
 # READ BEFORE USE
 #
@@ -48,7 +48,6 @@ BOLD=$(tput bold)
 
 create_worktree() {
     # avoid nesting of worktrees by switching to main worktree 😅
-    # TODO: make this function generic to handle both commit/branch based creation
     switch_to_main_tree
 
     common_dir=$(dirname "$(pwd)")
@@ -65,6 +64,8 @@ create_worktree() {
         git worktree add "$new_worktree"
     fi
 
+    find_copy_gitignored_paths "$new_worktree"
+
     printf "%s\n" "Switching to worktree, $BOLD$1${RESET}"
     switch_worktree "$1"
 }
@@ -72,7 +73,6 @@ create_worktree() {
 switch_worktree() {
     # switch current worktree in the terminal
     worktree=$(git worktree list | grep -m 1 -w "$1" | awk '{print $1}')
-    echo $worktree
 
     cd "$worktree" || printf "%s\n" "Can't find the linked worktree" && return
 }
@@ -99,14 +99,44 @@ switch_to_main_tree() {
     fi
 }
 
+# copy any gitignored paths to a worktree
+# avoid copying paths like python venvs
+find_copy_gitignored_paths() {
+
+    # Get all the files which are tracked
+    tracked_files=$(git ls-files >> /tmp/tracked_files)
+    # Get list of all files, hidden or not
+    all_filepaths=$(find . -maxdepth 1 -mtime -14 -printf '%f\n' > /tmp/all_files)
+    # Difference b/w these 2 lists
+    difference=$(comm -23 <(sort /tmp/all_files) <(sort /tmp/tracked_files))
+
+    # Ask the user what they want to copy
+    readarray -t choice_paths_to_copy < <(printf "%s" "$difference" | fzf \
+        --prompt="Choose filepaths (Tab for select): " \
+        --height 40% --reverse --multi \
+        --header="Looks like you won't find these files in the new worktree (Ctrl+C to skip)"
+    )
+
+    [[ -z $choice_paths_to_copy ]] && return
+
+    # Copy the choosen files
+    for ignored_file in "${choice_paths_to_copy[@]}"
+    do
+        if cp -r "$ignored_file" "$new_worktree"; then
+            printf "%s\n" "Copied $BOLD$ignored_file$RESET to worktree"
+        fi
+    done
+
+}
+
 init_worktree_menu() {
-    # list available branches that have a worktree assoicated with them
+    # list available branches that have a worktree associated with them
     # in any case the default tree with "main" branch is printed
 
     worktree=$(git for-each-ref --color=always --format='%(if)%(worktreepath)%(then)%(color:bold)%(refname:short)%(color:bold 208) %(align:63,middle)%(worktreepath)%(end)%(color:reset) [Commit:%(color: bold 154)%(objectname:short)%(color:reset)]%(end)' | column -t | fzf \
         --prompt="Choose a Worktree or Create One: " \
         --height 40% --reverse --ansi\
-        --header="If a worktree doesn't exist, git will create it for you. Just type in what you want" \
+        --header="If a worktree doesn't exist, git will create it for you." \
         --bind=enter:replace-query+print-query | awk '{print $1}'
     )
 
