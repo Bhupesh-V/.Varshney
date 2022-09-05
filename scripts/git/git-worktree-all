@@ -113,6 +113,8 @@ find_copy_gitignored_paths() {
     # Difference b/w these 2 lists
     difference=$(comm -23 <(sort /tmp/all_files) <(sort /tmp/tracked_files))
 
+    [[ -z $difference ]] && return
+
     # Ask the user what they want to copy
     readarray -t choice_paths_to_copy < <(printf "%s" "$difference" | fzf \
         --prompt="Choose filepaths to copy (TAB to select): " \
