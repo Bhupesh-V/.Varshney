@@ -138,7 +138,10 @@ init_worktree_menu() {
     # list available branches that have a worktree associated with them
     # in any case the default tree with "main" branch is printed
 
-    worktree=$(git for-each-ref --color=always --format='%(if)%(worktreepath)%(then)%(color:bold)%(refname:short)%(color:bold 208) %(align:63,middle)%(worktreepath)%(end)%(color:reset) [Commit:%(color: bold 154)%(objectname:short)%(color:reset)]%(end)' | column -t | fzf \
+    worktree=$(
+        git for-each-ref --color=always \
+        --format='%(if)%(worktreepath)%(then)%(color:bold)%(refname:short)%(color:reset) [%(color: bold 154)%(objectname:short)%(color:reset)] %(color:bold 208)%(align:63,left)%(worktreepath)%(end)%(color:reset) %(end)' |\
+        column -t | fzf \
         --prompt="Choose a Worktree or Create One: " \
         --height 40% --reverse --exact --ansi\
         --header="If a worktree doesn't exist, git will create it for you." \
