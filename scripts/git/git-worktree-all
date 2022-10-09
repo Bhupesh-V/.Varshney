@@ -50,6 +50,7 @@ create_worktree() {
     # avoid nesting of worktrees by switching to main worktree 😅
     switch_to_main_tree
 
+    # TODO check if main worktree is in sync with remote
     common_dir=$(dirname "$(pwd)")
     git_main_dir=$(basename "$(pwd)")
     new_worktree="$common_dir/$git_main_dir-worktrees/$1"
@@ -63,6 +64,7 @@ create_worktree() {
     if [[ -z $source_branch ]]; then
         git worktree add "$new_worktree"
     else
+        # create worktree from custom branch
         if git branch "$1" "$source_branch"; then
             git worktree add "$new_worktree" "$1"
         fi

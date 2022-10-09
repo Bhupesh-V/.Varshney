@@ -87,7 +87,7 @@ git_status() {
 
     delete_symbol="✖ "
     tracked_symbol="✚"
-    modified_symbol="⬤"
+    modified_symbol="●"
     GIT_STATUS_PROMPT=""
 
 # GIT_STATUS_PROMPT+="${GRAY_BG}"
@@ -212,7 +212,7 @@ if ! shopt -oq posix; then
 fi
 
 # Load custom bash completions
-source ~/scd-completions.bash
+# source ~/scd-completions.bash
 
 
 export CDPATH=".:/home/bhupesh"
@@ -242,3 +242,5 @@ export PATH=$PATH:$HOME/go/bin
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 export PATH="/home/bhupesh/.deta/bin:$PATH"
+
+source ~/.work_profile

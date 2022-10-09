@@ -71,7 +71,6 @@ HIST_STAMPS="dd.mm.yyyy"
 plugins=(git)
 plugins=(zsh-autosuggestions)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=2'
-eval $(thefuck --alias fuck)
 source $ZSH/oh-my-zsh.sh
 
 # User configuration

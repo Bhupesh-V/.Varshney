@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+
+read -e -p "Enter File Path: " -r IMAGE_PATH
+
+read -p "Enter S3 Pre-Sign URL: " -r S3_URL
+
+
+if curl -X PUT -T "$IMAGE_PATH" -L "$S3_URL"; then
+    echo "Done"
+fi

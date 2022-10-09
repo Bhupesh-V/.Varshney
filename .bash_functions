@@ -211,6 +211,7 @@ eye() {
         batcat "$1"
     fi
 }
+export -f eye
 
 cb() {
     # copy stuff from terminal to clipboard
@@ -323,6 +324,6 @@ gga() {
     gists -au Bhupesh-V | fzf | awk -F  "," '{print $2}' | xargs -0 browse > /dev/null 2>&1
 }
 
-gg() {
-    gists -u Bhupesh-V | fzf | awk -F  "," '{print $2}' | xargs -0 browse > /dev/null 2>&1
-}
+# gg() {
+# gists -u Bhupesh-V | fzf | awk -F  "," '{print $2}' | xargs -0 browse > /dev/null 2>&1
+# }
