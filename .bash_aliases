@@ -33,7 +33,7 @@ alias n="nvim.appimage"
 alias dotman='$HOME/dotman/dotman.sh'
 alias update='sudo apt-get update'
 alias upgrade='sudo apt-get upgrade'
-alias cd="cd"
+alias cd="vcd"
 alias sys="watch -ct -n0 sys"
 alias bb="jekyll serve --watch"
 alias lt="ls --human-readable --size -1 -S --classify"
@@ -42,3 +42,4 @@ alias browse="xdg-open > /dev/null 2>&1"
 alias amaze="find . -type f -print0 | shuf -z -n 1 | xargs -0 browse > /dev/null 2>&1"
 alias bro="xfi | fzf --exact --prompt='Search File: ' --preview '(eye {} || tree -C {}) 2> /dev/null || cat {}' --pointer='🡆' --height 60% --reverse --color 'fg:#E6E1CF,fg+:#ddeeff,prompt:#A9DC76,pointer:#FF6188,header:#AB9DF2,query:#FFD866,hl+:#FFEE99' | xargs -I FILEP browse \"FILEP\""
 alias til="locate -e '/home/bhupesh/Documents/til' | fzf | xargs glow --pager"
+alias fbro="locate $HOME | fzf --exact --prompt='Search File: ' --pointer=🡆 --height 60% --reverse --color fg:#E6E1CF,fg+:#ddeeff,prompt:#A9DC76,pointer:#FF6188,header:#AB9DF2,query:#FFD866,hl+:#FFEE99 | xargs -I FILEP browse FILEP"

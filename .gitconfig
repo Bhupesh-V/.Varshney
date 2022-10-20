@@ -30,6 +30,8 @@
 [color]
         diff = auto
         ui = auto
+[push]
+        autoSetupRemote = true
 [help]
         # run correct git command after 0.7 seconds
 	autocorrect = 7

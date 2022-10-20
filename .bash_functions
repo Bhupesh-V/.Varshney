@@ -79,8 +79,9 @@ vcd() {
         current_dir=$(pwd)
         while [[ "$current_dir" != "$HOME" ]]; do
             # check if current dir contains an activate script (the venv folder)
-            if [[ -f "$current_dir/bin/activate" ]]; then
-                source "$current_dir/bin/activate"
+            if [[ -f "$current_dir/venv/bin/activate" ]]; then
+                echo "got venv"
+                source "$current_dir/venv/bin/activate"
                 break
             fi
             # remove base directory name
