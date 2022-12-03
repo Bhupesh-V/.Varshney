@@ -11,7 +11,19 @@
 duration="12:00:00"
 duration_seconds=$(echo $duration | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }')
 
-printf "%s\n" "Getting session token"
+
+_pre_script(){
+    # unexport any existing keys
+    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+}
+
+_post_script(){
+    rm "aws_token.txt"
+}
+
+_pre_script
+
+printf "%s\n" "Getting AWS Session Token"
 
 if aws sts get-session-token --duration-seconds "$duration_seconds" > aws_token.txt; then
     AWS_ACCESS_KEY_ID=$(jq -r '.Credentials | {AccessKeyId} | join("")' < aws_token.txt)
@@ -28,4 +40,4 @@ if aws sts get-session-token --duration-seconds "$duration_seconds" > aws_token.
     printf "%s\n" "Exported as environment variables in ~/.work_profile"
 fi
 
-rm "aws_token.txt"
+_post_script
