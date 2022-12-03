@@ -11,10 +11,11 @@
 tmp_store="aws_token.txt"
 work_profile_path="$HOME/.work_profile"
 
-# Maximum possible duration "36:00:00" hours (129,600 seconds)
+# Maximum possible duration "36 hours" (129,600 seconds)
 # Read: https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html
-duration="12:00:00"
-duration_seconds=$(echo $duration | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }')
+duration="12 hours"
+# convert to UNIX epoch and find appropriate expire limit
+duration_seconds=$(( $(date -d "$duration" +%s) - $(date +%s) ))
 aws_region="us-west-1"
 now=$(date "+%d %B, %Y (%r)")
 
