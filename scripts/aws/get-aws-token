@@ -20,17 +20,17 @@ aws_region="us-west-1"
 now=$(date "+%d %B, %Y (%r)")
 
 
-_pre_script(){
+_init(){
     # unexport any existing keys
     unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
 }
 
-_post_script(){
+_cleanup(){
     # remove the temp file we created for storing keys
     rm "$tmp_store"
 }
 
-_get_token() {
+_get_secrets() {
     if aws sts get-session-token --duration-seconds "$duration_seconds" > "$tmp_store"; then
         AWS_ACCESS_KEY_ID=$(jq -r '.Credentials | {AccessKeyId} | join("")' < "$tmp_store")
         AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials | {SecretAccessKey} | join("")' < "$tmp_store")
@@ -52,7 +52,7 @@ _get_token() {
     fi
 }
 
-_pre_script
+_init
 printf "%s\n" "Getting AWS Session Token"
-_get_token
-_post_script
+_get_secrets
+_cleanup
