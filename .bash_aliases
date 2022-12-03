@@ -33,10 +33,11 @@ alias n="nvim.appimage"
 alias dotman='$HOME/dotman/dotman.sh'
 alias update='sudo apt-get update'
 alias upgrade='sudo apt-get upgrade'
-alias cd="vcd"
+# alias cd="vcd"
 alias sys="watch -ct -n0 sys"
 alias bb="jekyll serve --watch"
 alias lt="ls --human-readable --size -1 -S --classify"
+alias lh="ls -ld .*"
 alias browse="xdg-open > /dev/null 2>&1"
 # open a random file from current dir
 alias amaze="find . -type f -print0 | shuf -z -n 1 | xargs -0 browse > /dev/null 2>&1"

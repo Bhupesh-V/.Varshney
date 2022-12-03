@@ -6,11 +6,15 @@ esac
 
 # Gib me all the colors 
 export TERM=xterm-256color
-export PATH="$HOME/Documents/.Varshney/scripts:$PATH"
-export PATH="$HOME/Documents/.Varshney/scripts/git:$PATH"
-export PATH="$HOME/Documents/.Varshney/scripts/github:$PATH"
+export DOTFILES_HOME="$HOME/Documents/.Varshney"
+export PATH="$DOTFILES_HOME/scripts:$PATH"
+export PATH="$DOTFILES_HOME/scripts/git:$PATH"
+export PATH="$DOTFILES_HOME/scripts/github:$PATH"
+export PATH="$DOTFILES_HOME/scripts/aws:$PATH"
 # export PATH="$HOME/Documents/ugit:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
@@ -211,12 +215,7 @@ if ! shopt -oq posix; then
     fi
 fi
 
-# Load custom bash completions
-# source ~/scd-completions.bash
-
-
 export CDPATH=".:/home/bhupesh"
-export DOT_REPO=https://github.com/Bhupesh-V/.Varshney DOT_DEST=Documents
 
 # Make grep output sexy
 # Default: ‘ms=01;31:mc=01;31:sl=:cx=:fn=35:ln=32:bn=32:se=36’
@@ -237,10 +236,11 @@ export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
 export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 
+export DOT_REPO=https://github.com/Bhupesh-V/.Varshney DOT_DEST=Documents
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/go/bin
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
 export PATH="/home/bhupesh/.deta/bin:$PATH"
 
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 source ~/.work_profile
+source /home/bhupesh/fzf-docker/docker-fzf
