@@ -6,10 +6,14 @@
 # 1. jq
 # 2. aws cli
 
+tmp_store="aws_token.txt"
+work_profile_path="$HOME/.work_profile"
+
 # Maximum possible duration "36:00:00" (129,600 seconds)
 # Read: https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html
 duration="12:00:00"
 duration_seconds=$(echo $duration | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }')
+
 
 
 _pre_script(){
@@ -18,26 +22,30 @@ _pre_script(){
 }
 
 _post_script(){
-    rm "aws_token.txt"
+    # remove the temp file we created for storing keys
+    rm "$tmp_store"
+}
+
+_get_token() {
+    if aws sts get-session-token --duration-seconds "$duration_seconds" > "$tmp_store"; then
+        AWS_ACCESS_KEY_ID=$(jq -r '.Credentials | {AccessKeyId} | join("")' < "$tmp_store")
+        AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials | {SecretAccessKey} | join("")' < "$tmp_store")
+        AWS_SESSION_TOKEN=$(jq -r '.Credentials | {SessionToken} | join("")' < "$tmp_store")
+        EXPIRE_TIME=$(date --date="$(jq -r '.Credentials | {Expiration} | join("")' < "$tmp_store")" "+%d %B, %Y (%r)")
+
+        {
+            echo "export AWS_ACCESS_KEY_ID=\"${AWS_ACCESS_KEY_ID}"\"
+            echo "export AWS_SECRET_ACCESS_KEY=\"${AWS_SECRET_ACCESS_KEY}"\"
+            echo "export AWS_SESSION_TOKEN=\"${AWS_SESSION_TOKEN}"\"
+            echo 'export AWS_REGION="us-west-1"'
+        } > "$work_profile_path"
+
+        printf "Expiring on %s\n" "$EXPIRE_TIME"
+        printf "%s\n" "Exported as environment variables in $work_profile_path"
+    fi
 }
 
 _pre_script
-
 printf "%s\n" "Getting AWS Session Token"
-
-if aws sts get-session-token --duration-seconds "$duration_seconds" > aws_token.txt; then
-    AWS_ACCESS_KEY_ID=$(jq -r '.Credentials | {AccessKeyId} | join("")' < aws_token.txt)
-    AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials | {SecretAccessKey} | join("")' < aws_token.txt)
-    AWS_SESSION_TOKEN=$(jq -r '.Credentials | {SessionToken} | join("")' < aws_token.txt)
-    EXPIRE_TIME=$(date --date="$(jq -r '.Credentials | {Expiration} | join("")' < aws_token.txt)" "+%d %B, %Y (%r)")
-
-    echo "export AWS_ACCESS_KEY_ID=\"${AWS_ACCESS_KEY_ID}"\"> ~/.work_profile
-    echo "export AWS_SECRET_ACCESS_KEY=\"${AWS_SECRET_ACCESS_KEY}"\">> ~/.work_profile
-    echo "export AWS_SESSION_TOKEN=\"${AWS_SESSION_TOKEN}"\">> ~/.work_profile
-    echo 'export AWS_REGION="us-west-1"' >> ~/.work_profile
-
-    printf "Expiring on %s\n" "$EXPIRE_TIME"
-    printf "%s\n" "Exported as environment variables in ~/.work_profile"
-fi
-
+_get_token
 _post_script
