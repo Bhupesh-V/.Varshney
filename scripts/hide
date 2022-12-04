@@ -6,8 +6,7 @@
 # TODO: add help & about option
 
 from sys import stdin
-from os import isatty, getenv
-from pathlib import Path
+from os import isatty
 import re
 
 quotes_regex = re.compile('"(.*?)"')
