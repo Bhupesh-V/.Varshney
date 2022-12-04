@@ -13,11 +13,10 @@ import re
 quotes_regex = re.compile('"(.*?)"')
 
 def hide_secrets(data: str):
-    secret_strings = re.finditer(quotes_regex, data)
-    for string in secret_strings:
-        start, end = string.span()
-        secret_length = (end-start)
-        data = data.replace(string[0], "*" * secret_length, secret_length)
+    sensitive_data = re.findall(quotes_regex, data)
+
+    for secret in sensitive_data:
+        data = data.replace(secret, "*" * len(secret))
     print(data)
 
 
