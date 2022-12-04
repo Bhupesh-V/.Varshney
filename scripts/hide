@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+# Script to hide sensitive data from a command
+# This script assume everything inside double quotes is sensitive
+
+# TODO: add help & about option
+
+from sys import stdin
+from os import isatty, getenv
+from pathlib import Path
+import re
+
+quotes_regex = re.compile('"(.*?)"')
+
+def hide_secrets(data: str):
+    secret_strings = re.finditer(quotes_regex, data)
+    for string in secret_strings:
+        start, end = string.span()
+        secret_length = (end-start)
+        data = data.replace(string[0], "*" * secret_length, secret_length)
+    print(data)
+
+
+if __name__ == "__main__":
+    is_pipe = not isatty(stdin.fileno())
+
+    if is_pipe:
+        query = stdin.read()
+        hide_secrets(query)
