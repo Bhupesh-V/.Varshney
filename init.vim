@@ -21,9 +21,6 @@ Plug 'ayu-theme/ayu-vim'
 Plug 'lifepillar/vim-gruvbox8'
 Plug 'crusoexia/vim-monokai'
 Plug 'https://git.sr.ht/~novakane/kosmikoa.nvim'
-Plug 'rebelot/kanagawa.nvim'
-Plug 'catppuccin/nvim', {'as': 'catppuccin'}
-Plug 'joshdick/onedark.vim'
 " Miscellaneous
 Plug 'psf/black', { 'branch': 'stable' }
 Plug 'neovim/nvim-lspconfig'
@@ -31,9 +28,13 @@ Plug 'hrsh7th/nvim-compe'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'glepnir/lspsaga.nvim'
 Plug 'ray-x/lsp_signature.nvim'
+Plug 'godlygeek/tabular'
+Plug 'preservim/vim-markdown'
+Plug 'andweeb/presence.nvim' " Discord Status
 " Plug 'RRethy/vim-illuminate'
 " Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
+Plug 'aliou/bats.vim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.0' }
 Plug 'jparise/vim-graphql'
 Plug 'sunjon/shade.nvim'
@@ -44,9 +45,11 @@ Plug 'kyazdani42/nvim-web-devicons'
 Plug 'folke/trouble.nvim'
 Plug 'jose-elias-alvarez/null-ls.nvim'
 Plug 'WhoIsSethDaniel/toggle-lsp-diagnostics.nvim'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " Git Stuff
 Plug 'nvim-lua/plenary.nvim'
 Plug 'lewis6991/gitsigns.nvim'
+Plug 'Juksuu/worktrees.nvim'
 call plug#end()
 
 " Key Mappings {{{
@@ -77,7 +80,7 @@ nnoremap <A-CR> :Goyo 120<CR>
 " Tab to cycle through open splits
 nnoremap <Tab> <C-w><C-w>
 " Use Enter to switch to command mode
-nnoremap <CR> :
+" nnoremap <CR> :
 " Cycle through open buffers
 nnoremap <S-Tab> :bn<CR>
 " Use j/k to select from completion menu
@@ -189,7 +192,7 @@ set background=dark
 
 " Common Settings {{{
 set number
-" set rnu
+set rnu
 set autoindent smartindent
 set expandtab
 set showcmd
@@ -264,6 +267,11 @@ lua <<EOF
 require'lspconfig'.gopls.setup {
     on_attach = function(client)
     require 'lsp_signature'.on_attach(client)
+    settings = {
+      gopls = {
+        staticcheck = true,
+      },
+    }
 end,
 }
 
@@ -303,6 +311,25 @@ let g:compe.source.ultisnips = v:true
 " let g:compe.source.luasnip = v:true
 let g:compe.source.emoji = v:true
 
+
+lua <<EOF
+  function go_org_imports(wait_ms)
+    local params = vim.lsp.util.make_range_params()
+    params.context = {only = {"source.organizeImports"}}
+    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, wait_ms)
+    for cid, res in pairs(result or {}) do
+      for _, r in pairs(res.result or {}) do
+        if r.edit then
+          local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or "utf-16"
+          vim.lsp.util.apply_workspace_edit(r.edit, enc)
+        end
+      end
+    end
+  end
+EOF
+
+autocmd BufWritePre *.go lua go_org_imports()
+
 " }}}
 
 " lspsaga setup {{{
@@ -333,7 +360,7 @@ lua require('gitsigns').setup()
 
 " FZF Config {{{
 command! -bang -nargs=? -complete=dir Files
-            \ call fzf#vim#files(<q-args>, {'source': 'xfi', 'options': ['--preview', '[[ -d {} ]] && tree -C {} || ~/.config/nvim/plugged/fzf.vim/bin/preview.sh {}', '--prompt', 'Open File: ', '--pointer', '🡆']}, <bang>0)
+            \ call fzf#vim#files(<q-args>, {'source': 'locate', 'options': ['--preview', '[[ -d {} ]] && tree -C {} || ~/.config/nvim/plugged/fzf.vim/bin/preview.sh {}', '--prompt', 'Open File: ', '--pointer', '🡆']}, <bang>0)
 " }}}
 
 " lightline config {{{1
@@ -475,6 +502,31 @@ EOF
 
 lua <<EOF
 require'toggle_lsp_diagnostics'.init()
+require'worktrees'.setup()
+require("telescope").load_extension("worktrees")
+
+require("presence"):setup({
+    -- General options
+    auto_update         = true,                       -- Update activity based on autocmd events (if `false`, map or manually execute `:lua package.loaded.presence:update()`)
+    neovim_image_text   = "The One True Text Editor", -- Text displayed when hovered over the Neovim image
+    main_image          = "neovim",                   -- Main image display (either "neovim" or "file")
+    client_id           = "793271441293967371",       -- Use your own Discord application client id (not recommended)
+    log_level           = nil,                        -- Log messages at or above this level (one of the following: "debug", "info", "warn", "error")
+    debounce_timeout    = 10,                         -- Number of seconds to debounce events (or calls to `:lua package.loaded.presence:update(<filename>, true)`)
+    enable_line_number  = false,                      -- Displays the current line number instead of the current project
+    blacklist           = {},                         -- A list of strings or Lua patterns that disable Rich Presence if the current file name, path, or workspace matches
+    buttons             = true,                       -- Configure Rich Presence button(s), either a boolean to enable/disable, a static table (`{{ label = "<label>", url = "<url>" }, ...}`, or a function(buffer: string, repo_url: string|nil): table)
+    file_assets         = {},                         -- Custom file asset definitions keyed by file names and extensions (see default config at `lua/presence/file_assets.lua` for reference)
+
+    -- Rich Presence text options
+    editing_text        = "Editing %s",               -- Format string rendered when an editable file is loaded in the buffer (either string or function(filename: string): string)
+    file_explorer_text  = "Browsing %s",              -- Format string rendered when browsing a file explorer (either string or function(file_explorer_name: string): string)
+    git_commit_text     = "Committing changes",       -- Format string rendered when committing changes in git (either string or function(filename: string): string)
+    plugin_manager_text = "Managing plugins",         -- Format string rendered when managing plugins (either string or function(plugin_manager_name: string): string)
+    reading_text        = "Reading %s",               -- Format string rendered when a read-only or unmodifiable file is loaded in the buffer (either string or function(filename: string): string)
+    workspace_text      = "Working on %s",            -- Format string rendered when in a git repository (either string or function(project_name: string|nil, filename: string): string)
+    line_number_text    = "Line %s out of %s",        -- Format string rendered when `enable_line_number` is set to true (either string or function(line_number: number, line_count: number): string)
+})
 EOF
 
 " Auto Commands {{{
@@ -482,7 +534,7 @@ EOF
 " Set foldmethod based on file type
 augroup FoldMethodType
     autocmd!
-    autocmd FileType python,css,javascript,go,html,sh setlocal foldmethod=indent
+    autocmd FileType python,css,javascript,go,html,sh,json setlocal foldmethod=syntax
     autocmd FileType vim setlocal foldmethod=marker
 augroup END
 
@@ -490,7 +542,7 @@ augroup END
 augroup FileIndentLevel
     autocmd!
     autocmd FileType htmldjango,cpp,yaml,html,css setlocal shiftwidth=2 tabstop=2 softtabstop=2
-    autocmd FileType go,python,vim,sh setlocal tabstop=4 sts=4 shiftwidth=4
+    autocmd FileType go,python,vim,sh,json setlocal tabstop=4 sts=4 shiftwidth=4
 augroup END
 
 " Map Caps Lock to Esc (must be X.Org compliant)
@@ -535,18 +587,25 @@ endfunction
 
 " Run commands inside the editor & paste output in next line
 function! AddCmdOuput()
-    " A one liner for this can be nnoremap <S-r> !!sh<CR>
     try
         let cmd_output = systemlist(getline("."))
         echo "Executing " . getline(".")[0:3] . " ... "
+
+        let command_list = split(getline("."), " ")
+        if command_list[0] == "curl"
+
+        endif
+        call append(line('.'), '```')
+        call append(line('.'), cmd_output)
+        call append(line('.'), '```')
     catch E684
         echo "Not a command"
         return
         if stridx(cmd_output[0], "command not found") == -1
-            call append(line('.'), cmd_output)
+            call append(line('.') + 1, cmd_output)
         else
             " redraw
-            echo "⚠️  " . getline(".")[0:3] . ".. not found"
+            " echo "⚠️  " . getline(".")[0:3] . ".. not found"
         endif
     endtry
 endfunction
