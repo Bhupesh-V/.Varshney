@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Script to get AWS session access tokens
 
@@ -16,7 +16,7 @@ work_profile_path="$HOME/.work_profile"
 duration="12 hours"
 # convert to UNIX epoch and find appropriate expire limit
 duration_seconds=$(( $(date -d "$duration" +%s) - $(date +%s) ))
-aws_region="us-west-1"
+AWS_REGION="us-west-1"
 now=$(date "+%d %B, %Y (%r)")
 
 
@@ -30,6 +30,19 @@ _cleanup(){
     rm "$tmp_store"
 }
 
+_update_vscode_launch(){
+    if test -f .vscode/launch.json;then
+        launch_file_path=".vscode/launch.json"
+        json=$(cat $launch_file_path)
+        if jq ".configurations[].env += { AWS_ACCESS_KEY_ID: \"$1\", AWS_SECRET_ACCESS_KEY:\"$2\", AWS_SESSION_TOKEN: \"$3\", AWS_REGION: \"$AWS_REGION\" }" <<< "$json" > $launch_file_path; then
+            printf "%s\n" "Updated VSCode Launch Config"
+        else
+            # rollback json in case of errors
+            echo "$json" > $launch_file_path
+        fi
+    fi
+}
+
 _get_secrets() {
     if aws sts get-session-token --duration-seconds "$duration_seconds" > "$tmp_store"; then
         AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' < "$tmp_store")
@@ -41,7 +54,7 @@ _get_secrets() {
             echo "export AWS_ACCESS_KEY_ID=\"${AWS_ACCESS_KEY_ID}"\"
             echo "export AWS_SECRET_ACCESS_KEY=\"${AWS_SECRET_ACCESS_KEY}"\"
             echo "export AWS_SESSION_TOKEN=\"${AWS_SESSION_TOKEN}"\"
-            echo "export AWS_REGION=\"${aws_region}"\"
+            echo "export AWS_REGION=\"${AWS_REGION}"\"
 
             echo "# Keys requested on $now"
             echo "# Keys valid till $EXPIRE_TIME"
@@ -49,6 +62,8 @@ _get_secrets() {
 
         printf "Expiring on %s\n" "$EXPIRE_TIME"
         printf "%s\n" "Exported as environment variables in $work_profile_path"
+
+        _update_vscode_launch "${AWS_ACCESS_KEY_ID}" "${AWS_SECRET_ACCESS_KEY}" "${AWS_SESSION_TOKEN}"
     fi
 }
 
