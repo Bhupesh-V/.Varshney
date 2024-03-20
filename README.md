@@ -93,6 +93,12 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
    ```
    wget -q https://raw.githubusercontent.com/Bhupesh-V/.Varshney/master/scripts/sys && chmod +x sys && mv sys $HOME/.local/bin/
    ```
+   
+   install lm-sensors for detecting cpu-temps
+   ```
+   sudo apt install lm-sensors && sudo sensors-detect
+   ```
+
 
 2. [**md**](https://github.com/Bhupesh-V/.Varshney/blob/master/scripts/md)
    > A utility to watch a Markdown file & build its HTML preview using commonmarker
