@@ -239,8 +239,27 @@ export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 export DOT_REPO=https://github.com/Bhupesh-V/.Varshney DOT_DEST=Documents
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/go/bin
-export PATH="/home/bhupesh/.deta/bin:$PATH"
+export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/bin:$PATH"
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-source ~/.work_profile
-source /home/bhupesh/fzf-docker/docker-fzf
+
+# source ~/.work_profile
+# source /home/bhupesh/fzf-docker/docker-fzf
+
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --bash)"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Setting PATH for Python 3.13
+# The original version is saved in .bash_profile.pysave
+export PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:${PATH}"
+export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
