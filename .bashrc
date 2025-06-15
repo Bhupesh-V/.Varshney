@@ -121,21 +121,24 @@ get_git_branch() {
     [ "$curr_branch" ] && printf "($BOLD_ORANGE_FG%s$RESET)" "$curr_branch"
 }
 
-pc_uptime() {
-    uptime -p | awk '{for (i=2; i<NF; i++) printf $i " "; if (NF >= 1) print $NF; }'
-}
+# pc_uptime() {
+#     uptime -p | awk '{for (i=2; i<NF; i++) printf $i " "; if (NF >= 1) print $NF; }'
+# }
 
 virtualenv_ps1() {
-    [ "$VIRTUAL_ENV" ] && printf "%s" " $(basename "$VIRTUAL_ENV")"
+    [ "$VIRTUAL_ENV" ] && printf "%s" "$(basename "$VIRTUAL_ENV")"
 }
 
-rightprompt() {
-    # display stuff on right side of prompt
-    printf '%*s' $COLUMNS "$(pc_uptime)"
-}
+# rightprompt() {
+#     # display stuff on right side of prompt
+#     printf '%*s' $COLUMNS "$(pc_uptime)"
+# }
 
 # handles cursor position
-RIGHT_PROMPT="\n\$(tput sc; rightprompt; tput rc)"
+RIGHT_PROMPT="\n\$(tput sc; tput rc)"
+# Enable right prompt when you figure out what to add there
+# RIGHT_PROMPT="\n\$(tput sc; rightprompt; tput rc)"
+
 
 custom_prompt() {
 	EXIT="$?"
@@ -243,10 +246,8 @@ export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
 # source ~/.work_profile
 # source /home/bhupesh/fzf-docker/docker-fzf
-
 # Set up fzf key bindings and fuzzy completion
 eval "$(fzf --bash)"
 
