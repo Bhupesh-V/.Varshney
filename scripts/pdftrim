@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Thanks to Mickaël
+# src: https://superuser.com/a/1217306
+
+# gs options:
+# -dPDFSETTINGS=/screen   (screen-view-only quality, 72 dpi images)
+# -dPDFSETTINGS=/ebook    (low quality, 150 dpi images)
+# -dPDFSETTINGS=/printer  (high quality, 300 dpi images)
+# -dPDFSETTINGS=/prepress (high quality, color preserving, 300 dpi imgs)
+# -dPDFSETTINGS=/default  (almost identical to /screen)
+
+pdftrim_usage() {
+    printf "%s\n" 'Usage: pdftrim [input file] [output file] [screen|ebook|printer|prepress]'
+    printf "\n%s\n\n" 'Example: pdftrim input.pdf output.pdf ebook'
+    printf "%s\n" "Trim Options:"
+    printf "%s\n" "  screen     - Screen-view-only quality, 72 dpi images"
+    printf "%s\n" "  ebook      - Low quality, 150 dpi images"
+    printf "%s\n" "  printer    - High quality, 300 dpi images"
+    printf "%s\n" "  prepress   - High quality, color preserving, 300 dpi images"
+    printf "%s\n" "  default    - Almost identical to /screen"
+}
+
+pdftrim() {
+    if [ $# -lt 2 ]; then
+        printf "%s\n" 'Error: Not enough arguments provided.'
+        pdftrim_usage
+        return 1
+    fi
+    if [ ! -f "$1" ]; then
+        printf "%s\n" "Error: Input file '$1' does not exist."
+        pdftrim_usage
+        return 1
+    fi
+    if [ -z "$2" ]; then
+        printf "%s\n" 'Error: Output file must be specified.'
+        pdftrim_usage
+        return 1
+    fi
+
+    gs -sDEVICE=pdfwrite -dNOPAUSE -dQUIET -dBATCH -dPDFSETTINGS=/${3:-"screen"} -dCompatibilityLevel=1.4 -sOutputFile="$2" "$1"
+}
+
+if ! command -v gs &>/dev/null; then
+    printf "%s\n" 'Error: Ghostscript (gs) is not installed.'
+    return 1
+fi
+
+pdftrim "$@"
