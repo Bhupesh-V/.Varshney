@@ -38,7 +38,43 @@ pdftrim() {
         return 1
     fi
 
-    gs -sDEVICE=pdfwrite -dNOPAUSE -dQUIET -dBATCH -dPDFSETTINGS=/${3:-"screen"} -dCompatibilityLevel=1.4 -sOutputFile="$2" "$1"
+    # if not specified, use "screen" as default
+    if [ -z "$3" ]; then
+        printf "\n%s\n" 'Warning: No quality setting specified, using "screen" as default.'
+    fi
+
+    # gs -sDEVICE=pdfwrite -dNOPAUSE -dQUIET -dBATCH -dPDFSETTINGS=/${3:-"screen"} -dCompatibilityLevel=1.4 -sOutputFile="$2" "$1"
+
+    #TODO: ask user for gray scale or color conversion based on that try filters
+
+    # Color conversion options:
+    # -dDownsampleColorImages=true \
+    # -dColorImageDownsampleType=/Bicubic \
+    # -dColorImageResolution=72 \
+
+    # Gray scale conversion options:
+    # -dDownsampleGrayImages=true \
+    # -dGrayImageDownsampleType=/Bicubic \
+    # -dGrayImageResolution=72 \
+
+    # Mono image conversion options:
+    # -dDownsampleMonoImages=true \
+    # -dMonoImageDownsampleType=/Subsample \
+    # -dMonoImageResolution=72
+
+    gs -sDEVICE=pdfwrite \
+        -dCompatibilityLevel=1.4 \
+        -dPDFSETTINGS=/${3:-"screen"} \
+        -dNOPAUSE -dQUIET -dBATCH \
+        -dDownsampleColorImages=true \
+        -sColorConversionStrategy=Gray \
+        -dProcessColorModel=/DeviceGray \
+        -dDetectDuplicateImages=true \
+        -dRemoveUseClip=false \
+        -dDownsampleColorImages=true \
+        -dGrayImageDownsampleType=/Bicubic \
+        -dGrayImageResolution=45 \
+        -sOutputFile="$2" "$1"
 }
 
 if ! command -v gs &>/dev/null; then
