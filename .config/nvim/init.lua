@@ -9,12 +9,17 @@
 --         ├── conform.lua
 --         ├── devicons.lua
 --         ├── filetree.lua
+--         ├── floatterm.lua
 --         ├── gitsigns.lua
 --         ├── lualine.lua
+--         ├── neoscroll.lua
+--         ├── surround.lua
 --         ├── telescope.lua
---         └── treesitter.lua
+--         ├── treesitter.lua
+--         └── zen.lua
 
--- Adapted from: https://github.com/Jarmos-san/dotfiles
+-- Original Vim Config: https://github.com/Bhupesh-V/.Varshney/blob/master/init.vim
+-- References From: https://github.com/Jarmos-san/dotfiles
 
 -- Path to install "lazy.nvim" at
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
