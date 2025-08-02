@@ -47,33 +47,26 @@ pdftrim() {
 
     #TODO: ask user for gray scale or color conversion based on that try filters
 
-    # Color conversion options:
-    # -dDownsampleColorImages=true \
-    # -dColorImageDownsampleType=/Bicubic \
-    # -dColorImageResolution=72 \
+    # [EXPERIMENT] Use the following command to build a opinionated PDF based on the input file
 
-    # Gray scale conversion options:
-    # -dDownsampleGrayImages=true \
-    # -dGrayImageDownsampleType=/Bicubic \
-    # -dGrayImageResolution=72 \
+    # pdfimages -list file.pdf | awk '$1 ~ /^[0-9]+$/ && $7 != 1 { found=1 } END { print (found ? "Color" : "Grayscale") }'
+    # Download pdfimages @ https://poppler.freedesktop.org/
 
-    # Mono image conversion options:
-    # -dDownsampleMonoImages=true \
-    # -dMonoImageDownsampleType=/Subsample \
-    # -dMonoImageResolution=72
+    # Docs: https://ghostscript.readthedocs.io/en/latest/VectorDevices.html#distiller-parameters
 
     gs -sDEVICE=pdfwrite \
         -dCompatibilityLevel=1.4 \
         -dPDFSETTINGS=/${3:-"screen"} \
         -dNOPAUSE -dQUIET -dBATCH \
         -dDownsampleColorImages=true \
-        -sColorConversionStrategy=Gray \
-        -dProcessColorModel=/DeviceGray \
-        -dDetectDuplicateImages=true \
-        -dRemoveUseClip=false \
-        -dDownsampleColorImages=true \
+        -dColorImageResolution=320 \
+        -dColorImageDownsampleType=/Bicubic \
+        -dDownsampleMonoImages=true \
+        -dMonoImageResolution=1000 \
+        -dMonoImageDownsampleType=/Subsample \
+        -dDownsampleGrayImages=true \
         -dGrayImageDownsampleType=/Bicubic \
-        -dGrayImageResolution=45 \
+        -dGrayImageResolution=200 \
         -sOutputFile="$2" "$1"
 }
 
