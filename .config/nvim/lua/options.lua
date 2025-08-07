@@ -18,6 +18,7 @@ opt.completeopt = "menuone,noselect"
 opt.encoding = "UTF-8"
 opt.termguicolors = true
 opt.background = "dark"
+-- disable NVIM start message
 opt.shortmess:append("I")
 
 vim.g.netrw_banner = 0 -- disable annoying banner
@@ -30,29 +31,3 @@ vim.g.netrw_special_syntax = 1 -- Enable special file highlighting
 vim.g.netrw_browsex_viewer = "xdg-open"
 
 
--- Auto pair brackets and stuff
--- Helper function to eat whitespace characters
--- Helper: consume whitespace
--- Helper: consume whitespace
-local function eatchar(pat)
-    local c = vim.fn.nr2char(vim.fn.getchar(0))
-    return (c:match(pat) and '') or c
-end
-
--- Bracket pairs map (renamed to avoid conflict)
-local bracket_pairs = {
-    ['('] = ')',
-    ['{'] = '}',
-    ['['] = ']',
-    ['"'] = '"',
-    ["'"] = "'",
-    ['`'] = '`',
-    ['<'] = '>',
-}
-
--- Set keymaps dynamically
-for open, close in pairs(bracket_pairs) do
-    vim.keymap.set('i', open, function()
-        return open .. close .. '<Left>' .. eatchar('%s')
-    end, { silent = true, expr = true })
-end

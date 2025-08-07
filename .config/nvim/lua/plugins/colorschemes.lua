@@ -10,22 +10,22 @@ return {{
 }, {
     "sainnhe/sonokai",
     priority = 1000,
-    lazy = false -- Load immediately
+    lazy = false
 
 }, {
     "franbach/miramare",
     priority = 1000,
-    lazy = false -- Load immediately
+    lazy = false
 }, {
     "NLKNguyen/papercolor-theme",
     priority = 1000,
-    lazy = false -- Load immediately
+    lazy = false
 }, {
     "drewtempelmeyer/palenight.vim",
     priority = 1000,
-    lazy = false -- Load immediately
+    lazy = false
 }, {
     "lifepillar/vim-gruvbox8",
     priority = 1000,
-    lazy = false -- Load immediately
+    lazy = false
 }}

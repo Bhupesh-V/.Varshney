@@ -6,6 +6,9 @@ local opts = { noremap = true, silent = true }
 -- Leader key
 vim.g.mapleader = " "
 
+-- Terminal mode escape
+map("t", "<Esc>", "<C-\\><C-n>", opts)
+
 -- File explorer
 map("n", "<leader>n", ":NvimTreeToggle<CR>", opts)
 
@@ -34,3 +37,6 @@ map("n", "<leader>f", ":Telescope find_files<CR>", opts)
 map("n", "<leader>g", ":Telescope live_grep<CR>", opts)
 map("n", "<leader>b", ":Telescope buffers<CR>", opts)
 map("n", "<leader>h", ":Telescope help_tags<CR>", opts)
+
+-- Activate Command Mode
+map("n", ";", ":")

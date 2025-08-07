@@ -18,8 +18,12 @@
 --         ├── treesitter.lua
 --         └── zen.lua
 
--- Original Vim Config: https://github.com/Bhupesh-V/.Varshney/blob/master/init.vim
--- References From: https://github.com/Jarmos-san/dotfiles
+-- Original Vimscript Config: https://github.com/Bhupesh-V/.Varshney/blob/master/init.vim
+-- References from: https://github.com/Jarmos-san/dotfiles
+
+-- TODO
+-- 1. Debugging for Typescript and Go
+-- 2. Formatters
 
 -- Path to install "lazy.nvim" at
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -62,10 +66,10 @@ require("lazy").setup("plugins", {
         "gzip",
         "matchit",
         "matchparen",
-        "tarPlugin",
+        -- "tarPlugin",
         "tohtml",
         -- "tutor",
-        "zipPlugin",
+        -- "zipPlugin",
         "rplugin",
         "man",
         "spellfile",
@@ -78,7 +82,7 @@ require("lazy").setup("plugins", {
 })
 
 -- Safely load the necessary user-defined Lua modules meant to customise Neovim.
-for _, module in ipairs({ "options", "autocmds", "keymaps" }) do
+for _, module in ipairs({ "options", "autocmds", "keymaps", "extras" }) do
   local ok, error = pcall(require, module)
 
   if not ok then
@@ -90,4 +94,4 @@ vim.cmd.colorscheme("ayu")
 
 -- INFO: Enable an experimental fast module loader. See the PR for more information:
 -- https://github.com/neovim/neovim/pull/22668
-vim.loader.enable()
+-- vim.loader.enable()

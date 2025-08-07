@@ -12,7 +12,7 @@
   "neoscroll.nvim": { "branch": "master", "commit": "f957373912e88579e26fdaea4735450ff2ef5c9c" },
   "neovim-ayu": { "branch": "master", "commit": "30e53f8a0f3708e92c84d4df676898cd16b8b64f" },
   "nvim-lspconfig": { "branch": "master", "commit": "63a38440989c58e1f100373ab603fd24665bdc9a" },
-  "nvim-tree.lua": { "branch": "master", "commit": "0a7fcdf3f8ba208f4260988a198c77ec11748339" },
+  "nvim-tree.lua": { "branch": "master", "commit": "dd2364d6802f7f57a98acb8b545ed484c6697626" },
   "nvim-treesitter": { "branch": "master", "commit": "42fc28ba918343ebfd5565147a42a26580579482" },
   "nvim-web-devicons": { "branch": "master", "commit": "3362099de3368aa620a8105b19ed04c2053e38c0" },
   "palenight.vim": { "branch": "master", "commit": "5552a6349bcd927df9f17db34f017b77b963e503" },

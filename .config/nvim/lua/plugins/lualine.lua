@@ -14,7 +14,7 @@ return {
             left = '',
             right = ''
         },
-        -- theme = "horizon",
+        theme = "horizon",
         globalstatus = true,
         disabled_filetypes = {
             statusline = {"dashboard", "filesytem", "mason", "neo-tree", "neo-tree-popup", "null-ls-info", "lazy",
