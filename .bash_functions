@@ -328,3 +328,8 @@ gga() {
 # gg() {
 # gists -u Bhupesh-V | fzf | awk -F  "," '{print $2}' | xargs -0 browse > /dev/null 2>&1
 # }
+
+browse() {
+    command -v xdg-open >/dev/null 2>&1 && xdg-open "$@" ||
+    command -v open >/dev/null 2>&1 && open "$@" > /dev/null 2>&1
+}
