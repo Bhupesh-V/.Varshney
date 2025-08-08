@@ -1,6 +1,9 @@
-[user]
-        email = varshneybhupesh@gmail.com
-        name = Bhupesh-V
+[includeIf "gitdir:~/Documents/work/"]
+    path = ~/Documents/work/.gitconfig-work
+
+[includeIf "gitdir:~/Documents/personal/"]
+    path = ~/Documents/personal/.gitconfig-personal
+
 [commit]
         template = $HOME/.gitmessage
 [core]
