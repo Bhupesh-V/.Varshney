@@ -6,11 +6,11 @@ esac
 
 # Gib me all the colors
 export TERM=xterm-256color
-export DOTFILES_HOME="$HOME/Documents/.Varshney"
-export PATH="$DOTFILES_HOME/scripts:$PATH"
-export PATH="$DOTFILES_HOME/scripts/git:$PATH"
-export PATH="$DOTFILES_HOME/scripts/github:$PATH"
-export PATH="$DOTFILES_HOME/scripts/aws:$PATH"
+export PATH="$HOME/scripts:$PATH"
+export PATH="$HOME/scripts/git:$PATH"
+export PATH="$HOME/scripts/github:$PATH"
+export PATH="$HOME/scripts/aws:$PATH"
+export PATH="$HOME/scripts/media:$PATH"
 # export PATH="$HOME/Documents/ugit:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PYENV_ROOT="$HOME/.pyenv"
