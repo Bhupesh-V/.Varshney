@@ -1,7 +1,7 @@
 # If not running interactively, don't do anything
 case $- in
-*i*) ;;
-*) return ;;
+        *i*) ;;
+        *) return ;;
 esac
 
 # Gib me all the colors
@@ -44,12 +44,12 @@ shopt -s checkwinsize
 
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
+        debian_chroot=$(cat /etc/debian_chroot)
 fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-xterm-color | *-256color) color_prompt=yes ;;
+        xterm-color | *-256color) color_prompt=yes ;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -58,14 +58,14 @@ esac
 force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-        # We have color support; assume it's compliant with Ecma-48
-        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-        # a case would tend to support setf rather than setaf.)
-        color_prompt=yes
-    else
-        color_prompt=
-    fi
+        if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+                # We have color support; assume it's compliant with Ecma-48
+                # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+                # a case would tend to support setf rather than setaf.)
+                color_prompt=yes
+        else
+                color_prompt=
+        fi
 fi
 
 # disable the default virtualenv prompt change
@@ -83,42 +83,42 @@ BOLD_BLUE_FG=$'\e[1;38;5;111m'
 BOLD_ORANGE_FG="\e[1;38;5;208m"
 
 git_status() {
-    status=$(git status --porcelain 2>/dev/null)
-    untracked=$(echo "$status" | grep -c "??\s")
-    modified=$(echo "$status" | grep -c "M\s")
-    tracked=$(echo "$status" | grep -c "A\s")
-    deleted=$(echo "$status" | grep -c "D\s")
+        status=$(git status --porcelain 2> /dev/null)
+        untracked=$(echo "$status" | grep -c "??\s")
+        modified=$(echo "$status" | grep -c "M\s")
+        tracked=$(echo "$status" | grep -c "A\s")
+        deleted=$(echo "$status" | grep -c "D\s")
 
-    delete_symbol="✖ "
-    tracked_symbol="✚"
-    modified_symbol="●"
-    GIT_STATUS_PROMPT=""
+        delete_symbol="✖ "
+        tracked_symbol="✚"
+        modified_symbol="●"
+        GIT_STATUS_PROMPT=""
 
-    # GIT_STATUS_PROMPT+="${GRAY_BG}"
-    if [[ $untracked != 0 ]]; then
-        GIT_STATUS_PROMPT+=" ${BOLD_BLUE_FG}${tracked_symbol} ${untracked}"
-    fi
-    if [[ $tracked != 0 ]]; then
-        GIT_STATUS_PROMPT+=" ${BOLD_GREEN_FG}${tracked_symbol} ${tracked}"
-    fi
-    if [[ $modified != 0 ]]; then
-        GIT_STATUS_PROMPT+=" ${BOLD_L_YELLOW}${modified_symbol} ${modified}"
-    fi
-    if [[ $deleted != 0 ]]; then
-        GIT_STATUS_PROMPT+=" ${BOLD_RED_FG}${delete_symbol}${deleted}"
-    fi
-    GIT_STATUS_PROMPT+=" ${RESET}"
-    echo -e "${GIT_STATUS_PROMPT}"
+        # GIT_STATUS_PROMPT+="${GRAY_BG}"
+        if [[ $untracked != 0 ]]; then
+                GIT_STATUS_PROMPT+=" ${BOLD_BLUE_FG}${tracked_symbol} ${untracked}"
+        fi
+        if [[ $tracked != 0 ]]; then
+                GIT_STATUS_PROMPT+=" ${BOLD_GREEN_FG}${tracked_symbol} ${tracked}"
+        fi
+        if [[ $modified != 0 ]]; then
+                GIT_STATUS_PROMPT+=" ${BOLD_L_YELLOW}${modified_symbol} ${modified}"
+        fi
+        if [[ $deleted != 0 ]]; then
+                GIT_STATUS_PROMPT+=" ${BOLD_RED_FG}${delete_symbol}${deleted}"
+        fi
+        GIT_STATUS_PROMPT+=" ${RESET}"
+        echo -e "${GIT_STATUS_PROMPT}"
 }
 
 random_emoji() {
-    # add a random emoticon (mostly face emojis)
-    printf "%b" "\U1F$(shuf -i600-640 -n1)"
+        # add a random emoticon (mostly face emojis)
+        printf "%b" "\U1F$(shuf -i600-640 -n1)"
 }
 
 get_git_branch() {
-    curr_branch=$(git branch 2>/dev/null | grep \\* | cut -d ' ' -f2)
-    [ "$curr_branch" ] && printf "($BOLD_ORANGE_FG%s$RESET)" "$curr_branch"
+        curr_branch=$(git branch 2> /dev/null | grep \\* | cut -d ' ' -f2)
+        [ "$curr_branch" ] && printf "($BOLD_ORANGE_FG%s$RESET)" "$curr_branch"
 }
 
 # pc_uptime() {
@@ -126,7 +126,7 @@ get_git_branch() {
 # }
 
 virtualenv_ps1() {
-    [ "$VIRTUAL_ENV" ] && printf "%s" "$(basename "$VIRTUAL_ENV")"
+        [ "$VIRTUAL_ENV" ] && printf "%s" "$(basename "$VIRTUAL_ENV")"
 }
 
 # rightprompt() {
@@ -140,22 +140,22 @@ RIGHT_PROMPT="\n\$(tput sc; tput rc)"
 # RIGHT_PROMPT="\n\$(tput sc; rightprompt; tput rc)"
 
 custom_prompt() {
-    EXIT="$?"
-    color_themes=("38" "112" "220" "196" "200" "208" "255")
-    size=${#color_themes[@]}
-    index=$(($RANDOM % $size))
-    ARROW_FG="\e[38;5;${color_themes[$index]}m"
-    ARROW_BG="\e[48;5;${color_themes[$index]}m"
-    last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "\[$BOLD_RED_FG\]✘")
-    arrp="\[$GRAY_BG\] $last_command_status $(random_emoji) \[$GRAY_FG\]\[$ARROW_BG\]\[$ARROW_BG\]\[$BOLD_BLACK_FG\] $(virtualenv_ps1) \[$RESET\]\[$ARROW_FG\]\[$RESET\]"
-    PS1="\[$BOLD_L_YELLOW\]\[$RIGHT_PROMPT\]\[$RESET\]\[$BOLD_GREEN_FG\]\w\[$RESET\] $(get_git_branch)$(git_status)\n$arrp "
+        EXIT="$?"
+        color_themes=("38" "112" "220" "196" "200" "208" "255")
+        size=${#color_themes[@]}
+        index=$(($RANDOM % $size))
+        ARROW_FG="\e[38;5;${color_themes[$index]}m"
+        ARROW_BG="\e[48;5;${color_themes[$index]}m"
+        last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "\[$BOLD_RED_FG\]✘")
+        arrp="\[$GRAY_BG\] $last_command_status $(random_emoji) \[$GRAY_FG\]\[$ARROW_BG\]\[$ARROW_BG\]\[$BOLD_BLACK_FG\] $(virtualenv_ps1) \[$RESET\]\[$ARROW_FG\]\[$RESET\]"
+        PS1="\[$BOLD_L_YELLOW\]\[$RIGHT_PROMPT\]\[$RESET\]\[$BOLD_GREEN_FG\]\w\[$RESET\] $(get_git_branch)$(git_status)\n$arrp "
 }
 
 if [ "$color_prompt" = yes ]; then
-    #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-    PROMPT_COMMAND=custom_prompt
+        #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+        PROMPT_COMMAND=custom_prompt
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+        PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
 unset color_prompt force_color_prompt
 
@@ -170,14 +170,14 @@ unset color_prompt force_color_prompt
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
+        test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+        alias ls='ls --color=auto'
+        #alias dir='dir --color=auto'
+        #alias vdir='vdir --color=auto'
 
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
+        alias grep='grep --color=auto'
+        alias fgrep='fgrep --color=auto'
+        alias egrep='egrep --color=auto'
 fi
 
 # colored GCC warnings and errors
@@ -199,25 +199,25 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 
 # Don't change the order, first load functions & then aliases
 if [ -f ~/.bash_functions ]; then
-    . ~/.bash_functions
+        . ~/.bash_functions
 fi
 
 if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+        . ~/.bash_aliases
 fi
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
-    if [ -f /usr/share/bash-completion/bash_completion ]; then
-        . /usr/share/bash-completion/bash_completion
-    elif [ -f /etc/bash_completion ]; then
-        . /etc/bash_completion
-    # brew install bash-completion@2
-    elif [ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]; then
-        . "/opt/homebrew/etc/profile.d/bash_completion.sh"
-    fi
+        if [ -f /usr/share/bash-completion/bash_completion ]; then
+                . /usr/share/bash-completion/bash_completion
+        elif [ -f /etc/bash_completion ]; then
+                . /etc/bash_completion
+        # brew install bash-completion@2
+        elif [ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]; then
+                . "/opt/homebrew/etc/profile.d/bash_completion.sh"
+        fi
 fi
 
 export CDPATH=".:/home/bhupesh"
