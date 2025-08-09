@@ -2,7 +2,7 @@
 -- Figure out the weird behaviour on Iterm2
 function ToggleTransparent()
     if vim.g.is_transparent == 0 then
-        vim.cmd("hi Normal guibg=NONE ctermbg=NONE")
+        vim.cmd("hi Normal guibg=NONE ctermbg=NONE ctermfg=NONE guifg=NONE")
         vim.g.is_transparent = 1
     else
         vim.g.is_transparent = 0

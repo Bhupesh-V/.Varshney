@@ -1,28 +1,29 @@
 # .Varshney
 
-My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & easy to use dotfiles manager" href="https://github.com/Bhupesh-V/dotman"><b>dotman 🖖</b></a>
-
-<a href="https://github.com/Bhupesh-V/.Varshney/blob/master/LICENSE">
-	<img alt="License: GPLv3" src="https://img.shields.io/github/license/Bhupesh-V/.Varshney" />
-</a>
 <a href="https://github.com/ellerbrock/open-source-badges">
 	<img alt="bashit" src="https://badges.frapsoft.com/bash/v1/bash.png?v=103">
 </a>
-<a href="https://twitter.com/bhupeshimself">
-	<img alt="Twitter: bhupeshimself" src="https://img.shields.io/twitter/follow/bhupeshimself.svg?style=social" target="_blank" />
-</a>
 
+## Setup
 
-## My setup 🖥
+1. Clone to `$HOME/.dotfiles`.
+   ```
+   git clone --bare https://github.com/Bhupesh-V/.Varshney.git .dotfiles
+   ```
+2. Restart terminal so that bash aliases take effect (or do a `source .bashrc`).
+3. Setup `gitconfig` for work or personal work according [to the following doc](https://til.bhupesh.me/git/using-multiple-git-accounts-with-git-credentials#step-2-separate-git-config-for-each-account).
+4. Sync local changes to upstream.
+   ```
+   dot status
+   dot commit -am "update nvim config"
+   dot push
+   ```
+5. Sync changes from upstream.
+   ```
+   dot pull
+   ```
 
-- **OS**: Ubuntu 20.04
-- **DE**: Mate
-- **SHELL**: bash
-- **Editor**: NeoVim
-- **TERM**: xterm-256color
-
-
-## What's Inside 👀
+<!-- ## What's Inside 👀
 
 > ~~I am pretty new to this stuff~~ (not anymore), so you won't find any scripts that hack NASA. Anyways, hope you find something useful, Good luck 👍
 
@@ -195,17 +196,17 @@ My config &amp; .dotfiles managed by <a title="dotman is a simple, elegant & eas
 |  `Ctrl` + `v` |   Paste in Insert Mode |
 |  `t` |    Toggle Comment in Current line (Normal Mode)  |
 |  `<space>` |    Toggle Fold at Current line |
-|  `<Tab>` |  Switch Windows |
+|  `<Tab>` |  Switch Windows | -->
 
 
-## Author [![bhupesh-twitter-image](https://kutt.it/bhupeshimself)](https://twitter.com/bhupeshimself)
+<!-- ## Author [![bhupesh-twitter-image](https://kutt.it/bhupeshimself)](https://twitter.com/bhupeshimself)
 **🤓 [Bhupesh Varshney](https://bhupesh.me)** 
 
-<img height="200px" src="https://user-images.githubusercontent.com/34342551/101245824-8e973280-3735-11eb-982e-17d59d74891a.png">
+<img height="200px" src="https://user-images.githubusercontent.com/34342551/101245824-8e973280-3735-11eb-982e-17d59d74891a.png"> -->
 
-## ☺️ Show your support
+<!-- ## ☺️ Show your support
 
-Support me by giving a ⭐️ if this project helped you! or just [![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2FBhupesh-V%2F.Varshney%2F)](https://twitter.com/intent/tweet?url=https://github.com/Bhupesh-V/.Varshney&text=.Varshney%20via%20@bhupeshimself)
+Support me by giving a ⭐️ if this project helped you! or just [![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2FBhupesh-V%2F.Varshney%2F)](https://twitter.com/intent/tweet?url=https://github.com/Bhupesh-V/.Varshney&text=.Varshney%20via%20@bhupeshimself) -->
 
 ## 📝 License
 

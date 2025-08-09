@@ -1,10 +1,10 @@
 # If not running interactively, don't do anything
 case $- in
-    *i*) ;;
-      *) return;;
+*i*) ;;
+*) return ;;
 esac
 
-# Gib me all the colors 
+# Gib me all the colors
 export TERM=xterm-256color
 export DOTFILES_HOME="$HOME/Documents/.Varshney"
 export PATH="$DOTFILES_HOME/scripts:$PATH"
@@ -49,7 +49,7 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
+xterm-color | *-256color) color_prompt=yes ;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -59,12 +59,12 @@ force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
     else
-	color_prompt=
+        color_prompt=
     fi
 fi
 
@@ -83,7 +83,7 @@ BOLD_BLUE_FG=$'\e[1;38;5;111m'
 BOLD_ORANGE_FG="\e[1;38;5;208m"
 
 git_status() {
-    status=$(git status --porcelain 2> /dev/null)
+    status=$(git status --porcelain 2>/dev/null)
     untracked=$(echo "$status" | grep -c "??\s")
     modified=$(echo "$status" | grep -c "M\s")
     tracked=$(echo "$status" | grep -c "A\s")
@@ -94,7 +94,7 @@ git_status() {
     modified_symbol="●"
     GIT_STATUS_PROMPT=""
 
-# GIT_STATUS_PROMPT+="${GRAY_BG}"
+    # GIT_STATUS_PROMPT+="${GRAY_BG}"
     if [[ $untracked != 0 ]]; then
         GIT_STATUS_PROMPT+=" ${BOLD_BLUE_FG}${tracked_symbol} ${untracked}"
     fi
@@ -112,12 +112,12 @@ git_status() {
 }
 
 random_emoji() {
-	# add a random emoticon (mostly face emojis)
-	printf "%b" "\U1F$(shuf -i600-640 -n1)"
+    # add a random emoticon (mostly face emojis)
+    printf "%b" "\U1F$(shuf -i600-640 -n1)"
 }
 
 get_git_branch() {
-    curr_branch=$(git branch 2> /dev/null | grep \\* | cut -d ' ' -f2)
+    curr_branch=$(git branch 2>/dev/null | grep \\* | cut -d ' ' -f2)
     [ "$curr_branch" ] && printf "($BOLD_ORANGE_FG%s$RESET)" "$curr_branch"
 }
 
@@ -139,15 +139,14 @@ RIGHT_PROMPT="\n\$(tput sc; tput rc)"
 # Enable right prompt when you figure out what to add there
 # RIGHT_PROMPT="\n\$(tput sc; rightprompt; tput rc)"
 
-
 custom_prompt() {
-	EXIT="$?"
+    EXIT="$?"
     color_themes=("38" "112" "220" "196" "200" "208" "255")
     size=${#color_themes[@]}
     index=$(($RANDOM % $size))
     ARROW_FG="\e[38;5;${color_themes[$index]}m"
     ARROW_BG="\e[48;5;${color_themes[$index]}m"
-	last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "\[$BOLD_RED_FG\]✘")
+    last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "\[$BOLD_RED_FG\]✘")
     arrp="\[$GRAY_BG\] $last_command_status $(random_emoji) \[$GRAY_FG\]\[$ARROW_BG\]\[$ARROW_BG\]\[$BOLD_BLACK_FG\] $(virtualenv_ps1) \[$RESET\]\[$ARROW_FG\]\[$RESET\]"
     PS1="\[$BOLD_L_YELLOW\]\[$RIGHT_PROMPT\]\[$RESET\]\[$BOLD_GREEN_FG\]\w\[$RESET\] $(get_git_branch)$(git_status)\n$arrp "
 }
@@ -215,6 +214,9 @@ if ! shopt -oq posix; then
         . /usr/share/bash-completion/bash_completion
     elif [ -f /etc/bash_completion ]; then
         . /etc/bash_completion
+    # brew install bash-completion@2
+    elif [ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]; then
+        . "/opt/homebrew/etc/profile.d/bash_completion.sh"
     fi
 fi
 
@@ -243,17 +245,17 @@ export DOT_REPO=https://github.com/Bhupesh-V/.Varshney DOT_DEST=Documents
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/go/bin
 export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
-export PATH="/opt/homebrew/bin:$PATH"
+export PATH="/opt/homebrew/bin/$PATH"
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 # source ~/.work_profile
-# source /home/bhupesh/fzf-docker/docker-fzf
+source $HOME/fzf-docker/docker-fzf
 # Set up fzf key bindings and fuzzy completion
 eval "$(fzf --bash)"
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
@@ -264,3 +266,4 @@ export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
 export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"

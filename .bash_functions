@@ -45,11 +45,10 @@ alarm() {
 
     set +m
     (
-    sleep "$1"
-    notify-send -a "CLI Alarm" -u critical -i time "$2" "Alarm Notification Alert"
+        sleep "$1"
+        notify-send -a "CLI Alarm" -u critical -i time "$2" "Alarm Notification Alert"
     ) &
 }
-
 
 vcd() {
     # [v]irtual [cd] automatically activates/deactivates python virtual environments on cd
@@ -71,10 +70,10 @@ vcd() {
 
     if [[ $userpath != "" ]]; then
         case $1 in
-            "..") cd .. && return ;;
-            "-") cd - && return ;;
-            "/") cd / && return ;;
-            *) cd "$userpath" || return ;;
+        "..") cd .. && return ;;
+        "-") cd - && return ;;
+        "/") cd / && return ;;
+        *) cd "$userpath" || return ;;
         esac
         current_dir=$(pwd)
         while [[ "$current_dir" != "$HOME" ]]; do
@@ -97,31 +96,31 @@ scd() {
 
     if [[ "$1" ]]; then
         case $1 in
-            "..") cd .. || return ;;
-            "-") cd - || return ;;
-            "/") cd / || return ;;
-            *) if [[ $1 = /* ]]; then
-                # match absolute path
-                cd "$1" || return
-            else
-                # redo work if tab suggestions are not used
+        "..") cd .. || return ;;
+        "-") cd - || return ;;
+        "/") cd / || return ;;
+        *) if [[ $1 = /* ]]; then
+            # match absolute path
+            cd "$1" || return
+        else
+            # redo work if tab suggestions are not used
+            while read -r value; do
+                files+=($value)
+            done < <(locate -e -r "/$1$" | grep "$HOME")
+            if [[ ${#files} == 0 ]]; then
+                # do loose search
                 while read -r value; do
                     files+=($value)
-                done < <(locate -e -r "/$1$" | grep "$HOME")
-                if [[ ${#files} == 0 ]]; then
-                    # do loose search
-                    while read -r value; do
-                        files+=($value)
-                    done < <(locate -e -b -r "$1" | grep "$HOME")
+                done < <(locate -e -b -r "$1" | grep "$HOME")
+            fi
+            for file_match in "${files[@]}"; do
+                if [[ -d $file_match ]]; then
+                    printf "%s\n" "Hit 🎯: $file_match"
+                    cd "$file_match" || return
                 fi
-                for file_match in "${files[@]}"; do
-                    if [[ -d $file_match ]]; then
-                        printf "%s\n" "Hit 🎯: $file_match"
-                        cd "$file_match" || return
-                    fi
-                done
-                unset files
-                fi ;;
+            done
+            unset files
+        fi ;;
         esac
     else
         cd ~ || return
@@ -132,7 +131,7 @@ scd() {
 
 # gcd() {
 # cd "$1" || return
- 
+
 # default_branch=$(git remote show origin | awk '/HEAD/ {print $3}')
 
 # remote_commit=$(git ls-remote --head --exit-code origin "$default_branch" | cut -f 1 | head -1)
@@ -141,8 +140,8 @@ scd() {
 # if [[ $remote_commit != $local_commit ]]; then
 # printf "%s\n" "Your repository seems to be out of sync with remote"
 # printf "%s\n" "Please take a git pull"
-        # fi
-        # }
+# fi
+# }
 
 netu() {
     # [net]work [u]sage: check network usage stats
@@ -163,12 +162,12 @@ extract() {
 
     if [ -f "$1" ]; then
         case "$1" in
-            *.tar.bz2) tar xvjf "$1"  ;;
-            *.tar.gz) tar xvzf "$1"  ;;
-            *.tgz) tar xvzf "$1" ;;
-            *.tar) tar xvf "$1"  ;;
-            *.zip) unzip "$1" ;;
-            *) echo "'$1' is not a valid archive file!" ;;
+        *.tar.bz2) tar xvjf "$1" ;;
+        *.tar.gz) tar xvzf "$1" ;;
+        *.tgz) tar xvzf "$1" ;;
+        *.tar) tar xvf "$1" ;;
+        *.zip) unzip "$1" ;;
+        *) echo "'$1' is not a valid archive file!" ;;
         esac
     else
         echo "extract requires a filepath"
@@ -240,19 +239,19 @@ h() {
     fi
 }
 
-hl () { 
+hl() {
     # FROM: http://www.wassen.net/highlight-output.html
     # Use: tail file.txt | hl word-to-highlight
     if [[ $1 = '-i' ]]; then
         ARGS='--ignore-case'
         shift
     fi
-    egrep $ARGS --color=always -e '' $(echo $* | xargs -n1 printf "-e%s "); 
+    egrep $ARGS --color=always -e '' $(echo $* | xargs -n1 printf "-e%s ")
 }
 
 fino() {
     # get data if piped
-    declare filepath=${1:-$(</dev/stdin)};
+    declare filepath=${1:-$(</dev/stdin)}
     if [[ -f "$filepath" ]]; then
         echo -e "$(basename "$filepath")"
         info=$(file "$filepath" | awk -F ":" '{print $2}')
@@ -276,22 +275,21 @@ todo() {
     if [[ $# -gt 1 ]]; then
         local key="$1"
         case "$key" in
-            --remove|-r)
-                grep -v -- "$2" ~/todo.md > tmpfile && mv tmpfile ~/todo.md
-                ;;
-            *)
-                printf "%s\n" "ERROR: Unrecognized argument $key"
-                exit 1
-                ;;
+        --remove | -r)
+            grep -v -- "$2" ~/todo.md >tmpfile && mv tmpfile ~/todo.md
+            ;;
+        *)
+            printf "%s\n" "ERROR: Unrecognized argument $key"
+            exit 1
+            ;;
         esac
 
     elif [[ -z "$1" ]]; then
-        cat ~/todo.md 
+        cat ~/todo.md
     else
-        xargs -I TODO  echo "- [ ] TODO" >> ~/todo.md <<< "$1"
+        xargs -I TODO echo "- [ ] TODO" >>~/todo.md <<<"$1"
     fi
 }
-
 
 epoch() {
     # script to ouput current unix epoch and convert to readable datetime
@@ -302,17 +300,20 @@ epoch() {
     # Darwin ) echo "on Mac" ;;
     # esac
     case "$1" in
-        now)
-            date +'%s'
-            [ $(uname) == "Darwin" ] && date -r $(date -u +%s) || date --date="@$(date -u +%s)" ;;
-        later)
-            # e.g epoch later "10 days"
-            [ -z "$2" ] && echo "argument missing, 'epoch later <modifier>'" && return
-            date -d "$2"
-            date -u +%s -d "$2";;
-        *)
-            [ -z $1 ] && echo "argument missing, 'epoch <unix-timestamp>'" && return
-            [ $(uname) == "Darwin" ] && date -r "$1" || date --date="@$1";;
+    now)
+        date +'%s'
+        [ $(uname) == "Darwin" ] && date -r $(date -u +%s) || date --date="@$(date -u +%s)"
+        ;;
+    later)
+        # e.g epoch later "10 days"
+        [ -z "$2" ] && echo "argument missing, 'epoch later <modifier>'" && return
+        date -d "$2"
+        date -u +%s -d "$2"
+        ;;
+    *)
+        [ -z $1 ] && echo "argument missing, 'epoch <unix-timestamp>'" && return
+        [ $(uname) == "Darwin" ] && date -r "$1" || date --date="@$1"
+        ;;
     esac
 }
 
@@ -322,7 +323,7 @@ pp() {
 }
 
 gga() {
-    gists -au Bhupesh-V | fzf | awk -F  "," '{print $2}' | xargs -0 browse > /dev/null 2>&1
+    gists -au Bhupesh-V | fzf | awk -F "," '{print $2}' | xargs -0 browse >/dev/null 2>&1
 }
 
 # gg() {
@@ -331,5 +332,13 @@ gga() {
 
 browse() {
     command -v xdg-open >/dev/null 2>&1 && xdg-open "$@" ||
-    command -v open >/dev/null 2>&1 && open "$@" > /dev/null 2>&1
+        command -v open >/dev/null 2>&1 && open "$@" >/dev/null 2>&1
+}
+
+n() {
+    if [[ "$(uname)" == "Darwin" ]]; then
+        nvim "$@"
+    else
+        nvim.appimage "$@"
+    fi
 }

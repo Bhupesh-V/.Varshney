@@ -1,0 +1,11 @@
+[window]
+decorations = "Buttonless"
+opacity=0.8
+blur=true
+startup_mode="Maximized"
+
+[font]
+normal = { family = "FiraCode Nerd Font", style = "Medium" }
+size=21
+
+

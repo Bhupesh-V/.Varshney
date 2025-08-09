@@ -14,20 +14,21 @@ return {
             left = '',
             right = ''
         },
-        theme = "horizon",
+        --theme = "horizon",
         globalstatus = true,
         disabled_filetypes = {
-            statusline = {"dashboard", "filesytem", "mason", "neo-tree", "neo-tree-popup", "null-ls-info", "lazy",
-                          "lspinfo", "ministarter", "TelescopePrompt"}
+            statusline = { "dashboard", "filesytem", "mason", "neo-tree", "neo-tree-popup", "null-ls-info", "lazy",
+                "lspinfo", "ministarter", "TelescopePrompt" }
         }
     },
     config = function(_, opts)
         local sections = {
             -- Statusline components to showcase on the right-most end
-            lualine_x = {"filetype"},
-            lualine_y = {"progress"},
-            lualine_z = {"location"},
-            lualine_c = {"filename"}
+            lualine_x = { "filetype" },
+            -- add "progress" to lualine_y to show file scroll percentage
+            lualine_y = { "" },
+            lualine_z = { "location" },
+            lualine_c = { "filename" }
             -- lualine_c = { -- INFO: This section shows the entire filepath relative to the project root
             --   { "filename", path = 1 },
             -- },

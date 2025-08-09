@@ -6,7 +6,6 @@ alias gis='git status'
 alias gic='git-commit'
 alias gicl='git clone'
 
-
 alias gib='git branch'
 alias gibs='git-switch'
 alias giws='source git-worktree-switch'
@@ -29,7 +28,6 @@ alias venv="python3 -m venv"
 alias pdb="python3 -m pdb"
 alias serve="python3 -m http.server"
 # miscellaneous
-alias n="nvim.appimage"
 alias dotman='$HOME/dotman/dotman.sh'
 alias update='sudo apt-get update'
 alias upgrade='sudo apt-get upgrade'
@@ -43,3 +41,4 @@ alias amaze="find . -type f -print0 | shuf -z -n 1 | xargs -0 browse > /dev/null
 alias bro="xfi | fzf --exact --prompt='Search File: ' --preview '(eye {} || tree -C {}) 2> /dev/null || cat {}' --pointer='🡆' --height 60% --reverse --color 'fg:#E6E1CF,fg+:#ddeeff,prompt:#A9DC76,pointer:#FF6188,header:#AB9DF2,query:#FFD866,hl+:#FFEE99' | xargs -I FILEP browse \"FILEP\""
 alias til="locate -e '/home/bhupesh/Documents/til' | fzf | xargs glow --pager"
 alias fbro="locate $HOME | fzf --exact --prompt='Search File: ' --pointer=🡆 --height 60% --reverse --color fg:#E6E1CF,fg+:#ddeeff,prompt:#A9DC76,pointer:#FF6188,header:#AB9DF2,query:#FFD866,hl+:#FFEE99 | xargs -I FILEP browse FILEP"
+alias dot="git --git-dir=$HOME/.dot --work-tree=$HOME"

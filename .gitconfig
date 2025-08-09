@@ -1,7 +1,8 @@
 [includeIf "gitdir:~/Documents/work/"]
     path = ~/Documents/work/.gitconfig-work
-
 [includeIf "gitdir:~/Documents/personal/"]
+    path = ~/Documents/personal/.gitconfig-personal
+[includeIf "gitdir:~/.dotfiles"]
     path = ~/Documents/personal/.gitconfig-personal
 
 [commit]
