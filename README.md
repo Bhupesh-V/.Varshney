@@ -12,13 +12,28 @@
    ```
 2. Restart terminal so that bash aliases take effect (or do a `source .bashrc`).
 3. Setup `gitconfig` for work or personal work according [to the following doc](https://til.bhupesh.me/git/using-multiple-git-accounts-with-git-credentials#step-2-separate-git-config-for-each-account).
-4. Sync local changes to upstream.
+4. Checkout to overwrite changes.
+
+   Do a dry run first.
+   ```
+   dot checkout
+   ```
+
+   Apply changes
+   ```
+   dot checkout -f
+   ```
+5. Disable polluting `dot status` with other config files.
+   ```
+   dot config --local status.showUntrackedFiles no
+   ```
+6. Sync local changes to upstream.
    ```
    dot status
    dot commit -am "update nvim config"
    dot push
    ```
-5. Sync changes from upstream.
+7. Sync changes from upstream.
    ```
    dot pull
    ```
