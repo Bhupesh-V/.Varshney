@@ -3,9 +3,10 @@ decorations = "Buttonless"
 opacity=0.8
 blur=true
 startup_mode="Maximized"
+dynamic_padding=false
 
 [font]
 normal = { family = "FiraCode Nerd Font", style = "Medium" }
-size=21
+size=22
 
 
