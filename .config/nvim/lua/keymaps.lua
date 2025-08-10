@@ -33,10 +33,12 @@ map("n", "<leader>c", ":nohlsearch<CR>", opts)
 map("n", "<leader>z", ":Goyo<CR>", opts)
 
 -- Telescope
-map("n", "<leader>f", ":Telescope find_files<CR>", opts)
-map("n", "<leader>g", ":Telescope live_grep<CR>", opts)
+map("n", "<leader>f", ":Telescope fd<CR>", opts)
+-- map("n", "<leader>g", ":Telescope live_grep<CR>", opts)
 map("n", "<leader>b", ":Telescope buffers<CR>", opts)
 map("n", "<leader>h", ":Telescope help_tags<CR>", opts)
+map("n", "<leader>c", ":Telescope colorscheme<CR>", opts)
+map("n", "<leader>d", ":Telescope diagnostics<CR>", opts)
 
 -- Activate Command Mode
 map("n", ";", ":")

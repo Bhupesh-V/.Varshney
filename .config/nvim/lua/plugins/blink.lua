@@ -46,7 +46,8 @@ return {
         -- (Default) Only show the documentation popup when manually triggered
         completion = {
             documentation = {
-                auto_show = false,
+                auto_show = true,
+                auto_show_delay = 250,
                 window = {
                     border = "rounded",
                     winblend = 0
