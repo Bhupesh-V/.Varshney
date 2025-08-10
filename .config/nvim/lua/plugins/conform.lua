@@ -13,7 +13,7 @@ return {
       lua = { "stylua" },
       scss = { "prettier" },
       sh = { "shfmt" },
-      python = { "ruff_organize_imports", "ruff_format" },
+      -- python = { "ruff_organize_imports", "ruff_format" },
       typescript = { "prettier" },
       vue = { "prettier" },
       yaml = { "prettier" },
@@ -46,7 +46,7 @@ return {
     -- Add proper indents to the formatted Shell files
     conform.formatters.shfmt = {
       prepend_args = {
-        "--indent=2",
+        "--indent=4",
         "--binary-next-line",
         "--case-indent",
         "--space-redirects",

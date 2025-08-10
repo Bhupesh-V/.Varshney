@@ -61,3 +61,5 @@ map("n", "gR", telescope.lsp_references, {
 map("n", "gra", vim.lsp.buf.code_action, {
     desc = "Open available code actions"
 })
+
+require("snippets.go")

@@ -33,7 +33,8 @@ config.cursor_blink_rate = 650
 config.window_background_opacity = 0.7  -- 0.0 = fully transparent, 1.0 = opaque
 config.text_background_opacity = 1.0     -- keep text solid
 config.macos_window_background_blur = 20
-config.line_height = 1.0 -- or slightly less, e.g., 0.95
+--config.line_height = 1.0 -- or slightly less, e.g., 0.95
+config.cursor_thickness="2pt"
 
 config.colors = {
   cursor_bg = '#5DFFFF',
@@ -45,6 +46,4 @@ wezterm.on("gui-startup", function(cmd)
   window:gui_window():toggle_fullscreen()
 end)
 
-
--- Finally, return the configuration to wezterm:
 return config

@@ -20,13 +20,27 @@ return {
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
         keymap = {
-            preset = 'enter'
+            preset = 'super-tab'
         },
 
         appearance = {
             -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
             -- Adjusts spacing to ensure icons are aligned
             nerd_font_variant = 'mono'
+        },
+        snippets = {
+            -- Function to use when expanding LSP provided snippets
+            expand = function(snippet)
+                vim.snippet.expand(snippet)
+            end,
+            -- Function to use when checking if a snippet is active
+            active = function(filter)
+                return vim.snippet.active(filter)
+            end,
+            -- Function to use when jumping between tab stops in a snippet, where direction can be negative or positive
+            jump = function(direction)
+                vim.snippet.jump(direction)
+            end
         },
 
         -- (Default) Only show the documentation popup when manually triggered

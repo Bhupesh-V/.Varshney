@@ -2,10 +2,12 @@
 
 # FZF + Git interactively switch branches
 
-choice=$(git for-each-ref --format='%(refname:short)' | fzf \
-  --prompt="Switch branch: " \
-  --height 40% --reverse \
-  --header="Select a branch to switch to"
+choice=$(
+         git for-each-ref --format='%(refname:short)' | fzf \
+                --prompt="Switch Branch: " \
+                --height 40% --reverse
 )
 
-git switch $choice
+if [ -n "$choice" ]; then
+        git switch $choice
+fi

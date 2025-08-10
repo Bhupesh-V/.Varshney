@@ -83,6 +83,22 @@ return {
                 end
             })
         end
+        -- Setup LSP servers
+        -- Load LSP configurations using dofile (keeps your directory structure)
+        local function load_lsp_config(config_name)
+            local config_path = vim.fn.stdpath('config') .. '/lsp/' .. config_name .. '.lua'
+            return dofile(config_path)
+        end
+
+        local servers = {
+            gopls = load_lsp_config('gopls'),
+            lua_ls = load_lsp_config('lua_ls')
+        }
+
+        for server, config in pairs(servers) do
+            config.on_attach = on_attach
+            lspconfig[server].setup(config)
+        end
 
     end,
     dependencies = { -- This plugin needs to be loaded as well otherwise Neovim can't find the LSP binary on $PATH.

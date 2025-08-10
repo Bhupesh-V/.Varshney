@@ -1,5 +1,4 @@
 -- Toggle transparent mode (make sure this is always below colorscheme setting)
--- Figure out the weird behaviour on Iterm2
 function ToggleTransparent()
     if vim.g.is_transparent == 0 then
         vim.cmd("hi Normal guibg=NONE ctermbg=NONE ctermfg=NONE guifg=NONE")
@@ -11,7 +10,7 @@ function ToggleTransparent()
 end
 vim.api.nvim_create_user_command("ToggleTransparent", ToggleTransparent, {})
 
--- Run command on the current line and paste its output in next line
+-- Run command on the current line and paste its output in next line inside a markdown code block
 function AddCmdOutput()
     local line_num = vim.fn.line(".")
     local cmd = vim.fn.getline(".")
@@ -47,10 +46,19 @@ local bracket_pairs = {
 }
 
 -- Set keymaps dynamically
--- TODO: don't auto close when there are characters just before and after the cursor
 for open, close in pairs(bracket_pairs) do
     vim.keymap.set('i', open, function()
+        local _, col = unpack(vim.api.nvim_win_get_cursor(0))
+        local line = vim.api.nvim_get_current_line()
+
+        -- Get chars before/after cursor
+        local before = col > 0 and line:sub(col, col) or ''
+        local after = line:sub(col + 1, col + 1)
+
+        -- Only insert the pair if both before and after are non-whitespace chars
+        if before:match('%S') or after:match('%S') then
+            return open -- insert the typed char
+        end
         return open .. close .. '<Left>' .. eatchar('%s')
     end, { silent = true, expr = true })
 end
-
