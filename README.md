@@ -38,6 +38,24 @@
    dot pull
    ```
 
+# Bookstraping (WIP)
+
+## MacOS
+
+brew packages I rely on
+
+```
+bash
+bash-completion@2
+ffmpeg
+ripgrep
+lua-language-server
+neovim
+openapi-generator
+tree
+ugit
+```
+
 <!-- ## What's Inside 👀
 
 > ~~I am pretty new to this stuff~~ (not anymore), so you won't find any scripts that hack NASA. Anyways, hope you find something useful, Good luck 👍

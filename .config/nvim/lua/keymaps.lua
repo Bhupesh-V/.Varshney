@@ -30,7 +30,7 @@ map("n", "<C-l>", "<C-W>l", opts)
 map("n", "<leader>c", ":nohlsearch<CR>", opts)
 
 -- Toggle Goyo mode
-map("n", "<leader>z", ":Goyo<CR>", opts)
+-- map("n", "<leader>z", ":Goyo<CR>", opts)
 
 -- Telescope
 map("n", "<leader>f", ":Telescope fd<CR>", opts)
@@ -40,5 +40,19 @@ map("n", "<leader>h", ":Telescope help_tags<CR>", opts)
 map("n", "<leader>c", ":Telescope colorscheme<CR>", opts)
 map("n", "<leader>d", ":Telescope diagnostics<CR>", opts)
 
--- Activate Command Mode
+-- Activate Command Mode using ";"
 map("n", ";", ":")
+
+-- Resize split windows
+map("n", "<A-h>", ":vertical resize +3<CR>")
+map("n", "<A-l>", ":vertical resize -3<CR>")
+
+-- Cycle through open buffers
+map("n", "<S-Tab>", ":bn<CR>")
+
+-- Tab to cycle through open splits
+map("n", "<Tab>", "<C-w><C-w>")
+
+-- Copy using ctrl + c
+map("v", "<C-c>", '"+y')
+map("i", "<C-v>", '<Esc>"+pi')
