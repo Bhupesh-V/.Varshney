@@ -67,7 +67,7 @@ local comment_chars = {
 	vim = { prefix = '" ', suffix = "" },
 	python = { prefix = "# ", suffix = "" },
 	sh = { prefix = "# ", suffix = "" },
-	go = { single = { prefix = "// ", suffix = "" }, multi = { prefix = "/* ", suffix = " */" } },
+	go = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/*", suffix = "*/" } },
 	html = { prefix = "<!-- ", suffix = " -->" },
 	css = { prefix = "/* ", suffix = " */" },
 	javascript = { prefix = "/* ", suffix = " */" },
@@ -82,28 +82,35 @@ function trim(s)
 	return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
 end
 
-function ToggleComment(s_start, s_end)
+function ToggleComment(_, _)
 	-- TODO: shall we care about file's indent level?
 	-- TODO: set an undo point
 	-- TODO: support visual mode
 	local ft = vim.bo.filetype
 	local line = vim.api.nvim_get_current_line()
 	local comment = comment_chars[ft]
-	local isCommented = false
 
-	local m = vim.fn.mode()
+	local m = "v"
+	print("current mode", m)
 
-	if m == "v" or m == "V" or m == "\22" then
+	if m == "v" or m == "V" then
 		print("in visual")
-		local lines, _, _ = Get_visual_selection()
-		print(s_start, s_end)
+		local lines, s_start, s_end = Get_visual_selection()
+
+		for _, value in pairs(lines) do
+			print("value", value)
+		end
+
+		if #lines == 0 then
+			print("Nothing to comment/uncomment")
+			return
+		end
 
 		local prefix = comment["multi"]["prefix"]
 		local suffix = comment["multi"]["suffix"]
 
-		local start_lnum = s_start[2]
+		local start_lnum = s_start[2] - 1
 		print("start", start_lnum)
-		--local start_col = s_start[3]
 
 		local end_lnum = s_end[2]
 		print("end", end_lnum)
@@ -112,32 +119,30 @@ function ToggleComment(s_start, s_end)
 			start_lnum, end_lnum = end_lnum, start_lnum
 		end
 
-		--local end_col = s_end[3]
+		local trimmed = trim(lines[1])
 
-		if #lines == 0 then
-			print("Nothing to comment/uncomment")
+		print("Trimmed", trimmed)
+		print("Trimmed Length", #trimmed)
+
+		if string.sub(trimmed, 1, #prefix) == prefix then
+			-- current line is already commented, so uncomment it
+			print("Uncommenting")
+			local firstLine = string.sub(lines[1], #prefix + (#line - #trimmed), #line - #suffix)
+			local lastLine = string.sub(lines[#lines], #suffix + (#line - #trimmed), #line - #suffix)
+
+			lines[1] = firstLine
+			lines[#lines] = lastLine
+			vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
+			return
 		else
-			local trimmed = trim(lines[1])
+			print("Commenting")
+			local firstLine = prefix .. lines[1]
+			local lastLine = lines[#lines] .. suffix
 
-			if string.sub(trimmed, 1, #prefix) == prefix then
-				-- current line is already commented, so uncomment it
-				local firstLine = string.sub(lines[1], #prefix + (#line - #trimmed), #line - #suffix)
-				local lastLine = string.sub(lines[#lines], #suffix + (#line - #trimmed), #line - #suffix)
+			lines[1] = firstLine
+			lines[#lines] = lastLine
 
-				lines[1] = firstLine
-				lines[#lines] = lastLine
-				vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
-
-				isCommented = true
-			end
-			if not isCommented then
-				local firstLine = prefix .. lines[1]
-				local lastLine = lines[#lines] .. suffix
-
-				lines[1] = firstLine
-				lines[#lines] = lastLine
-				vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
-			end
+			vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
 		end
 	end
 
@@ -151,31 +156,18 @@ function ToggleComment(s_start, s_end)
 		if string.sub(trimmed, 1, #prefix) == prefix then
 			-- current line is already commented, so uncomment it
 			vim.api.nvim_set_current_line(string.sub(line, #prefix + (#line - #trimmed), #line - #suffix))
-			isCommented = true
-		end
-		if not isCommented then
+		else
 			vim.api.nvim_set_current_line(prefix .. line .. suffix)
 		end
 	end
 end
 vim.api.nvim_create_user_command("ToggleComment", ToggleComment, {})
--- Visual mode mapping vim.keymap.set("v", "<C-/>", "<cmd>lua ToggleComment()<CR>", { noremap = true, silent = true })
+-- Visual mode mapping
+vim.keymap.set("v", "<C-/>", ":<C-u>lua ToggleComment()<CR>", { noremap = true, silent = true })
+-- vim.keymap.set("v", "<C-/>", ToggleComment, { noremap = true, silent = true })
 
 -- Normal mode mapping that works on the *last* visual selection
 -- vim.keymap.set("n", "<C-/>", "gv<cmd>lua ToggleComment()<CR>", { noremap = true, silent = true })
-
-vim.keymap.set("v", "<C-/>", function()
-	local s_start = vim.fn.getpos("'<")
-	local s_end = vim.fn.getpos("'>")
-	ToggleComment(s_start, s_end)
-end, { noremap = true, silent = true })
-
-vim.keymap.set("n", "<C-/>", function()
-	vim.cmd("normal! gv") -- reselect last visual
-	local s_start = vim.fn.getpos("'<")
-	local s_end = vim.fn.getpos("'>")
-	ToggleComment(s_start, s_end)
-end, { noremap = true, silent = true })
 
 function Get_visual_selection()
 	local s_start = vim.fn.getpos("'<")
@@ -193,3 +185,22 @@ function Get_visual_selection()
 	return lines, s_start, s_end
 end
 vim.api.nvim_create_user_command("GetVis", Get_visual_selection, {})
+
+function PutRandom()
+	local s_start = vim.fn.getpos("'<")
+	local s_end = vim.fn.getpos("'>")
+	local start_lnum = s_start[2] - 1
+	local end_lnum = s_end[2]
+	print("inside random", start_lnum, end_lnum)
+	if start_lnum > end_lnum then
+		start_lnum, end_lnum = end_lnum, start_lnum
+	end
+	vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, {
+		"line 1",
+		"line 2",
+	})
+end
+
+vim.api.nvim_create_user_command("PutRandom", PutRandom, {})
+--vim.keymap.set("v", "<C-x>", PutRandom, { noremap = true, silent = true })
+vim.keymap.set("v", "<C-x>", ":<C-u>lua PutRandom()<CR>", { noremap = true, silent = true })
