@@ -82,24 +82,18 @@ function trim(s)
 	return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
 end
 
-function ToggleComment(_, _)
+function ToggleComment(invoked_mode)
 	-- TODO: shall we care about file's indent level?
 	-- TODO: set an undo point
-	-- TODO: support visual mode
+	-- TODO: support insert mode
 	local ft = vim.bo.filetype
 	local line = vim.api.nvim_get_current_line()
 	local comment = comment_chars[ft]
 
-	local m = "v"
-	print("current mode", m)
+	local m = invoked_mode
 
 	if m == "v" or m == "V" then
-		print("in visual")
 		local lines, s_start, s_end = Get_visual_selection()
-
-		for _, value in pairs(lines) do
-			print("value", value)
-		end
 
 		if #lines == 0 then
 			print("Nothing to comment/uncomment")
@@ -110,10 +104,7 @@ function ToggleComment(_, _)
 		local suffix = comment["multi"]["suffix"]
 
 		local start_lnum = s_start[2] - 1
-		print("start", start_lnum)
-
 		local end_lnum = s_end[2]
-		print("end", end_lnum)
 
 		if start_lnum > end_lnum then
 			start_lnum, end_lnum = end_lnum, start_lnum
@@ -121,21 +112,16 @@ function ToggleComment(_, _)
 
 		local trimmed = trim(lines[1])
 
-		print("Trimmed", trimmed)
-		print("Trimmed Length", #trimmed)
-
 		if string.sub(trimmed, 1, #prefix) == prefix then
 			-- current line is already commented, so uncomment it
-			print("Uncommenting")
 			local firstLine = string.sub(lines[1], #prefix + (#line - #trimmed), #line - #suffix)
 			local lastLine = string.sub(lines[#lines], #suffix + (#line - #trimmed), #line - #suffix)
 
 			lines[1] = firstLine
 			lines[#lines] = lastLine
+
 			vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
-			return
 		else
-			print("Commenting")
 			local firstLine = prefix .. lines[1]
 			local lastLine = lines[#lines] .. suffix
 
@@ -146,24 +132,25 @@ function ToggleComment(_, _)
 		end
 	end
 
-	-- Multiline insert mode automatically becomes visual mode
-	if m == "n" or m == "i" then
-		print("in normal")
+	-- Only support single line toggle on normal mode
+	if m == "n" then
 		local prefix = comment["single"]["prefix"]
 		local suffix = comment["single"]["suffix"]
 		local trimmed = trim(line)
 
 		if string.sub(trimmed, 1, #prefix) == prefix then
 			-- current line is already commented, so uncomment it
-			vim.api.nvim_set_current_line(string.sub(line, #prefix + (#line - #trimmed), #line - #suffix))
+			local new_line = string.sub(line, #prefix + 1 + (#line - #trimmed), #line - #suffix)
+			vim.api.nvim_set_current_line(new_line)
 		else
 			vim.api.nvim_set_current_line(prefix .. line .. suffix)
 		end
 	end
 end
 vim.api.nvim_create_user_command("ToggleComment", ToggleComment, {})
--- Visual mode mapping
-vim.keymap.set("v", "<C-/>", ":<C-u>lua ToggleComment()<CR>", { noremap = true, silent = true })
+vim.keymap.set("v", "<C-/>", ":<C-u>lua ToggleComment('v')<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-/>", ":lua ToggleComment('n')<CR>", { noremap = true, silent = true })
+
 -- vim.keymap.set("v", "<C-/>", ToggleComment, { noremap = true, silent = true })
 
 -- Normal mode mapping that works on the *last* visual selection
