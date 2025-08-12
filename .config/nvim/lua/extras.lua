@@ -47,7 +47,6 @@ local bracket_pairs = {
 	["`"] = "`",
 	["<"] = ">",
 }
-
 -- Set keymaps dynamically
 for open, close in pairs(bracket_pairs) do
 	vim.keymap.set("i", open, function()
@@ -71,7 +70,7 @@ local comment_chars = {
 	python = { prefix = "# ", suffix = "" },
 	sh = { prefix = "# ", suffix = "" },
 	go = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/*", suffix = "*/" } },
-	html = { prefix = "<!-- ", suffix = " -->" },
+	html = { single = { prefix = "<!-- ", suffix = " -->" }, multi = { prefix = "<!-- ", suffix = " -->" } },
 	css = { prefix = "/* ", suffix = " */" },
 	javascript = { prefix = "/* ", suffix = " */" },
 	typescript = { prefix = "/* ", suffix = " */" },
@@ -80,19 +79,19 @@ local comment_chars = {
 	lua = { prefix = "-- ", suffix = "" },
 }
 
-function ToggleComment(invoked_mode)
+function ToggleComment()
 	-- TODO: shall we care about file's indent level?
 	-- TODO: set an undo point
 	-- TODO: support insert mode
+	-- TODO: fix cursor position b/w toggles
 	local ft = vim.bo.filetype
 	local line = vim.api.nvim_get_current_line()
 	local comment = comment_chars[ft]
 
-	local m = invoked_mode
+	local lines, s_start, s_end = get_visual_selection()
 
-	if m == "v" or m == "V" then
-		local lines, s_start, s_end = get_visual_selection()
-
+	if #lines > 1 then
+		-- visual selection
 		if #lines == 0 then
 			print("Nothing to comment/uncomment")
 			return
@@ -128,10 +127,8 @@ function ToggleComment(invoked_mode)
 
 			vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
 		end
-	end
-
-	-- Only support single line toggle on normal mode
-	if m == "n" then
+	else
+		-- Only support single line toggle on normal mode
 		local prefix = comment["single"]["prefix"]
 		local suffix = comment["single"]["suffix"]
 		local trimmed = trim(line)
@@ -146,8 +143,9 @@ function ToggleComment(invoked_mode)
 	end
 end
 vim.api.nvim_create_user_command("ToggleComment", ToggleComment, {})
-vim.keymap.set("v", "<C-/>", ":<C-u>lua ToggleComment('v')<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<C-/>", ":lua ToggleComment('n')<CR>", { noremap = true, silent = true })
+vim.keymap.set("v", "<C-/>", ":<C-u>lua ToggleComment()<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-/>", ":lua ToggleComment()<CR>", { noremap = true, silent = true })
+--vim.keymap.set("i", "<C-/>", "<Esc>:ToggleComment<CR>a", { noremap = true, silent = true })
 
 -- vim.keymap.set("v", "<C-/>", ToggleComment, { noremap = true, silent = true })
 
