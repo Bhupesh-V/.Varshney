@@ -19,20 +19,6 @@ M.map = function(mode, lhs, rhs, opts)
 	end
 end
 
--- M.format = function(command)
---   -- INFO: Get the current location of the cursor on the current window
---   local cursor = vim.api.nvim_win_get_cursor(0)
---
---   -- INFO: The formatting command to invoke after the contents are saved
---   vim.cmd(command)
---
---   -- INFO: In case the formatting got rid of the line we came from
---   cursor[1] = math.min(cursor[1], vim.api.nvim_buf_line_count(0))
---
---   -- INFO: Update the current cursor location according to the caluclated values
---   vim.api.nvim_win_set_cursor(0, cursor)
--- end
-
 -- Setup highlight groups for Neovim easily
 M.highlight = vim.api.nvim_set_hl
 
@@ -62,10 +48,12 @@ M.has_git_dir = function()
 	end
 end
 
--- Source: https://github.com/kristijanhusak/neovim-config/blob/a84dd777a3c202df880c075f89644b919f4efacb/nvim/lua/partials/utils.lua#L26-L38
+-- Utlity to get current visual selection along with start and end positions
 M.get_visual_selection = function()
+	-- Source: https://github.com/kristijanhusak/neovim-config/blob/a84dd777a3c202df880c075f89644b919f4efacb/nvim/lua/partials/utils.lua#L26-L38
 	local s_start = vim.fn.getpos("'<")
 	local s_end = vim.fn.getpos("'>")
+
 	local n_lines = math.abs(s_end[2] - s_start[2]) + 1
 	local lines = vim.api.nvim_buf_get_lines(0, s_start[2] - 1, s_end[2], false)
 	lines[1] = string.sub(lines[1], s_start[3], -1)
@@ -74,7 +62,13 @@ M.get_visual_selection = function()
 	else
 		lines[n_lines] = string.sub(lines[n_lines], 1, s_end[3])
 	end
-	return table.concat(lines, "\n")
+	--return table.concat(lines, "\n")
+	return lines, s_start, s_end
+end
+
+-- Utlity function to trim a lua string
+M.trim = function(s)
+	return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
 end
 
 return M

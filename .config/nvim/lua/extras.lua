@@ -1,3 +1,6 @@
+local get_visual_selection = require("utils").get_visual_selection
+local trim = require("utils").trim
+
 -- Toggle transparent mode (make sure this is always below colorscheme setting)
 function ToggleTransparent()
 	if vim.g.is_transparent == 0 then
@@ -77,11 +80,6 @@ local comment_chars = {
 	lua = { prefix = "-- ", suffix = "" },
 }
 
--- TODO: move to utils
-function trim(s)
-	return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
-end
-
 function ToggleComment(invoked_mode)
 	-- TODO: shall we care about file's indent level?
 	-- TODO: set an undo point
@@ -93,7 +91,7 @@ function ToggleComment(invoked_mode)
 	local m = invoked_mode
 
 	if m == "v" or m == "V" then
-		local lines, s_start, s_end = Get_visual_selection()
+		local lines, s_start, s_end = get_visual_selection()
 
 		if #lines == 0 then
 			print("Nothing to comment/uncomment")
@@ -155,39 +153,3 @@ vim.keymap.set("n", "<C-/>", ":lua ToggleComment('n')<CR>", { noremap = true, si
 
 -- Normal mode mapping that works on the *last* visual selection
 -- vim.keymap.set("n", "<C-/>", "gv<cmd>lua ToggleComment()<CR>", { noremap = true, silent = true })
-
-function Get_visual_selection()
-	local s_start = vim.fn.getpos("'<")
-	local s_end = vim.fn.getpos("'>")
-
-	local n_lines = math.abs(s_end[2] - s_start[2]) + 1
-	local lines = vim.api.nvim_buf_get_lines(0, s_start[2] - 1, s_end[2], false)
-	lines[1] = string.sub(lines[1], s_start[3], -1)
-	if n_lines == 1 then
-		lines[n_lines] = string.sub(lines[n_lines], 1, s_end[3] - s_start[3] + 1)
-	else
-		lines[n_lines] = string.sub(lines[n_lines], 1, s_end[3])
-	end
-	--return table.concat(lines, "\n")
-	return lines, s_start, s_end
-end
-vim.api.nvim_create_user_command("GetVis", Get_visual_selection, {})
-
-function PutRandom()
-	local s_start = vim.fn.getpos("'<")
-	local s_end = vim.fn.getpos("'>")
-	local start_lnum = s_start[2] - 1
-	local end_lnum = s_end[2]
-	print("inside random", start_lnum, end_lnum)
-	if start_lnum > end_lnum then
-		start_lnum, end_lnum = end_lnum, start_lnum
-	end
-	vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, {
-		"line 1",
-		"line 2",
-	})
-end
-
-vim.api.nvim_create_user_command("PutRandom", PutRandom, {})
---vim.keymap.set("v", "<C-x>", PutRandom, { noremap = true, silent = true })
-vim.keymap.set("v", "<C-x>", ":<C-u>lua PutRandom()<CR>", { noremap = true, silent = true })
