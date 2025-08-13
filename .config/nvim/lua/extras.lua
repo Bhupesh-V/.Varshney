@@ -66,16 +66,16 @@ for open, close in pairs(bracket_pairs) do
 end
 
 local comment_chars = {
-	vim = { prefix = '" ', suffix = "" },
-	python = { prefix = "# ", suffix = "", isUnified = true },
-	sh = { prefix = "# ", suffix = "", isUnified = true },
+	vim = { prefix = '"', suffix = "" },
+	python = { prefix = "#", suffix = "", isUnified = true },
+	sh = { prefix = "#", suffix = "", isUnified = true },
 	go = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/*", suffix = "*/" } },
-	html = { prefix = "<!-- ", suffix = " -->", isUnified = true },
-	css = { prefix = "/* ", suffix = " */", isUnified = true },
+	html = { prefix = "<!--", suffix = "-->", isUnified = true },
+	css = { prefix = "/*", suffix = "*/", isUnified = true },
 	javascript = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/*", suffix = "*/" } },
-	typescript = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/* ", suffix = " */" } },
-	yaml = { prefix = "# ", suffix = "", isUnified = true },
-	markdown = { prefix = "<!-- ", suffix = " -->", isUnified = true },
+	typescript = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/*", suffix = "*/" } },
+	yaml = { prefix = "#", suffix = "", isUnified = true },
+	markdown = { prefix = "<!--", suffix = "-->", isUnified = true },
 	lua = { single = { prefix = "--", suffix = "" }, multi = { prefix = "--[[", suffix = "]]" } },
 }
 
@@ -138,13 +138,7 @@ function ToggleComment()
 			-- current line is already commentencomment it
 			local firstLine =
 				string.sub(currentfirstLine, #prefix + 1 + (#currentfirstLine - #trimmedFirstLine), #currentfirstLine)
-			local lastLine = string.sub(
-				currentLastLine,
-				#suffix - 1 + (#currentLastLine - #trimmedLastLine),
-				#currentLastLine - #suffix
-			)
-			print(firstLine)
-			print(lastLine)
+			local lastLine = string.sub(currentLastLine, 1, #currentLastLine - #suffix)
 
 			lines[1] = firstLine
 			lines[#lines] = lastLine
