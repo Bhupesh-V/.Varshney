@@ -67,38 +67,45 @@ end
 
 local comment_chars = {
 	vim = { prefix = '" ', suffix = "" },
-	python = { prefix = "# ", suffix = "" },
-	sh = { prefix = "# ", suffix = "" },
+	python = { prefix = "# ", suffix = "", isUnified = true },
+	sh = { prefix = "# ", suffix = "", isUnified = true },
 	go = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/*", suffix = "*/" } },
-	html = { single = { prefix = "<!-- ", suffix = " -->" }, multi = { prefix = "<!-- ", suffix = " -->" } },
-	css = { prefix = "/* ", suffix = " */" },
-	javascript = { prefix = "/* ", suffix = " */" },
-	typescript = { prefix = "/* ", suffix = " */" },
-	yaml = { prefix = "# ", suffix = "" },
-	markdown = { prefix = "<!-- ", suffix = " -->" },
-	lua = { prefix = "-- ", suffix = "" },
+	html = { prefix = "<!-- ", suffix = " -->", isUnified = true },
+	css = { prefix = "/* ", suffix = " */", isUnified = true },
+	javascript = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/*", suffix = "*/" } },
+	typescript = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/* ", suffix = " */" } },
+	yaml = { prefix = "# ", suffix = "", isUnified = true },
+	markdown = { prefix = "<!-- ", suffix = " -->", isUnified = true },
+	lua = { single = { prefix = "--", suffix = "" }, multi = { prefix = "--[[", suffix = "]]" } },
 }
 
 function ToggleComment()
-	-- TODO: shall we care about file's indent level?
-	-- TODO: set an undo point
-	-- TODO: support insert mode
-	-- TODO: fix cursor position b/w toggles
+	-- TODO: Set an undo point?
+	-- TODO: [Optional] fix cursor position b/w toggles
 	local ft = vim.bo.filetype
-	local line = vim.api.nvim_get_current_line()
 	local comment = comment_chars[ft]
+	local prefix, suffix
+
+	if comment == nil then
+		error("Comment toggle not supported for filetype:" .. ft)
+	end
 
 	local lines, s_start, s_end = get_visual_selection()
+
+	if comment["isUnified"] then
+		prefix = comment["single"]["prefix"]
+		suffix = comment["single"]["suffix"]
+	else
+		prefix = comment["multi"]["prefix"]
+		suffix = comment["multi"]["suffix"]
+	end
 
 	if #lines > 1 then
 		-- visual selection
 		if #lines == 0 then
-			print("Nothing to comment/uncomment")
+			-- Nothing to comment/uncomment
 			return
 		end
-
-		local prefix = comment["multi"]["prefix"]
-		local suffix = comment["multi"]["suffix"]
 
 		local start_lnum = s_start[2] - 1
 		local end_lnum = s_end[2]
@@ -107,20 +114,46 @@ function ToggleComment()
 			start_lnum, end_lnum = end_lnum, start_lnum
 		end
 
-		local trimmed = trim(lines[1])
+		local currentfirstLine = lines[1]
+		local currentLastLine = lines[#lines]
 
-		if string.sub(trimmed, 1, #prefix) == prefix then
-			-- current line is already commented, so uncomment it
-			local firstLine = string.sub(lines[1], #prefix + (#line - #trimmed), #line - #suffix)
-			local lastLine = string.sub(lines[#lines], #suffix + (#line - #trimmed), #line - #suffix)
+		local trimmedFirstLine = trim(currentfirstLine)
+		local trimmedLastLine = trim(currentLastLine)
+
+		print("currentfirstLine len", #currentfirstLine)
+		print("currentfirstLine", currentfirstLine)
+		print("currentLastLine len", #currentLastLine)
+		print("currentLastLine", currentLastLine)
+
+		print("trimmedFirstLine", trimmedFirstLine)
+		print("trimmedFirstLine length", #trimmedFirstLine)
+		print("trimmedLastLine", trimmedLastLine)
+		print("trimmedLastLine length", #trimmedLastLine)
+
+		print("prefix", #prefix)
+		print("suffix", #suffix)
+
+		if string.sub(trimmedFirstLine, 1, #prefix) == prefix then
+			print("uncommenting in visual")
+			-- current line is already commentencomment it
+			local firstLine =
+				string.sub(currentfirstLine, #prefix + 1 + (#currentfirstLine - #trimmedFirstLine), #currentfirstLine)
+			local lastLine = string.sub(
+				currentLastLine,
+				#suffix - 1 + (#currentLastLine - #trimmedLastLine),
+				#currentLastLine - #suffix
+			)
+			print(firstLine)
+			print(lastLine)
 
 			lines[1] = firstLine
 			lines[#lines] = lastLine
 
 			vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
 		else
-			local firstLine = prefix .. lines[1]
-			local lastLine = lines[#lines] .. suffix
+			local firstLine = prefix .. currentfirstLine
+
+			local lastLine = currentLastLine .. suffix
 
 			lines[1] = firstLine
 			lines[#lines] = lastLine
@@ -129,8 +162,7 @@ function ToggleComment()
 		end
 	else
 		-- Only support single line toggle on normal mode
-		local prefix = comment["single"]["prefix"]
-		local suffix = comment["single"]["suffix"]
+		local line = vim.api.nvim_get_current_line()
 		local trimmed = trim(line)
 
 		if string.sub(trimmed, 1, #prefix) == prefix then
@@ -145,7 +177,6 @@ end
 vim.api.nvim_create_user_command("ToggleComment", ToggleComment, {})
 vim.keymap.set("v", "<C-/>", ":<C-u>lua ToggleComment()<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-/>", ":lua ToggleComment()<CR>", { noremap = true, silent = true })
---vim.keymap.set("i", "<C-/>", "<Esc>:ToggleComment<CR>a", { noremap = true, silent = true })
 
 -- vim.keymap.set("v", "<C-/>", ToggleComment, { noremap = true, silent = true })
 
