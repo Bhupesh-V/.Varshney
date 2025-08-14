@@ -79,6 +79,13 @@ local comment_chars = {
 	lua = { single = { prefix = "--", suffix = "" }, multi = { prefix = "--[[", suffix = "]]" } },
 }
 
+function handleUnifiedComment(prefix, lines)
+	for index, value in ipairs(lines) do
+		lines[index] = prefix .. value
+	end
+
+	return lines
+end
 function ToggleComment()
 	-- TODO: Set an undo point?
 	-- TODO: [Optional] fix cursor position b/w toggles
@@ -93,8 +100,8 @@ function ToggleComment()
 	local lines, s_start, s_end = get_visual_selection()
 
 	if comment["isUnified"] then
-		prefix = comment["single"]["prefix"]
-		suffix = comment["single"]["suffix"]
+		prefix = comment["prefix"]
+		suffix = comment["suffix"]
 	else
 		prefix = comment["multi"]["prefix"]
 		suffix = comment["multi"]["suffix"]
@@ -132,28 +139,22 @@ function ToggleComment()
 
 		print("prefix", #prefix)
 		print("suffix", #suffix)
+		local newFirstLine, newLastLine
 
 		if string.sub(trimmedFirstLine, 1, #prefix) == prefix then
 			print("uncommenting in visual")
 			-- current line is already commentencomment it
-			local firstLine =
+			newFirstLine =
 				string.sub(currentfirstLine, #prefix + 1 + (#currentfirstLine - #trimmedFirstLine), #currentfirstLine)
-			local lastLine = string.sub(currentLastLine, 1, #currentLastLine - #suffix)
-
-			lines[1] = firstLine
-			lines[#lines] = lastLine
-
-			vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
+			newLastLine = string.sub(currentLastLine, 1, #currentLastLine - #suffix)
 		else
-			local firstLine = prefix .. currentfirstLine
-
-			local lastLine = currentLastLine .. suffix
-
-			lines[1] = firstLine
-			lines[#lines] = lastLine
-
-			vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
+			newFirstLine = prefix .. currentfirstLine
+			newLastLine = currentLastLine .. suffix
 		end
+		lines[1] = newFirstLine
+		lines[#lines] = newLastLine
+
+		vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
 	else
 		-- Only support single line toggle on normal mode
 		local line = vim.api.nvim_get_current_line()
