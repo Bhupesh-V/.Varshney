@@ -66,53 +66,50 @@ for open, close in pairs(bracket_pairs) do
 end
 
 local comment_chars = {
-	vim = { prefix = '"', suffix = "" },
+	-- languages with no special multi-line comment markers
+	vim = { prefix = '"', suffix = "", isUnified = true },
+	html = { prefix = "<!--", suffix = "-->", isUnified = true },
+	markdown = { prefix = "<!--", suffix = "-->", isUnified = true },
+	css = { prefix = "/*", suffix = "*/", isUnified = true },
 	python = { prefix = "#", suffix = "", isUnified = true },
 	sh = { prefix = "#", suffix = "", isUnified = true },
+	yaml = { prefix = "#", suffix = "", isUnified = true },
+	graphql = { prefix = "#", suffix = "", isUnified = true },
+	toml = { prefix = "#", suffix = "", isUnified = true },
+	gitignore = { prefix = "#", suffix = "", isUnified = true },
+	elixir = { prefix = "#", suffix = "", isUnified = true },
+	-- languages with special multi-line comment markers
 	go = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/*", suffix = "*/" } },
-	html = { prefix = "<!--", suffix = "-->", isUnified = true },
-	css = { prefix = "/*", suffix = "*/", isUnified = true },
 	javascript = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/*", suffix = "*/" } },
 	typescript = { single = { prefix = "//", suffix = "" }, multi = { prefix = "/*", suffix = "*/" } },
-	yaml = { prefix = "#", suffix = "", isUnified = true },
-	markdown = { prefix = "<!--", suffix = "-->", isUnified = true },
 	lua = { single = { prefix = "--", suffix = "" }, multi = { prefix = "--[[", suffix = "]]" } },
 }
 
-function handleUnifiedComment(prefix, lines)
-	for index, value in ipairs(lines) do
-		lines[index] = prefix .. value
-	end
-
-	return lines
-end
 function ToggleComment()
 	-- TODO: Set an undo point?
 	-- TODO: [Optional] fix cursor position b/w toggles
+	-- TODO: fix detection of comment markers in a combination of HTML/CSS/JS code.
 	local ft = vim.bo.filetype
-	local comment = comment_chars[ft]
-	local prefix, suffix
+	if ft == nil or ft == "" then
+		error("Not a valid filetype")
+	end
 
+	local comment = comment_chars[ft]
 	if comment == nil then
 		error("Comment toggle not supported for filetype:" .. ft)
 	end
 
+	local prefix, suffix
+	local isUnified = false
 	local lines, s_start, s_end = get_visual_selection()
 
 	if comment["isUnified"] then
-		prefix = comment["prefix"]
-		suffix = comment["suffix"]
-	else
-		prefix = comment["multi"]["prefix"]
-		suffix = comment["multi"]["suffix"]
+		-- Yeah, I know!
+		isUnified = true
 	end
 
 	if #lines > 1 then
-		-- visual selection
-		if #lines == 0 then
-			-- Nothing to comment/uncomment
-			return
-		end
+		-- its a visual selection
 
 		local start_lnum = s_start[2] - 1
 		local end_lnum = s_end[2]
@@ -121,49 +118,71 @@ function ToggleComment()
 			start_lnum, end_lnum = end_lnum, start_lnum
 		end
 
-		local currentfirstLine = lines[1]
-		local currentLastLine = lines[#lines]
+		-- TODO: fix for HTML
+		if isUnified then
+			prefix = comment["prefix"]
+			suffix = comment["suffix"]
 
-		local trimmedFirstLine = trim(currentfirstLine)
-		local trimmedLastLine = trim(currentLastLine)
+			local newLine
 
-		print("currentfirstLine len", #currentfirstLine)
-		print("currentfirstLine", currentfirstLine)
-		print("currentLastLine len", #currentLastLine)
-		print("currentLastLine", currentLastLine)
-
-		print("trimmedFirstLine", trimmedFirstLine)
-		print("trimmedFirstLine length", #trimmedFirstLine)
-		print("trimmedLastLine", trimmedLastLine)
-		print("trimmedLastLine length", #trimmedLastLine)
-
-		print("prefix", #prefix)
-		print("suffix", #suffix)
-		local newFirstLine, newLastLine
-
-		if string.sub(trimmedFirstLine, 1, #prefix) == prefix then
-			print("uncommenting in visual")
-			-- current line is already commentencomment it
-			newFirstLine =
-				string.sub(currentfirstLine, #prefix + 1 + (#currentfirstLine - #trimmedFirstLine), #currentfirstLine)
-			newLastLine = string.sub(currentLastLine, 1, #currentLastLine - #suffix)
+			for index, value in ipairs(lines) do
+				-- remove prefix
+				if string.sub(trim(value), 1, #prefix) == prefix then
+					-- remove prefix
+					newLine = string.sub(value, #prefix + 1)
+					-- remove suffix
+					newLine = string.sub(newLine, 1, #newLine - #suffix)
+					lines[index] = newLine
+				else
+					lines[index] = prefix .. value .. suffix
+				end
+			end
+			vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
 		else
-			newFirstLine = prefix .. currentfirstLine
-			newLastLine = currentLastLine .. suffix
-		end
-		lines[1] = newFirstLine
-		lines[#lines] = newLastLine
+			local currentfirstLine = lines[1]
+			local currentLastLine = lines[#lines]
 
-		vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
+			prefix = comment["multi"]["prefix"]
+			suffix = comment["multi"]["suffix"]
+
+			local newFirstLine, newLastLine
+
+			if
+				string.sub(trim(currentfirstLine), 1, #prefix) == prefix
+				and string.sub(trim(currentLastLine), -#suffix) == suffix
+			then
+				-- current line is already commented, un-comment it
+				newFirstLine = string.sub(
+					currentfirstLine,
+					#prefix + 1 + (#currentfirstLine - #trim(currentfirstLine)),
+					#currentfirstLine
+				)
+				newLastLine = string.sub(currentLastLine, 1, #currentLastLine - #suffix)
+			else
+				newFirstLine = prefix .. currentfirstLine
+				newLastLine = currentLastLine .. suffix
+			end
+			lines[1] = newFirstLine
+			lines[#lines] = newLastLine
+
+			vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
+		end
 	else
-		-- Only support single line toggle on normal mode
+		-- Only support single line toggle on normal mode or visual mode with only single line selection
 		local line = vim.api.nvim_get_current_line()
 		local trimmed = trim(line)
 
+		if isUnified then
+			prefix = comment["prefix"]
+			suffix = comment["suffix"]
+		else
+			prefix = comment["single"]["prefix"]
+			suffix = comment["single"]["suffix"]
+		end
+
 		if string.sub(trimmed, 1, #prefix) == prefix then
-			-- current line is already commented, so uncomment it
-			local new_line = string.sub(line, #prefix + 1 + (#line - #trimmed), #line - #suffix)
-			vim.api.nvim_set_current_line(new_line)
+			local newCurrentLine = string.sub(line, #prefix + 1 + (#line - #trimmed), #line - #suffix)
+			vim.api.nvim_set_current_line(newCurrentLine)
 		else
 			vim.api.nvim_set_current_line(prefix .. line .. suffix)
 		end
