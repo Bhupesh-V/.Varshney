@@ -126,18 +126,19 @@ function ToggleComment()
 			local newLine
 
 			for index, value in ipairs(lines) do
-				-- remove prefix
-				if string.sub(trim(value), 1, #prefix) == prefix then
+				if value ~= "" then
 					-- remove prefix
-					newLine = string.sub(value, #prefix + 1)
-					-- remove suffix
-					newLine = string.sub(newLine, 1, #newLine - #suffix)
-					lines[index] = newLine
-				else
-					lines[index] = prefix .. value .. suffix
+					if string.sub(trim(value), 1, #prefix) == prefix then
+						-- remove prefix
+						newLine = string.sub(value, #prefix + 1)
+						-- remove suffix
+						newLine = string.sub(newLine, 1, #newLine - #suffix)
+						lines[index] = newLine
+					else
+						lines[index] = prefix .. value .. suffix
+					end
 				end
 			end
-			vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
 		else
 			local currentfirstLine = lines[1]
 			local currentLastLine = lines[#lines]
@@ -164,13 +165,13 @@ function ToggleComment()
 			end
 			lines[1] = newFirstLine
 			lines[#lines] = newLastLine
-
-			vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
 		end
+		vim.api.nvim_buf_set_lines(0, start_lnum, end_lnum, false, lines)
 	else
 		-- Only support single line toggle on normal mode or visual mode with only single line selection
 		local line = vim.api.nvim_get_current_line()
 		local trimmed = trim(line)
+		local newCurrentLine
 
 		if isUnified then
 			prefix = comment["prefix"]
@@ -181,11 +182,11 @@ function ToggleComment()
 		end
 
 		if string.sub(trimmed, 1, #prefix) == prefix then
-			local newCurrentLine = string.sub(line, #prefix + 1 + (#line - #trimmed), #line - #suffix)
-			vim.api.nvim_set_current_line(newCurrentLine)
+			newCurrentLine = string.sub(line, #prefix + 1 + (#line - #trimmed), #line - #suffix)
 		else
-			vim.api.nvim_set_current_line(prefix .. line .. suffix)
+			newCurrentLine = prefix .. line .. suffix
 		end
+		vim.api.nvim_set_current_line(newCurrentLine)
 	end
 end
 vim.api.nvim_create_user_command("ToggleComment", ToggleComment, {})
