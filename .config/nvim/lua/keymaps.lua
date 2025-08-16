@@ -56,3 +56,15 @@ map("n", "<Tab>", "<C-w><C-w>")
 -- Copy using ctrl + c
 map("v", "<C-c>", '"+y')
 map("i", "<C-v>", '<Esc>"+pi')
+
+-- vertical split
+map("n", "<leader>v", ":vsp<CR>")
+
+-- horizontal split
+map("n", "<leader>v", ":sp<CR>")
+
+-- new tab
+map("n", "<leader>t", ":tabnew<CR>")
+
+-- Visual inner line (without whitespaces) - slightly better than shift+v
+map("v", "il", ":<C-U>normal ^vg_<CR>")

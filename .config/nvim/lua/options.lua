@@ -9,10 +9,26 @@ opt.autoread = true
 opt.cursorline = true
 opt.iskeyword:append("-")
 opt.wildignorecase = true
-opt.wildignore = {"*.jpg", "*.bmp", "*.gif", "*.png", "*.jpeg", "*.avi", "*.mp4", "*.mkv", "*.pdf", "*.odt", "*/.git/*",
-                  "*/site-packages/*", "*/lib/*", "*/bin/*", "*.pyc"}
+opt.wildignore = {
+	"*.jpg",
+	"*.bmp",
+	"*.gif",
+	"*.png",
+	"*.jpeg",
+	"*.avi",
+	"*.mp4",
+	"*.mkv",
+	"*.pdf",
+	"*.odt",
+	"*/.git/*",
+	"*/site-packages/*",
+	"*/lib/*",
+	"*/bin/*",
+	"*.pyc",
+}
 opt.path:append("**")
 opt.shortmess:append("c")
+opt.dictionary:append("/usr/share/dict/words")
 opt.lazyredraw = true
 opt.completeopt = "menuone,noselect"
 opt.encoding = "UTF-8"
@@ -30,8 +46,8 @@ vim.g.netrw_winsize = 27 -- Fix width to 27%
 vim.g.netrw_special_syntax = 1 -- Enable special file highlighting
 vim.g.netrw_browsex_viewer = "xdg-open"
 
-
 vim.o.tabstop = 4 -- A TAB character looks like 4 spaces
 vim.o.expandtab = true -- Pressing the TAB key will insert spaces instead of a TAB character
 vim.o.softtabstop = 4 -- Number of spaces inserted instead of a TAB character
 vim.o.shiftwidth = 4 -- Number of spaces inserted when indenting
+
