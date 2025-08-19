@@ -13,7 +13,7 @@ map("t", "<Esc>", "<C-\\><C-n>", opts)
 map("n", "<leader>n", ":NvimTreeToggle<CR>", opts)
 
 -- Terminal
-map("n", "<leader>t", ":FloatermToggle<CR>", opts)
+--map("n", "<leader>t", ":FloatermToggle<CR>", opts)
 
 -- Save & quit
 map("n", "<leader>w", ":w<CR>", opts)
@@ -55,6 +55,7 @@ map("n", "<Tab>", "<C-w><C-w>")
 
 -- Copy using ctrl + c
 map("v", "<C-c>", '"+y')
+map("v", "<A-c>", '"+y')
 map("i", "<C-v>", '<Esc>"+pi')
 
 -- vertical split

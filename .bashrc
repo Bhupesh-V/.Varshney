@@ -63,9 +63,9 @@ if [ -n "$force_color_prompt" ]; then
                 # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
                 # a case would tend to support setf rather than setaf.)
                 color_prompt=yes
-        else
+    else
                 color_prompt=
-        fi
+    fi
 fi
 
 # disable the default virtualenv prompt change
@@ -97,16 +97,16 @@ git_status() {
         # GIT_STATUS_PROMPT+="${GRAY_BG}"
         if [[ $untracked != 0 ]]; then
                 GIT_STATUS_PROMPT+=" ${BOLD_BLUE_FG}${tracked_symbol} ${untracked}"
-        fi
+    fi
         if [[ $tracked != 0 ]]; then
                 GIT_STATUS_PROMPT+=" ${BOLD_GREEN_FG}${tracked_symbol} ${tracked}"
-        fi
+    fi
         if [[ $modified != 0 ]]; then
                 GIT_STATUS_PROMPT+=" ${BOLD_L_YELLOW}${modified_symbol} ${modified}"
-        fi
+    fi
         if [[ $deleted != 0 ]]; then
                 GIT_STATUS_PROMPT+=" ${BOLD_RED_FG}${delete_symbol}${deleted}"
-        fi
+    fi
         GIT_STATUS_PROMPT+=" ${RESET}"
         echo -e "${GIT_STATUS_PROMPT}"
 }
@@ -212,12 +212,12 @@ fi
 if ! shopt -oq posix; then
         if [ -f /usr/share/bash-completion/bash_completion ]; then
                 . /usr/share/bash-completion/bash_completion
-        elif [ -f /etc/bash_completion ]; then
+    elif     [ -f /etc/bash_completion ]; then
                 . /etc/bash_completion
         # brew install bash-completion@2
-        elif [ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]; then
+    elif     [ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]; then
                 . "/opt/homebrew/etc/profile.d/bash_completion.sh"
-        fi
+    fi
 fi
 
 export CDPATH=".:/home/bhupesh"
@@ -241,7 +241,6 @@ export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
 export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 
-export DOT_REPO=https://github.com/Bhupesh-V/.Varshney DOT_DEST=Documents
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/go/bin
 export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
@@ -258,6 +257,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
+HOMEBREW_NO_AUTO_UPDATE=1
 
 # Setting PATH for Python 3.13
 # The original version is saved in .bash_profile.pysave
