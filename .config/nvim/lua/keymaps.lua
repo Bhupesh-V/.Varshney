@@ -20,25 +20,18 @@ map("n", "<leader>w", ":w<CR>", opts)
 map("n", "<leader>q", ":q<CR>", opts)
 map("n", "<leader>x", ":x<CR>", opts)
 
--- Better navigation
-map("n", "<C-j>", "<C-W>j", opts)
-map("n", "<C-k>", "<C-W>k", opts)
-map("n", "<C-h>", "<C-W>h", opts)
-map("n", "<C-l>", "<C-W>l", opts)
-
 -- Clear search
 map("n", "<leader>c", ":nohlsearch<CR>", opts)
 
 -- Toggle Goyo mode
 -- map("n", "<leader>z", ":Goyo<CR>", opts)
 
--- Telescope
-map("n", "<leader>f", ":Telescope fd<CR>", opts)
--- map("n", "<leader>g", ":Telescope live_grep<CR>", opts)
-map("n", "<leader>b", ":Telescope buffers<CR>", opts)
-map("n", "<leader>h", ":Telescope help_tags<CR>", opts)
-map("n", "<leader>c", ":Telescope colorscheme<CR>", opts)
-map("n", "<leader>d", ":Telescope diagnostics<CR>", opts)
+-- FZF Lua
+map("n", "<leader>f", ":FzfLua files<CR>", opts)
+map("n", "<leader>g", ":FzfLua live_grep<CR>", opts)
+map("n", "<leader>b", ":FzfLua buffers<CR>", opts)
+map("n", "<leader>c", ":FzfLua colorschemes<CR>", opts)
+map("n", "<leader>d", ":FzfLua diagnostics_document<CR>", opts)
 
 -- Activate Command Mode using ";"
 map("n", ";", ":")
@@ -62,7 +55,7 @@ map("i", "<C-v>", '<Esc>"+pi')
 map("n", "<leader>v", ":vsp<CR>")
 
 -- horizontal split
-map("n", "<leader>v", ":sp<CR>")
+map("n", "<leader>s", ":sp<CR>")
 
 -- new tab
 map("n", "<leader>t", ":tabnew<CR>")

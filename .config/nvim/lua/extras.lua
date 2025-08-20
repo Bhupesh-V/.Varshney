@@ -89,6 +89,7 @@ function ToggleComment()
 	-- TODO: Set an undo point?
 	-- TODO: [Optional] fix cursor position b/w toggles
 	-- TODO: fix detection of comment markers in a combination of HTML/CSS/JS code.
+	-- TODO: fix comment marker detection for Go (VSCode uses single-line comment for commenting a block of code, wtf?)
 	local ft = vim.bo.filetype
 	if ft == nil or ft == "" then
 		error("Not a valid filetype")

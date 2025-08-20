@@ -33,7 +33,7 @@ return {
 				-- library = { vim.env.RUNTIME },
 			},
 			diagnostics = {
-				globals = { "vim" },
+				globals = { "vim", "vim.g" },
 				enable = true,
 			},
 			format = { enable = false },

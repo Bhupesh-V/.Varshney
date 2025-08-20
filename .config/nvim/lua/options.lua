@@ -44,10 +44,9 @@ vim.g.netrw_preview = 1
 vim.g.netrw_altv = 1
 vim.g.netrw_winsize = 27 -- Fix width to 27%
 vim.g.netrw_special_syntax = 1 -- Enable special file highlighting
-vim.g.netrw_browsex_viewer = "xdg-open"
+vim.g.netrw_browsex_viewer = "browse"
 
 vim.o.tabstop = 4 -- A TAB character looks like 4 spaces
 vim.o.expandtab = true -- Pressing the TAB key will insert spaces instead of a TAB character
 vim.o.softtabstop = 4 -- Number of spaces inserted instead of a TAB character
 vim.o.shiftwidth = 4 -- Number of spaces inserted when indenting
-

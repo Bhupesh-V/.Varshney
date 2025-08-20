@@ -27,18 +27,18 @@ return {
 	config = function()
 		local lspconfig = require("lspconfig")
 		local map = require("utils").map
-		local telescope = require("telescope.builtin")
+		local fzf = require("fzf-lua")
 
 		require("lspconfig.ui.windows").default_options.border = "rounded"
 
 		local on_attach = function(_, bufnr)
-			map("n", "gd", telescope.lsp_definitions, {
+			map("n", "gd", fzf.lsp_definitions, {
 				desc = "Jump to the object definition",
 			})
 			map("n", "gD", vim.lsp.buf.declaration, {
 				desc = "Jump to the object declaration",
 			})
-			map("n", "gT", telescope.lsp_type_definitions, {
+			map("n", "gT", fzf.lsp_typedefs, {
 				desc = "Get the type documentations",
 			})
 			map("n", "gi", vim.lsp.buf.implementation, {
@@ -53,7 +53,7 @@ return {
 			map("n", "gr", vim.lsp.buf.rename, {
 				desc = "Rename the object under the cursor",
 			})
-			map("n", "gR", telescope.lsp_references, {
+			map("n", "gR", fzf.lsp_references, {
 				desc = "Jump to the reference of the object",
 			})
 			map("n", "gra", vim.lsp.buf.code_action, {

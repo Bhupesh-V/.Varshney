@@ -1,6 +1,7 @@
 -- Module for configuring Go
 
 local map = require("utils").map
+local fzf = require("fzf-lua")
 
 map("n", "<F5>", "<CMD>terminal go run %<CR>")
 
@@ -19,15 +20,14 @@ vim.treesitter.start()
 vim.lsp.enable("gopls", true)
 
 -- Add LSP keybindings for Go files
-local telescope = require("telescope.builtin")
 
-map("n", "gd", telescope.lsp_definitions, {
+map("n", "gd", fzf.lsp_definitions, {
 	desc = "Jump to the object definition",
 })
 map("n", "gD", vim.lsp.buf.declaration, {
 	desc = "Jump to the object declaration",
 })
-map("n", "gT", telescope.lsp_type_definitions, {
+map("n", "gT", fzf.lsp_typedefs, {
 	desc = "Get the type documentations",
 })
 map("n", "gi", vim.lsp.buf.implementation, {
@@ -42,7 +42,7 @@ map("n", "<C-S>", vim.lsp.buf.signature_help, {
 map("n", "gr", vim.lsp.buf.rename, {
 	desc = "Rename the object under the cursor",
 })
-map("n", "gR", telescope.lsp_references, {
+map("n", "gR", fzf.lsp_references, {
 	desc = "Jump to the reference of the object",
 })
 map("n", "gra", vim.lsp.buf.code_action, {
