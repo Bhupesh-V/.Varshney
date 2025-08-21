@@ -1,9 +1,9 @@
 -- Module for configuring Go
 
-local map = require("utils").map
-local fzf = require("fzf-lua")
-
-map("n", "<F5>", "<CMD>terminal go run %<CR>")
+-- Start the Treesitter parsing process
+vim.treesitter.start()
+-- Start the "gopls" LSP server
+vim.lsp.enable("gopls", true)
 
 -- Configure the indent-based folds for Go buffers
 if vim.api.nvim_buf_line_count(0) >= 100 then
@@ -13,38 +13,3 @@ if vim.api.nvim_buf_line_count(0) >= 100 then
 	vim.opt.foldcolumn = "auto" -- Show fold indicators on the left margin
 	vim.opt.foldnestmax = 99 -- Maximum depth of folds
 end
-
--- Start the Treesitter parsing process
-vim.treesitter.start()
--- Start the "gopls" LSP server
-vim.lsp.enable("gopls", true)
-
--- Add LSP keybindings for Go files
-
-map("n", "gd", fzf.lsp_definitions, {
-	desc = "Jump to the object definition",
-})
-map("n", "gD", vim.lsp.buf.declaration, {
-	desc = "Jump to the object declaration",
-})
-map("n", "gT", fzf.lsp_typedefs, {
-	desc = "Get the type documentations",
-})
-map("n", "gi", vim.lsp.buf.implementation, {
-	desc = "Jump to the implementation",
-})
-map("n", "K", vim.lsp.buf.hover, {
-	desc = "Open the documentations of the object",
-})
-map("n", "<C-S>", vim.lsp.buf.signature_help, {
-	desc = "Get the help documentations",
-})
-map("n", "gr", vim.lsp.buf.rename, {
-	desc = "Rename the object under the cursor",
-})
-map("n", "gR", fzf.lsp_references, {
-	desc = "Jump to the reference of the object",
-})
-map("n", "gra", vim.lsp.buf.code_action, {
-	desc = "Open available code actions",
-})

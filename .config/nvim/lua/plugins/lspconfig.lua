@@ -97,6 +97,7 @@ return {
 		local servers = {
 			gopls = load_lsp_config("gopls"),
 			lua_ls = load_lsp_config("lua_ls"),
+			ts_ls = load_lsp_config("typescript-language-server"),
 		}
 
 		for server, config in pairs(servers) do
