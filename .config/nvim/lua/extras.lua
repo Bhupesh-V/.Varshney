@@ -89,7 +89,6 @@ function ToggleComment()
 	-- TODO: Set an undo point?
 	-- TODO: [Optional] fix cursor position b/w toggles
 	-- TODO: fix detection of comment markers in a combination of HTML/CSS/JS code.
-	-- TODO: fix comment marker detection for Go (VSCode uses single-line comment for commenting a block of code, wtf?)
 	local ft = vim.bo.filetype
 	if ft == nil or ft == "" then
 		error("Not a valid filetype")
@@ -109,6 +108,7 @@ function ToggleComment()
 		isUnified = true
 	end
 
+	print(vim.fn.mode())
 	if #lines > 1 then
 		-- its a visual selection
 
@@ -198,3 +198,10 @@ vim.keymap.set("n", "<C-/>", ":lua ToggleComment()<CR>", { noremap = true, silen
 
 -- Normal mode mapping that works on the *last* visual selection
 -- vim.keymap.set("n", "<C-/>", "gv<cmd>lua ToggleComment()<CR>", { noremap = true, silent = true })
+
+function GotLife()
+	local start_pos = vim.fn.getpos("v")
+	local end_pos = vim.fn.getpos(".")
+	print(vim.inspect({ start_pos, end_pos }))
+end
+vim.api.nvim_create_user_command("GotLife", GotLife, {})

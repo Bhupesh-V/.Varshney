@@ -31,7 +31,6 @@ map("n", "<leader>f", ":FzfLua files<CR>", opts)
 map("n", "<leader>g", ":FzfLua live_grep<CR>", opts)
 map("n", "<leader>b", ":FzfLua buffers<CR>", opts)
 map("n", "<leader>c", ":FzfLua colorschemes<CR>", opts)
-map("n", "<leader>d", ":FzfLua diagnostics_document<CR>", opts)
 
 -- Activate Command Mode using ";"
 map("n", ";", ":")

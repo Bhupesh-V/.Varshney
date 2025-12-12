@@ -35,14 +35,23 @@ return {
 			map("n", "gd", fzf.lsp_definitions, {
 				desc = "Jump to the object definition",
 			})
-			map("n", "gD", vim.lsp.buf.declaration, {
+			map("n", "gD", fzf.lsp_declarations, {
 				desc = "Jump to the object declaration",
 			})
 			map("n", "gT", fzf.lsp_typedefs, {
 				desc = "Get the type documentations",
 			})
-			map("n", "gi", vim.lsp.buf.implementation, {
+			map("n", "gi", fzf.lsp_implementations, {
 				desc = "Jump to the implementation",
+			})
+			map("n", "gR", fzf.lsp_references, {
+				desc = "Jump to the reference of the object",
+			})
+			map("n", "gra", fzf.lsp_code_actions, {
+				desc = "Open available code actions",
+			})
+			map("n", "<leader>d", fzf.lsp_document_diagnostics, {
+				desc = "Show diagnostics",
 			})
 			map("n", "K", vim.lsp.buf.hover, {
 				desc = "Open the documentations of the object",
@@ -52,12 +61,6 @@ return {
 			})
 			map("n", "gr", vim.lsp.buf.rename, {
 				desc = "Rename the object under the cursor",
-			})
-			map("n", "gR", fzf.lsp_references, {
-				desc = "Jump to the reference of the object",
-			})
-			map("n", "gra", vim.lsp.buf.code_action, {
-				desc = "Open available code actions",
 			})
 			map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, {
 				desc = "Add workspace folder",

@@ -23,9 +23,37 @@
                     }
                 ]
             },
-            "name": "Default profile",
+            "devices": [
+                {
+                    "disable_built_in_keyboard_if_exists": true,
+                    "fn_function_keys": [
+                        {
+                            "from": { "key_code": "f5" },
+                            "to": [{ "key_code": "f5" }]
+                        }
+                    ],
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 20233,
+                        "vendor_id": 1008
+                    },
+                    "ignore_vendor_events": true,
+                    "simple_modifications": [
+                        {
+                            "from": { "key_code": "left_command" },
+                            "to": [{ "key_code": "left_option" }]
+                        },
+                        {
+                            "from": { "key_code": "left_option" },
+                            "to": [{ "key_code": "left_command" }]
+                        }
+                    ]
+                }
+            ],
+            "name": "Default",
             "selected": true,
             "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" }
-        }
+        },
+        { "name": "HP 350 Compact" }
     ]
 }
