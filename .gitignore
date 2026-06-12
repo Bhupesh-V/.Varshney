@@ -1,0 +1,16 @@
+# 1. Ignore absolutely everything in the home directory
+*
+
+# 2. But do NOT ignore the .gitignore file itself
+!.gitignore
+
+# 3. Allow specific configuration files
+!*.bashrc
+!*.bash_aliases
+!*.bash_functions
+!.vimrc
+
+# 4. Allow specific configuration directories (and their contents)
+# Note: To look inside a directory, Git needs the directory itself unignored first
+!.config/
+!.config/**
