@@ -3,46 +3,67 @@
 ## A helper script to create conventional commits using fzf
 
 if [[ -z $(git status --porcelain=v1 2>/dev/null | grep -E '^[A-Z]') ]]; then
-    echo -e "No staged changes found."
-    exit 1
+	echo -e "No staged changes found."
+	exit 1
 fi
 
-# Color codes for fzf display
+# 256-color friendly palette (requires a 256-color terminal / TERM supporting it)
 RESET="\033[0m"
 BOLD="\033[1m"
-GREEN="\033[32m"
-RED="\033[31m"
-MAGENTA="\033[35m"
-YELLOW="\033[33m"
-CYAN="\033[36m"
-BLUE="\033[34m"
-GRAY="\033[90m"
+# Foreground 256-color: \033[38;5;<n>m
+GREEN="\033[38;5;46m"    # bright green (feat)
+RED="\033[38;5;196m"     # vivid red (fix)
+PURPLE="\033[38;5;129m"  # soft purple (refactor)
+ORANGE="\033[38;5;208m"  # warm orange (perf)
+TEAL="\033[38;5;37m"     # teal (style)
+BLUE="\033[38;5;39m"     # rich blue (test)
+CYAN="\033[38;5;51m"     # aqua (docs)
+GRAY="\033[38;5;250m"    # light gray (chore)
+YELLOW="\033[38;5;220m"  # yellow (build)
+MAGENTA="\033[38;5;141m" # soft magenta (deps)
+SKY="\033[38;5;45m"      # sky/cyan (ops)
+PINK="\033[38;5;197m"    # pink (security)
+
+# Keep `types` and `descriptions` as-is; update `colors` to match order of `types`
+colors=(
+	"$GREEN"   # feat
+	"$RED"     # fix
+	"$PURPLE"  # refactor
+	"$ORANGE"  # perf
+	"$TEAL"    # style
+	"$BLUE"    # test
+	"$CYAN"    # docs
+	"$GRAY"    # chore
+	"$YELLOW"  # build
+	"$MAGENTA" # deps
+	"$SKY"     # ops
+	"$PINK"    # security
+)
 
 types=(feat fix refactor perf style test docs chore build deps ops security)
 descriptions=(
-    "add or change a feature"
-    "fix a bug"
-    "restructure code without changing behavior"
-    "improve performance"
-    "code style changes"
-    "add or update tests"
-    "documentation only changes"
-    "maintenance tasks"
-    "build-related changes"
-    "update dependencies"
-    "operational changes"
-    "security fix"
+	"add or change a feature"
+	"fix a bug"
+	"restructure code without changing behavior"
+	"improve performance"
+	"code style changes"
+	"add or update tests"
+	"documentation only changes"
+	"maintenance tasks"
+	"build-related changes"
+	"update dependencies"
+	"operational changes"
+	"security fix"
 )
-colors=("$GREEN" "$RED" "$MAGENTA" "$YELLOW" "$CYAN" "$GREEN" "$BLUE" "$GRAY" "$YELLOW" "$MAGENTA" "$CYAN" "$RED")
 
 # Build data array (Format: index|type|colored_display)
 lines=()
 for i in "${!types[@]}"; do
-    c=${colors[$i]}
-    t=${types[$i]}
-    d=${descriptions[$i]}
-    colored="${BOLD}${c}[${t}]${RESET} ${d}"
-    lines+=("$i|$t|$colored")
+	c=${colors[$i]}
+	t=${types[$i]}
+	d=${descriptions[$i]}
+	colored="${BOLD}${c}[${t}]${RESET} ${d}"
+	lines+=("$i|$t|$colored")
 done
 
 # Prompt user for selection
@@ -52,7 +73,7 @@ selected_line=$(printf "%b\n" "${lines[@]}" | fzf --ansi -d "|" --with-nth=3 --p
 [[ -z "$selected_line" ]] && echo "Commit aborted." && exit 0
 
 # Parse fields directly using pure bash internal splitting
-IFS='|' read -r selected_index type_prefix selected_item <<< "$selected_line"
+IFS='|' read -r selected_index type_prefix selected_item <<<"$selected_line"
 
 printf "Selected: %b  (%s)\n\n" "$selected_item" "$type_prefix"
 
@@ -66,13 +87,13 @@ read -erp "Issue/Ticket Ref: " issue_ref
 
 # Build conventional commit subject
 if [[ -n "$scope" ]]; then
-    subject="${type_prefix}(${scope}): ${title}"
+	subject="${type_prefix}(${scope}): ${title}"
 else
-    subject="${type_prefix}: ${title}"
+	subject="${type_prefix}: ${title}"
 fi
 
 if [[ -n "$issue_ref" ]]; then
-    subject+=" ($issue_ref)"
+	subject+=" ($issue_ref)"
 fi
 
 # Execute Git commit
