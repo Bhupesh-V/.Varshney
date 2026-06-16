@@ -144,9 +144,9 @@ init_worktree_menu() {
         git for-each-ref --color=always \
         --format='%(if)%(worktreepath)%(then)%(color:bold)%(refname:short)%(color:reset) [%(color: bold 154)%(objectname:short)%(color:reset)] %(color:bold 208)%(align:63,left)%(worktreepath)%(end)%(color:reset) %(end)' |\
         column -t | fzf \
-        --prompt="Choose a Worktree or Create One: " \
+        --prompt="Choose/Create a Worktree: " \
         --height 40% --reverse --exact --ansi\
-        --header="If a worktree doesn't exist, git will create it for you." \
+        --header="All worktrees will be present in  directory" \
         --bind=enter:replace-query+print-query | awk '{print $1}'
     )
 

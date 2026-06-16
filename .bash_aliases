@@ -1,19 +1,17 @@
 # git aliases
 alias gsh='git push'
 alias gll='git pull'
-alias gia='git-add'
 alias gis='git status'
-alias gic='git-commit'
 alias gicl='git clone'
-
+alias gid='git diff'
 alias gib='git branch'
+alias gir='git restore'
+alias gil='git log --graph --decorate --pretty=oneline --abbrev-commit'
+alias gia='git-add'
+alias gic='git-commit'
 alias gibs='git-switch'
 alias giws='source git-worktree-switch'
 alias giw='source git-worktree-all'
-
-alias gir='git restore'
-alias gil='git log --graph --decorate --pretty=oneline --abbrev-commit'
-alias gid='git diff'
 # go aliases
 alias gb="go build"
 alias gr="go run"
@@ -28,7 +26,6 @@ alias venv="python3 -m venv"
 alias pdb="python3 -m pdb"
 alias serve="python3 -m http.server"
 # miscellaneous
-alias dotman='$HOME/dotman/dotman.sh'
 alias update='sudo apt-get update'
 alias upgrade='sudo apt-get upgrade'
 # alias cd="vcd"
@@ -42,3 +39,4 @@ alias bro="xfi | fzf --exact --prompt='Search File: ' --preview '(eye {} || tree
 alias til="locate -e '/home/bhupesh/Documents/til' | fzf | xargs glow --pager"
 alias fbro="locate $HOME | fzf --exact --prompt='Search File: ' --pointer=🡆 --height 60% --reverse --color fg:#E6E1CF,fg+:#ddeeff,prompt:#A9DC76,pointer:#FF6188,header:#AB9DF2,query:#FFD866,hl+:#FFEE99 | xargs -I FILEP browse FILEP"
 alias dot="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
+alias k="kubectl"

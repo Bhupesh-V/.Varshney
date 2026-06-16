@@ -10,7 +10,7 @@ local config = wezterm.config_builder()
 --config.initial_rows = 28
 config.window_decorations = "RESIZE"
 
-config.font_size = 15
+config.font_size = 18
 config.color_scheme = "Ayu Mirage"
 config.font = wezterm.font("FiraCode Nerd Font")
 

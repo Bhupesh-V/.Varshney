@@ -13,21 +13,19 @@
         helper = store
 [alias]
     wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
-        # find file creation date: git cake <filepath>
+    # find file creation date: git cake <filepath>
     cake = log --date=format:'%d %b %Y' --diff-filter=A --name-only --pretty='%n%C(yellow bold)🎂️ %ad%Creset by (%C(blue bold)%h%Creset)'
-        # find commits that changed a file: git his <filepath>
+    # find commits that changed a file: git his <filepath>
     his = log --follow --color=always --date=format:'%d %b, %Y' --pretty=format:'(%C(blue bold)%h%Creset)[%ad - %cn] %C(yellow bold)%s%Creset'
-        # search code in commit history: git wot :function_name:filepath
+    # search code in commit history: git wot :function_name:filepath
     wot = log --date=format:'%d %b, %Y' --pretty='%n%C(yellow bold)📅️ %ad%Creset by (%C(green bold)%an%Creset) %C(cyan bold)%h%Creset' --graph -L
-        # top 10 most edited files
+    # top 10 most edited files
     top10 = ! git log --pretty=format: --name-only | sort | uniq -c | sort -rg | head -10
-        # generate changelog from commit messages
+    # generate changelog from commit messages
     chglg = "!f() { git log --since=2weeks --pretty=format:\"- [%h]($(git config --get remote.origin.url)/commit/%H) _%s_ (%cr) by (%an)\" | grep -v Merge > CHANGELOG.md;}; f"
-        # git stash list with relative time
+    # git stash list with relative time
     sl = !git --no-pager stash list --pretty=format:'%C(bold blue)%gd%C(reset) %C(bold green) (%cr)%C(reset) - %s'
-        # use custom script to browse git stash
-    stach = !git-stash-checkout
-        # single line log
+    # single line log
     lo = !git --no-pager log --oneline
 
 [color]
