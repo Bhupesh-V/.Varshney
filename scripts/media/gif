@@ -2,37 +2,61 @@
 
 # Utility to convert video files to GIFs using ffmpeg
 #
-# Usage: convert-to-gif.sh <video-file-path>
-# To skip frames: convert-to-gif.sh <video-file-path> <time-in-seconds>
-# Example:
-# convert-to-gif.sh video.mp4 28
+# Usage: gif <video-file-path> [options]
+# Options:
+#   -s <time>   Start time (e.g., 10, 00:01:20)
+#   -t <time>   End timestamp / Duration (e.g., 28, 00:00:05)
+#
+# Examples:
+#   gif video.mp4 -t 28        (Convert first 28 seconds)
+#   gif video.mp4 -s 10 -t 5   (Start at 10s, last for 5s)
 
-
-if [[ -z "$1" ]]; then
-    echo "No video file specified"
-    exit 1
+if [[ -z "$1" || "$1" == -* ]]; then
+	echo "Usage: $0 <video-file-path> [-s start_time] [-t duration/end_time]"
+	exit 1
 fi
 
-# get everything after last /
-video=${1##*/}
-# remove everything after .
+VIDEO_PATH="$1"
+shift # Remove the video path from the arguments list
+
+START_TIME=""
+DURATION=""
+
+# Parse remaining options
+while getopts "s:t:" opt; do
+	case ${opt} in
+	s) START_TIME="$OPTARG" ;;
+	t) DURATION="$OPTARG" ;;
+	\?)
+		echo "Invalid option"
+		exit 1
+		;;
+	esac
+done
+
+# Extract filename information
+video=${VIDEO_PATH##*/}
 filename=${video%.*}
 
 echo -e "$(tput bold) Getting video dimensions $(tput sgr0)"
-# Get video dimensions
-dimensions=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$1")
+dimensions=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$VIDEO_PATH")
+
+# Build ffmpeg timing flags dynamically
+TIME_FLAGS=""
+if [[ -n "$START_TIME" ]]; then
+	TIME_FLAGS+="-ss $START_TIME "
+fi
+if [[ -n "$DURATION" ]]; then
+	TIME_FLAGS+="-t $DURATION "
+fi
 
 echo -e "$(tput bold) Generating Palette $(tput sgr0)"
-# Generate palette
-ffmpeg -i "$1" -vf "fps=22,scale=${dimensions%x*}:-1:flags=lanczos,palettegen" "$filename".png
+# Apply timing constraints to palette generation so it only samples the relevant scene
+ffmpeg $TIME_FLAGS -i "$VIDEO_PATH" -vf "fps=22,scale=${dimensions%x*}:-1:flags=lanczos,palettegen" "$filename".png
 
 echo -e "$(tput bold) Converting Video to GIF $(tput sgr0)"
-
-if [[ "$2" ]]; then
-    ffmpeg -t "$2" -i "$1" -i "$filename".png -filter_complex "fps=22,scale=${dimensions%x*}:-1:flags=lanczos[x];[x][1:v]paletteuse" "$filename".gif
-else
-    ffmpeg -i "$1" -i "$filename".png -filter_complex "fps=22,scale=${dimensions%x*}:-1:flags=lanczos[x];[x][1:v]paletteuse" "$filename".gif
-fi
+# Apply timing constraints to final conversion
+ffmpeg $TIME_FLAGS -i "$VIDEO_PATH" -i "$filename".png -filter_complex "fps=22,scale=${dimensions%x*}:-1:flags=lanczos[x];[x][1:v]paletteuse" "$filename".gif
 
 echo -e "Removing palette"
 rm "$filename".png
