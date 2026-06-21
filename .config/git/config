@@ -5,7 +5,7 @@
 [includeIf "gitdir:~/.dotfiles"]
     path = ~/Documents/personal/.gitconfig-personal
 [commit]
-    template = $HOME/.gitmessage
+    template = ~/.config/git/message
 [core]
     editor = nano
 	excludesFile = ~/.config/git/ignore

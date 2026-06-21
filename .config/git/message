@@ -1,0 +1,16 @@
+# <type>(<scope>): <short summary>
+# 
+# Types: feat, fix, refactor, docs, style, test, chore, perf
+# Scope: Optional area of code changed (e.g., auth, api, ui)
+# 
+# Example: fix(auth): resolve session timeout issue #123
+
+
+# --- WHY IS IT NECESSARY? ---
+
+
+# --- HOW DOES THE CHANGE ADDRESS THE ISSUE? ---
+
+
+# --- SIDE EFFECTS / BREAKING CHANGES ---
+
