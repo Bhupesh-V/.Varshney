@@ -46,4 +46,30 @@ wezterm.on("gui-startup", function(cmd)
 	window:gui_window():toggle_fullscreen()
 end)
 
+config.keys = {
+  -- Vertical split with Cmd + Left Arrow
+  {
+    key = 'LeftArrow',
+    mods = 'CMD',
+    action = wezterm.action.SplitHorizontal({ domain = 'CurrentPaneDomain' }),
+  },
+  {
+    key = 'RightArrow',
+    mods = 'CMD',
+    action = wezterm.action.SplitHorizontal({ domain = 'CurrentPaneDomain' }),
+  },
+  -- Horizontal split with Cmd + Up Arrow
+  {
+    key = 'UpArrow',
+    mods = 'CMD',
+    action = wezterm.action.SplitVertical({ domain = 'CurrentPaneDomain' }),
+  },
+  {
+    key = 'DownArrow',
+    mods = 'CMD',
+    action = wezterm.action.SplitVertical({ domain = 'CurrentPaneDomain' }),
+  },
+}
+
+
 return config
