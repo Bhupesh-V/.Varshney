@@ -1,0 +1,57 @@
+[user]
+
+provider = "slack"
+
+## Here we define all your status presets
+
+# The preset "eat" can be triggered using command `afk eat`
+[presets.eat]
+# Default Config for eat
+text = "On Lunch"
+duration = "1h"
+presence = "away"
+notifications = "off"
+emojis = ["cook", "knife_fork_plate", "sandwich", "stuffed_flatbread"]
+# Day Specific Config for eat
+schedule = [
+    { day = "Monday", text = "Monday left me broken ... 🎶" },
+    { day = "Tuesday", text = "Tuesday I was through with hoping ... 🎶" },
+    { day = "Wednesday", text = "Wednesday my empty arms were open ... 🎶" },
+    { day = "Thursday", text = "Thursday waiting for love, waiting for love ... 🎶" },
+    { day = "Friday", text = "Thank the stars it's Friday ... 🎶" },
+    # WHY TF are you working on a Saturday??, people died for this bruh (https://en.wikipedia.org/wiki/Haymarket_affair)
+    { day = "Saturday", text = "I'm burning like a fire gone wild on Saturday... 🎶" },
+]
+
+[presets.afk]
+text = "AFK"
+duration = "30m"
+emojis = [
+    "four_leaf_clover",
+    "person_in_lotus_position",
+    "sunflower",
+    "potted_plant",
+]
+schedule = [{ day = "Friday", text = "Prayer", emojis = ["seedling"] }]
+
+[presets.ooo]
+text = "Out of Office"
+duration = "3w"
+presence = "away"
+notifications = "off"
+emojis = ["palm_tree", "beach_with_umbrella", "no_entry", "no_bell"]
+
+[presets.sick]
+text = "Out Sick"
+duration = "2d"
+emojis = ["pill", "mask", "face_with_thermometer", "sneezing_face", "microbe"]
+
+[presets.aura]
+text = "Aura Farming (don't tell my mum)"
+duration = "35m"
+emojis = ["moyai", "male_genie"]
+
+[preset.focus]
+text = "Focusing (Locked In)"
+duration = "1h"
+emojis = ["dart", "headphones", "brain"]
