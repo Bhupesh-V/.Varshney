@@ -1,57 +1,104 @@
 [user]
+# The messaging provider you use (e.g. slack)
+provider = 'slack'
 
-provider = "slack"
-
-## Here we define all your status presets
-
-# The preset "eat" can be triggered using command `afk eat`
-[presets.eat]
-# Default Config for eat
-text = "On Lunch"
-duration = "1h"
-presence = "away"
-notifications = "off"
-emojis = ["cook", "knife_fork_plate", "sandwich", "stuffed_flatbread"]
-# Day Specific Config for eat
-schedule = [
-    { day = "Monday", text = "Monday left me broken ... 🎶" },
-    { day = "Tuesday", text = "Tuesday I was through with hoping ... 🎶" },
-    { day = "Wednesday", text = "Wednesday my empty arms were open ... 🎶" },
-    { day = "Thursday", text = "Thursday waiting for love, waiting for love ... 🎶" },
-    { day = "Friday", text = "Thank the stars it's Friday ... 🎶" },
-    # WHY TF are you working on a Saturday??, people died for this bruh (https://en.wikipedia.org/wiki/Haymarket_affair)
-    { day = "Saturday", text = "I'm burning like a fire gone wild on Saturday... 🎶" },
-]
-
+[presets]
 [presets.afk]
-text = "AFK"
-duration = "30m"
+text = 'AFK'
 emojis = [
-    "four_leaf_clover",
-    "person_in_lotus_position",
-    "sunflower",
-    "potted_plant",
+  'four_leaf_clover',
+  'person_in_lotus_position',
+  'sunflower',
+  'potted_plant'
 ]
-schedule = [{ day = "Friday", text = "Prayer", emojis = ["seedling"] }]
-
-[presets.ooo]
-text = "Out of Office"
-duration = "3w"
-presence = "away"
-notifications = "off"
-emojis = ["palm_tree", "beach_with_umbrella", "no_entry", "no_bell"]
-
-[presets.sick]
-text = "Out Sick"
-duration = "2d"
-emojis = ["pill", "mask", "face_with_thermometer", "sneezing_face", "microbe"]
+duration = '30m'
+schedule = [
+  {day = 'Friday', text = 'Prayer', emojis = [
+    'seedling'
+  ]}
+]
 
 [presets.aura]
 text = "Aura Farming (don't tell my mum)"
-duration = "35m"
-emojis = ["moyai", "male_genie"]
+emojis = [
+  'moyai',
+  'male_genie'
+]
+duration = '35m'
 
-[preset.focus]
-text = "Focusing (Locked In)"
-duration = "1h"
-emojis = ["dart", "headphones", "brain"]
+[presets.crime]
+text = "Committing Crime (don't report to HR 🔫)"
+emojis = [
+  'supervillain',
+  'japanese_goblin',
+  'shushing_face'
+]
+duration = '666m'
+
+[presets.eat]
+text = 'On Lunch'
+emojis = [
+  'cook',
+  'knife_fork_plate',
+  'sandwich',
+  'stuffed_flatbread'
+]
+duration = '1h'
+schedule = [
+  {day = 'Monday', text = 'Monday left me broken ... 🎶'},
+  {day = 'Tuesday', text = 'Tuesday I was through with hoping ... 🎶'},
+  {day = 'Wednesday', text = 'Wednesday my empty arms were open ... 🎶'},
+  {day = 'Thursday', text = 'Thursday waiting for love, waiting for love ... 🎶'},
+  {day = 'Friday', text = "Thank the stars it's Friday ... 🎶"},
+  {day = 'Saturday', text = "I'm burning like a fire gone wild on Saturday... 🎶"}
+]
+
+[presets.live]
+text = 'Streaming right now'
+emojis = [
+  'video_camera'
+]
+duration = '2h'
+
+[presets.med]
+text = 'Out for a health check-up'
+emojis = [
+  'pill',
+  'hospital',
+  'mending_heart'
+]
+duration = '3h'
+
+[presets.ooo]
+text = 'Out of Office'
+emojis = [
+  'palm_tree',
+  'beach_with_umbrella',
+  'no_entry',
+  'no_bell'
+]
+duration = '3w'
+presence = 'away'
+notifications = 'off'
+
+[presets.sick]
+text = 'Out Sick'
+emojis = [
+  'face_with_head_bandage',
+  'mask',
+  'face_with_thermometer',
+  'sneezing_face',
+  'microbe',
+  'face_with_spiral_eyes',
+  'face_with_bags_under_eyes'
+]
+duration = '2d'
+
+[presets.travel]
+text = 'Travelling'
+emojis = [
+  'airplane',
+  'red_car',
+  'auto_rickshaw'
+]
+duration = '2h'
