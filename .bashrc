@@ -1,7 +1,7 @@
 # If not running interactively, don't do anything
 case $- in
-        *i*) ;;
-        *) return ;;
+    *i*) ;;
+    *) return ;;
 esac
 
 # Gib me all the colors
@@ -44,12 +44,12 @@ shopt -s checkwinsize
 
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-        debian_chroot=$(cat /etc/debian_chroot)
+    debian_chroot=$(cat /etc/debian_chroot)
 fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-        xterm-color | *-256color) color_prompt=yes ;;
+    xterm-color | *-256color) color_prompt=yes ;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -58,13 +58,13 @@ esac
 force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
-        if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-                # We have color support; assume it's compliant with Ecma-48
-                # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-                # a case would tend to support setf rather than setaf.)
-                color_prompt=yes
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
     else
-                color_prompt=
+        color_prompt=
     fi
 fi
 
@@ -83,42 +83,52 @@ BOLD_BLUE_FG=$'\e[1;38;5;111m'
 BOLD_ORANGE_FG="\e[1;38;5;208m"
 
 git_status() {
-        status=$(git status --porcelain 2> /dev/null)
-        untracked=$(echo "$status" | grep -c "??\s")
-        modified=$(echo "$status" | grep -c "M\s")
-        tracked=$(echo "$status" | grep -c "A\s")
-        deleted=$(echo "$status" | grep -c "D\s")
+    status=$(git status --porcelain 2> /dev/null)
+    untracked=$(echo "$status" | grep -c "??\s")
+    modified=$(echo "$status" | grep -c "M\s")
+    tracked=$(echo "$status" | grep -c "A\s")
+    deleted=$(echo "$status" | grep -c "D\s")
 
-        delete_symbol="✖ "
-        tracked_symbol="✚"
-        modified_symbol="●"
-        GIT_STATUS_PROMPT=""
+    delete_symbol="✖ "
+    tracked_symbol="✚"
+    modified_symbol="●"
+    GIT_STATUS_PROMPT=""
 
-        # GIT_STATUS_PROMPT+="${GRAY_BG}"
-        if [[ $untracked != 0 ]]; then
-                GIT_STATUS_PROMPT+=" ${BOLD_BLUE_FG}${tracked_symbol} ${untracked}"
+    # GIT_STATUS_PROMPT+="${GRAY_BG}"
+    if [[ $untracked != 0 ]]; then
+        GIT_STATUS_PROMPT+=" ${BOLD_BLUE_FG}${tracked_symbol} ${untracked}"
     fi
-        if [[ $tracked != 0 ]]; then
-                GIT_STATUS_PROMPT+=" ${BOLD_GREEN_FG}${tracked_symbol} ${tracked}"
+    if [[ $tracked != 0 ]]; then
+        GIT_STATUS_PROMPT+=" ${BOLD_GREEN_FG}${tracked_symbol} ${tracked}"
     fi
-        if [[ $modified != 0 ]]; then
-                GIT_STATUS_PROMPT+=" ${BOLD_L_YELLOW}${modified_symbol} ${modified}"
+    if [[ $modified != 0 ]]; then
+        GIT_STATUS_PROMPT+=" ${BOLD_L_YELLOW}${modified_symbol} ${modified}"
     fi
-        if [[ $deleted != 0 ]]; then
-                GIT_STATUS_PROMPT+=" ${BOLD_RED_FG}${delete_symbol}${deleted}"
+    if [[ $deleted != 0 ]]; then
+        GIT_STATUS_PROMPT+=" ${BOLD_RED_FG}${delete_symbol}${deleted}"
     fi
-        GIT_STATUS_PROMPT+=" ${RESET}"
-        echo -e "${GIT_STATUS_PROMPT}"
+    GIT_STATUS_PROMPT+=" ${RESET}"
+    echo -e "${GIT_STATUS_PROMPT}"
 }
 
 random_emoji() {
-        # add a random emoticon (mostly face emojis)
-        printf "%b" "\U1F$(shuf -i600-640 -n1)"
+    local count="${1:-1}"
+    # Ranges: Smileys (128512-128591), Food/Nature (127792-127866),
+    # Animals (128000-128062), Objects/Misc (129292-129338)
+    shuf -n "$count" -e \
+        $(seq 128512 128591) \
+        $(seq 127792 127866) \
+        $(seq 128000 128062) \
+        $(seq 129292 129338) \
+                       | while read -r code; do
+            printf "\\U$(printf "%08X" "$code")"
+        done
+    echo ""
 }
 
 get_git_branch() {
-        curr_branch=$(git branch 2> /dev/null | grep \\* | cut -d ' ' -f2)
-        [ "$curr_branch" ] && printf "($BOLD_ORANGE_FG%s$RESET)" "$curr_branch"
+    curr_branch=$(git branch 2> /dev/null | grep \\* | cut -d ' ' -f2)
+    [ "$curr_branch" ] && printf "($BOLD_ORANGE_FG%s$RESET)" "$curr_branch"
 }
 
 # pc_uptime() {
@@ -126,7 +136,7 @@ get_git_branch() {
 # }
 
 virtualenv_ps1() {
-        [ "$VIRTUAL_ENV" ] && printf "%s" "$(basename "$VIRTUAL_ENV")"
+    [ "$VIRTUAL_ENV" ] && printf "%s" "$(basename "$VIRTUAL_ENV")"
 }
 
 # rightprompt() {
@@ -140,22 +150,27 @@ RIGHT_PROMPT="\n\$(tput sc; tput rc)"
 # RIGHT_PROMPT="\n\$(tput sc; rightprompt; tput rc)"
 
 custom_prompt() {
-        EXIT="$?"
-        color_themes=("38" "112" "220" "196" "200" "208" "255")
-        size=${#color_themes[@]}
-        index=$(($RANDOM % $size))
-        ARROW_FG="\e[38;5;${color_themes[$index]}m"
-        ARROW_BG="\e[48;5;${color_themes[$index]}m"
-        last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "\[$BOLD_RED_FG\]✘")
-        arrp="\[$GRAY_BG\] $last_command_status $(random_emoji) \[$GRAY_FG\]\[$ARROW_BG\]\[$ARROW_BG\]\[$BOLD_BLACK_FG\] $(virtualenv_ps1) \[$RESET\]\[$ARROW_FG\]\[$RESET\]"
-        PS1="\[$BOLD_L_YELLOW\]\[$RIGHT_PROMPT\]\[$RESET\]\[$BOLD_GREEN_FG\]\w\[$RESET\] $(get_git_branch)$(git_status)\n$arrp "
+    EXIT="$?"
+
+    # Pick dynamically from the 216 vibrant color space (ANSI 16–231)
+    RAND_COLOR=$((16 + RANDOM % 216))
+    ARROW_FG="\e[38;5;${RAND_COLOR}m"
+    ARROW_BG="\e[48;5;${RAND_COLOR}m"
+
+    last_command_status=$([ "$EXIT" != 0 ] && printf "%s" "\[$BOLD_RED_FG\]✘")
+
+    venv=$(virtualenv_ps1)
+    [ -n "$venv" ] && venv=" $venv "
+    # Reverted layout: Emoji block on the left, Virtualenv on the right
+    arrp="\[$GRAY_BG\] $last_command_status $(random_emoji) \[$GRAY_FG\]\[$ARROW_BG\]\[$ARROW_BG\]\[$BOLD_BLACK_FG\]${venv}\[$RESET\]\[$ARROW_FG\]\[$RESET\]"
+    PS1="\[$BOLD_L_YELLOW\]\[$RIGHT_PROMPT\]\[$RESET\]\[$BOLD_GREEN_FG\]\w\[$RESET\] $(get_git_branch)$(git_status)\n$arrp "
 }
 
 if [ "$color_prompt" = yes ]; then
-        #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-        PROMPT_COMMAND=custom_prompt
+    #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PROMPT_COMMAND=custom_prompt
 else
-        PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
 unset color_prompt force_color_prompt
 
@@ -170,14 +185,14 @@ unset color_prompt force_color_prompt
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
-        test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-        alias ls='ls --color=auto'
-        #alias dir='dir --color=auto'
-        #alias vdir='vdir --color=auto'
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
 
-        alias grep='grep --color=auto'
-        alias fgrep='fgrep --color=auto'
-        alias egrep='egrep --color=auto'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
 fi
 
 # colored GCC warnings and errors
@@ -199,24 +214,24 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 
 # Don't change the order, first load functions & then aliases
 if [ -f ~/.bash_functions ]; then
-        . ~/.bash_functions
+    . ~/.bash_functions
 fi
 
 if [ -f ~/.bash_aliases ]; then
-        . ~/.bash_aliases
+    . ~/.bash_aliases
 fi
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
-        if [ -f /usr/share/bash-completion/bash_completion ]; then
-                . /usr/share/bash-completion/bash_completion
-    elif     [ -f /etc/bash_completion ]; then
-                . /etc/bash_completion
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
         # brew install bash-completion@2
-    elif     [ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]; then
-                . "/opt/homebrew/etc/profile.d/bash_completion.sh"
+    elif [ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]; then
+        . "/opt/homebrew/etc/profile.d/bash_completion.sh"
     fi
 fi
 
@@ -252,9 +267,23 @@ source $HOME/fzf-docker/docker-fzf
 # Set up fzf key bindings and fuzzy completion
 eval "$(fzf --bash)"
 
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+
+# Lazy-load NVM on first use of nvm, node, npm, or pnpm
+_load_nvm() {
+    unset -f nvm node npm pnpm
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+}
+
+nvm()  { _load_nvm; nvm "$@"; }
+node() { _load_nvm; node "$@"; }
+npm()  { _load_nvm; npm "$@"; }
+pnpm() { _load_nvm; pnpm "$@"; }
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 HOMEBREW_NO_AUTO_UPDATE=1
@@ -269,3 +298,12 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
 source <(kubectl completion bash)
 complete -F __start_kubectl k
+
+# pnpm
+export PNPM_HOME="/Users/one2n/Library/pnpm"
+case ":$PATH:" in
+    *":$PNPM_HOME/bin:"*) ;;
+    *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+# pnpm end
+export PATH=$PATH:$HOME/go/bin

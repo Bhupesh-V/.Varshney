@@ -12,7 +12,8 @@ config.window_decorations = "RESIZE"
 
 config.font_size = 18
 config.color_scheme = "Ayu Mirage"
-config.font = wezterm.font("FiraCode Nerd Font")
+config.font = wezterm.font("0xProto Nerd Font")
+-- config.font = wezterm.font("FiraCode Nerd Font")
 
 -- Remove extra padding
 config.window_padding = {
@@ -25,6 +26,7 @@ config.window_frame = {
 	active_titlebar_bg = "#090909",
 }
 
+config.hide_tab_bar_if_only_one_tab = true
 config.animation_fps = 120
 config.cursor_blink_ease_in = "EaseOut"
 config.cursor_blink_ease_out = "EaseOut"
