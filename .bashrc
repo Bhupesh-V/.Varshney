@@ -1,17 +1,4 @@
-# If not running interactively, don't do anything
-case $- in
-    *i*) ;;
-      *) return ;;
-esac
-
 BASH_CONFIG_DIR="$HOME/.config/bash"
-
-config_modules=(
-    "env.bash"
-    "options.bash"
-    "prompt.bash"
-    "external.bash"
-)
 
 # Guard clause: log error and exit if config directory is missing
 if [ ! -d "$BASH_CONFIG_DIR" ]; then
@@ -19,11 +6,32 @@ if [ ! -d "$BASH_CONFIG_DIR" ]; then
     return 1
 fi
 
-# Source modules in defined sequence
-for module in "${config_modules[@]}"; do
+# Load general environment configurations first
+if [ -r "$BASH_CONFIG_DIR/env.bash" ]; then
+    source "$BASH_CONFIG_DIR/env.bash"
+fi
+
+# Source standalone functions and aliases unconditionally (for non-interactive scripts/subshells)
+[ -f ~/.bash_functions ] && source ~/.bash_functions
+[ -f ~/.bash_aliases ]   && source ~/.bash_aliases
+
+# If not running interactively, stop here (skip interactive prompts, options, and tools)
+case $- in
+    *i*) ;;
+      *) unset BASH_CONFIG_DIR; return ;;
+esac
+
+# Interactive-only modules
+interactive_modules=(
+    "options.bash"
+    "prompt.bash"
+    "external.bash"
+)
+
+# Source interactive modules
+for module in "${interactive_modules[@]}"; do
     file="$BASH_CONFIG_DIR/$module"
 
-    # Guard clause: log warning and skip if file is unreadable
     if [ ! -r "$file" ]; then
         echo "[bashrc WARN] Skipping missing or unreadable module: $module ($file)" >&2
         continue
@@ -32,8 +40,4 @@ for module in "${config_modules[@]}"; do
     source "$file"
 done
 
-# Source standard standalone dotfiles
-[ -f ~/.bash_functions ] && source ~/.bash_functions
-[ -f ~/.bash_aliases ]   && source ~/.bash_aliases
-
-unset BASH_CONFIG_DIR config_modules module file
+unset BASH_CONFIG_DIR interactive_modules module file
