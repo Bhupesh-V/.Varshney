@@ -199,9 +199,9 @@ vim.keymap.set("n", "<C-/>", ":lua ToggleComment()<CR>", { noremap = true, silen
 -- Normal mode mapping that works on the *last* visual selection
 -- vim.keymap.set("n", "<C-/>", "gv<cmd>lua ToggleComment()<CR>", { noremap = true, silent = true })
 
-function GotLife()
-	local start_pos = vim.fn.getpos("v")
-	local end_pos = vim.fn.getpos(".")
-	print(vim.inspect({ start_pos, end_pos }))
-end
-vim.api.nvim_create_user_command("GotLife", GotLife, {})
+-- function GotLife()
+-- 	local start_pos = vim.fn.getpos("v")
+-- 	local end_pos = vim.fn.getpos(".")
+-- 	print(vim.inspect({ start_pos, end_pos }))
+-- end
+-- vim.api.nvim_create_user_command("GotLife", GotLife, {})
