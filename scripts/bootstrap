@@ -1,0 +1,113 @@
+# vim: set ft=sh:
+
+#!/bin/sh
+set -eu
+
+# Unified Format: "binary_to_check:apt_package:brew_package"
+# Use 'NONE' for APT if Linux already has the tool built-in.
+PACKAGES="
+git:git:git
+nvim:neovim:neovim
+rg:ripgrep:ripgrep
+grealpath:NONE:coreutils
+gfind:NONE:findutils
+gmake:NONE:make
+ugit:NONE:ugit
+fzf:fzf:fzf
+ffmpeg:ffmpeg:ffmpeg
+"
+
+has_cmd() {
+    command -v "$1" > /dev/null 2>&1
+}
+
+setup_macos() {
+    printf "Detected OS: macOS\n"
+
+    if ! has_cmd brew; then
+        printf "Error: Homebrew is required but not installed.\n" >&2
+        exit 1
+    fi
+
+    TO_INSTALL=""
+    for item in $PACKAGES; do
+        cmd=$(echo "$item" | cut -d: -f1)
+        brew_pkg=$(echo "$item" | cut -d: -f3)
+
+        if [ "$brew_pkg" != "NONE" ]; then
+            if ! has_cmd "$cmd"; then
+                TO_INSTALL="$TO_INSTALL $brew_pkg"
+            else
+                printf "  [✓] %s is already installed\n" "$cmd"
+            fi
+        fi
+    done
+
+    if [ -n "$TO_INSTALL" ]; then
+        printf "Installing missing Homebrew packages:%s\n" "$TO_INSTALL"
+        # shellcheck disable=SC2086
+        brew install $TO_INSTALL
+    else
+        printf "All macOS dependencies are up to date.\n"
+    fi
+}
+
+setup_linux() {
+    printf "Detected OS: Linux\n"
+
+    if ! has_cmd apt-get; then
+        printf "Error: Only APT-based Linux distributions are supported by this script.\n" >&2
+        exit 1
+    fi
+
+    TO_INSTALL=""
+    for item in $PACKAGES; do
+        cmd=$(echo "$item" | cut -d: -f1)
+        apt_pkg=$(echo "$item" | cut -d: -f2)
+
+        # Skip items that Linux already provides out of the box
+        if [ "$apt_pkg" = "NONE" ]; then
+            continue
+        fi
+
+        if ! has_cmd "$cmd"; then
+            TO_INSTALL="$TO_INSTALL $apt_pkg"
+        else
+            printf "  [✓] %s is already installed\n" "$cmd"
+        fi
+    done
+
+    if [ -n "$TO_INSTALL" ]; then
+        printf "Installing missing APT packages:%s\n" "$TO_INSTALL"
+
+        SUDO=""
+        if [ "$(id -u)" -ne 0 ]; then
+            if has_cmd sudo; then
+                SUDO="sudo"
+            else
+                printf "Error: Root access or sudo is required to install APT packages.\n" >&2
+                exit 1
+            fi
+        fi
+
+        $SUDO apt-get update -qq
+        # shellcheck disable=SC2086
+        $SUDO apt-get install -y $TO_INSTALL
+    else
+        printf "All Linux dependencies are up to date.\n"
+    fi
+}
+
+main() {
+    OS="$(uname -s)"
+    case "$OS" in
+        Darwin) setup_macos ;;
+        Linux) setup_linux ;;
+        *)
+            printf "Error: Unsupported operating system '%s'\n" "$OS" >&2
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
