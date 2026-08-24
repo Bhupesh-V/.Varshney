@@ -14,4 +14,7 @@
 # Note: To look inside a directory, Git needs the directory itself unignored first
 !.config/
 !.config/**
+
+# 5. Allow scripts directory and its contents
+!scripts/
 !scripts/**

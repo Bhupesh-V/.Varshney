@@ -17,6 +17,9 @@ fzf:fzf:fzf
 ffmpeg:ffmpeg:ffmpeg
 "
 
+DOTFILES_REPO="https://github.com/Bhupesh-V/.Varshney.git"
+DOTFILES_DIR="$HOME/.dotfiles"
+
 has_cmd() {
     command -v "$1" > /dev/null 2>&1
 }
@@ -98,6 +101,30 @@ setup_linux() {
     fi
 }
 
+setup_dotfiles() {
+    printf "\nSetting up dotfiles...\n"
+
+    if [ ! -d "$DOTFILES_DIR" ]; then
+        printf "Cloning bare repository to %s...\n" "$DOTFILES_DIR"
+        git clone --bare "$DOTFILES_REPO" "$DOTFILES_DIR"
+    else
+        printf "  [✓] Dotfiles repository already exists at %s\n" "$DOTFILES_DIR"
+    fi
+
+    # Define dot helper function inside subshell environment context
+    dot() {
+        git --git-dir="$DOTFILES_DIR" --work-tree="$HOME" "$@"
+    }
+
+    printf "Checking out dotfiles...\n"
+    dot checkout -f
+
+    printf "Hiding untracked files for dotfiles repository...\n"
+    dot config --local status.showUntrackedFiles no
+
+    printf "Dotfiles setup completed successfully!\n"
+}
+
 main() {
     OS="$(uname -s)"
     case "$OS" in
@@ -108,6 +135,8 @@ main() {
             exit 1
             ;;
     esac
+
+    setup_dotfiles
 }
 
 main "$@"
