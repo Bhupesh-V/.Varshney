@@ -12,7 +12,7 @@ if [ -r "$BASH_CONFIG_DIR/env.bash" ]; then
 fi
 
 # Source standalone functions and aliases unconditionally (for non-interactive scripts/subshells)
-[ -f ~/.bash_functions ] && source ~/.bash_functions
+# [ -f ~/.bash_functions ] && source ~/.bash_functions
 [ -f ~/.bash_aliases ]   && source ~/.bash_aliases
 
 # If not running interactively, stop here (skip interactive prompts, options, and tools)
@@ -25,6 +25,7 @@ esac
 interactive_modules=(
     "options.bash"
     "prompt.bash"
+	"functions.bash"
     "external.bash"
 )
 
