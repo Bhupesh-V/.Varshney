@@ -29,7 +29,7 @@ opt.wildignore = {
 opt.path:append("**")
 opt.shortmess:append("c")
 opt.dictionary:append("/usr/share/dict/words")
-opt.lazyredraw = true
+opt.lazyredraw = false
 opt.completeopt = "menuone,noselect"
 opt.encoding = "UTF-8"
 opt.termguicolors = true

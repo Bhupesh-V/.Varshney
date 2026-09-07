@@ -94,7 +94,7 @@ for _, module in ipairs({ "options", "autocmds", "keymaps", "extras" }) do
 end
 
 --vim.cmd.colorscheme("ayu")
-vim.cmd.colorscheme("gruvbox8_hard")
+vim.cmd.colorscheme("carbonfox")
 
 -- INFO: Enable an experimental fast module loader. See the PR for more information:
 -- https://github.com/neovim/neovim/pull/22668

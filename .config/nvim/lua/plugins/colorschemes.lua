@@ -11,13 +11,8 @@ return {{
     "sainnhe/sonokai",
     priority = 1000,
     lazy = false
-
 }, {
     "franbach/miramare",
-    priority = 1000,
-    lazy = false
-}, {
-    "NLKNguyen/papercolor-theme",
     priority = 1000,
     lazy = false
 }, {
@@ -26,6 +21,10 @@ return {{
     lazy = false
 }, {
     "lifepillar/vim-gruvbox8",
+    priority = 1000,
+    lazy = false
+}, {
+    "EdenEast/nightfox.nvim",
     priority = 1000,
     lazy = false
 }}

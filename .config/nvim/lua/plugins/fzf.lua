@@ -20,7 +20,9 @@ return {
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	-- or if using mini.icons/mini.nvim
 	-- dependencies = { "echasnovski/mini.icons" },
-	opts = {},
+	opts = {
+		winopts = { backdrop = false },
+	},
 	config = function(_, opts)
 		require("fzf-lua").setup(opts)
 		require("fzf-lua").register_ui_select()

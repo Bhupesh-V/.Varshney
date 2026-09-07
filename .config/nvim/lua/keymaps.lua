@@ -23,11 +23,14 @@ map("n", "<leader>x", ":x<CR>", opts)
 -- Clear search
 map("n", "<leader>c", ":nohlsearch<CR>", opts)
 
--- Toggle Goyo mode
--- map("n", "<leader>z", ":Goyo<CR>", opts)
+-- Toggle Zen mode
+map("n", "<leader>z", ":ZenMode<CR>", opts)
 
 -- FZF Lua
 map("n", "<leader>f", ":FzfLua files<CR>", opts)
+map("n", "<leader>h", function()
+	require("fzf-lua").files({ cwd = vim.fn.expand("~") })
+end, opts)
 map("n", "<leader>g", ":FzfLua live_grep<CR>", opts)
 map("n", "<leader>b", ":FzfLua buffers<CR>", opts)
 map("n", "<leader>c", ":FzfLua colorschemes<CR>", opts)

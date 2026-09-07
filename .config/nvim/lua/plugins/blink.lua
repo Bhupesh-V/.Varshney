@@ -66,7 +66,22 @@ return {
         -- Default list of enabled providers defined so that you can extend it
         -- elsewhere in your config, without redefining it, due to `opts_extend`
         sources = {
-            default = {'lsp', 'path', 'snippets', 'buffer'}
+            default = {'lsp', 'path', 'snippets', 'buffer'},
+
+            -- Only turn on dictionary word completion for prose filetypes
+            per_filetype = {
+                markdown = { inherit_defaults = true, 'dictionary' },
+                text = { inherit_defaults = true, 'dictionary' }
+            },
+
+            providers = {
+                dictionary = {
+                    name = 'Dictionary',
+                    module = 'dictionary_source',
+                    min_keyword_length = 2,
+                    score_offset = -3 -- rank below lsp/buffer/path matches
+                }
+            }
         }
     },
     opts_extend = {"sources.default"}

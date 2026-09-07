@@ -16,7 +16,22 @@ return {
                     laststatus = 0, -- Disable last status line
                     showcmd = false
                 }
-            }
+            },
+            -- Force a full screen clear/repaint so leftover characters from
+            -- the wider layout don't stay ghosted in the reclaimed gutter.
+            -- Deferred via vim.schedule: zen-mode still runs its own layout
+            -- fixup (fix_layout) after on_open/on_close fire, so redrawing
+            -- immediately happens before the layout actually settles.
+            on_open = function()
+                vim.schedule(function()
+                    vim.cmd("redraw!")
+                end)
+            end,
+            on_close = function()
+                vim.schedule(function()
+                    vim.cmd("redraw!")
+                end)
+            end
         })
     end
 }

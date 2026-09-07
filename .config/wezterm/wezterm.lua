@@ -32,7 +32,7 @@ config.cursor_blink_ease_in = "EaseOut"
 config.cursor_blink_ease_out = "EaseOut"
 config.default_cursor_style = "BlinkingBlock"
 config.cursor_blink_rate = 650
-config.window_background_opacity = 0.7 -- 0.0 = fully transparent, 1.0 = opaque
+config.window_background_opacity = 1.0 -- 0.0 = fully transparent, 1.0 = opaque
 config.text_background_opacity = 1.0 -- keep text solid
 config.macos_window_background_blur = 20
 --config.line_height = 1.0 -- or slightly less, e.g., 0.95

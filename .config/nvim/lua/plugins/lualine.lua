@@ -36,7 +36,16 @@ return {
 			-- Statusline components to showcase on the right-most end
 			lualine_x = { "filetype" },
 			-- add "progress" to lualine_y to show file scroll percentage
-			lualine_y = { "" },
+			lualine_y = {
+				{
+					function()
+						return "words: " .. vim.fn.wordcount().words
+					end,
+					cond = function()
+						return vim.bo.filetype == "markdown" or vim.bo.filetype == "text"
+					end,
+				},
+			},
 			lualine_z = { "location" },
 			lualine_c = { "filename" },
 			-- lualine_c = { -- INFO: This section shows the entire filepath relative to the project root

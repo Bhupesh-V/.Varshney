@@ -19,6 +19,7 @@ fi
 # FZF fuzzy finder initialization
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 [ -f "$HOME/fzf-docker/docker-fzf" ] && source "$HOME/fzf-docker/docker-fzf"
+export FZF_COMPLETION_TRIGGER=''
 command -v fzf &>/dev/null && eval "$(fzf --bash)"
 
 # Lazy-load NVM on first use (prevents startup lag)

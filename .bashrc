@@ -15,12 +15,6 @@ fi
 # [ -f ~/.bash_functions ] && source ~/.bash_functions
 [ -f ~/.bash_aliases ]   && source ~/.bash_aliases
 
-# If not running interactively, stop here (skip interactive prompts, options, and tools)
-case $- in
-    *i*) ;;
-      *) unset BASH_CONFIG_DIR; return ;;
-esac
-
 # Interactive-only modules
 interactive_modules=(
     "options.bash"
@@ -40,5 +34,12 @@ for module in "${interactive_modules[@]}"; do
 
     source "$file"
 done
+
+# If not running interactively, stop here (skip interactive prompts, options, and tools)
+case $- in
+    *i*) ;;
+      *) unset BASH_CONFIG_DIR; return ;;
+esac
+
 
 unset BASH_CONFIG_DIR interactive_modules module file

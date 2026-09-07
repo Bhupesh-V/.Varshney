@@ -3,8 +3,8 @@
 ## A helper script to create conventional commits using fzf
 
 if [[ -z $(git status --porcelain=v1 2>/dev/null | grep -E '^[A-Z]') ]]; then
-	echo -e "No staged changes found."
-	exit 1
+    echo -e "No staged changes found."
+    exit 1
 fi
 
 # 256-color friendly palette (requires a 256-color terminal / TERM supporting it)
@@ -23,47 +23,50 @@ YELLOW="\033[38;5;220m"  # yellow (build)
 MAGENTA="\033[38;5;141m" # soft magenta (deps)
 SKY="\033[38;5;45m"      # sky/cyan (ops)
 PINK="\033[38;5;197m"    # pink (security)
+LIME="\033[38;5;118m"    # vibrant lime/spring green (content)
 
 # Keep `types` and `descriptions` as-is; update `colors` to match order of `types`
 colors=(
-	"$GREEN"   # feat
-	"$RED"     # fix
-	"$PURPLE"  # refactor
-	"$ORANGE"  # perf
-	"$TEAL"    # style
-	"$BLUE"    # test
-	"$CYAN"    # docs
-	"$GRAY"    # chore
-	"$YELLOW"  # build
-	"$MAGENTA" # deps
-	"$SKY"     # ops
-	"$PINK"    # security
+    "$GREEN"   # feat
+    "$RED"     # fix
+    "$PURPLE"  # refactor
+    "$ORANGE"  # perf
+    "$TEAL"    # style
+    "$BLUE"    # test
+    "$CYAN"    # docs
+    "$GRAY"    # chore
+    "$YELLOW"  # build
+    "$MAGENTA" # deps
+    "$SKY"     # ops
+    "$PINK"    # security
+    "$LIME"    # content
 )
 
-types=(feat fix refactor perf style test docs chore build deps ops security)
+types=(feat fix refactor perf style test docs chore build deps ops security content)
 descriptions=(
-	"add or change a feature"
-	"fix a bug"
-	"restructure code without changing behavior"
-	"improve performance"
-	"code style changes"
-	"add or update tests"
-	"documentation only changes"
-	"maintenance tasks"
-	"build-related changes"
-	"update dependencies"
-	"operational changes"
-	"security fix"
+    "add or change a feature"
+    "fix a bug"
+    "restructure code without changing behavior"
+    "improve performance"
+    "code style changes"
+    "add or update tests"
+    "documentation only changes"
+    "maintenance tasks"
+    "build-related changes"
+    "update dependencies"
+    "operational changes"
+    "security fix"
+    "website copy, blog posts, or media assets"
 )
 
 # Build data array (Format: index|type|colored_display)
 lines=()
 for i in "${!types[@]}"; do
-	c=${colors[$i]}
-	t=${types[$i]}
-	d=${descriptions[$i]}
-	colored="${BOLD}${c}[${t}]${RESET} ${d}"
-	lines+=("$i|$t|$colored")
+    c=${colors[$i]}
+    t=${types[$i]}
+    d=${descriptions[$i]}
+    colored="${BOLD}${c}[${t}]${RESET} ${d}"
+    lines+=("$i|$t|$colored")
 done
 
 # Prompt user for selection
@@ -87,13 +90,13 @@ read -erp "Issue/Ticket Ref: " issue_ref
 
 # Build conventional commit subject
 if [[ -n "$scope" ]]; then
-	subject="${type_prefix}(${scope}): ${title}"
+    subject="${type_prefix}(${scope}): ${title}"
 else
-	subject="${type_prefix}: ${title}"
+    subject="${type_prefix}: ${title}"
 fi
 
 if [[ -n "$issue_ref" ]]; then
-	subject+=" ($issue_ref)"
+    subject+=" ($issue_ref)"
 fi
 
 # Execute Git commit
