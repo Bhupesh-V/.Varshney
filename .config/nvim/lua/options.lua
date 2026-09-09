@@ -29,6 +29,9 @@ opt.wildignore = {
 opt.path:append("**")
 opt.shortmess:append("c")
 opt.dictionary:append("/usr/share/dict/words")
+-- Moby Thesaurus II (public domain), downloaded from:
+-- https://www.gutenberg.org/files/3202/files/mthesaur.txt
+opt.thesaurus:append(vim.fn.stdpath("config") .. "/thesaurus/mthesaur.txt")
 opt.lazyredraw = false
 opt.completeopt = "menuone,noselect"
 opt.encoding = "UTF-8"

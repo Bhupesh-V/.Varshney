@@ -46,7 +46,7 @@ return {
 					end,
 				},
 			},
-			lualine_z = { "location" },
+			lualine_z = {},
 			lualine_c = { "filename" },
 			-- lualine_c = { -- INFO: This section shows the entire filepath relative to the project root
 			--   { "filename", path = 1 },
