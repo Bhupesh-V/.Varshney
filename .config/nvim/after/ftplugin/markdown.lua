@@ -3,6 +3,10 @@
 vim.opt.wrap = true -- Wrap lines instead of continuing on beyond the limits of the monitor
 vim.opt.linebreak = true -- Wrap the lines at the end of a word instead of the last character of a line
 
+-- Underline misspelled words (]s/[s to jump, z= for suggestions, zg to add a word)
+vim.opt.spell = true
+vim.opt.spelllang = "en_us"
+
 -- Enable the "vale-ls" LSP server for Markdown files
 vim.lsp.enable("vale-ls", true)
 

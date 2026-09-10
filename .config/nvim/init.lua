@@ -85,7 +85,7 @@ require("lazy").setup("plugins", {
 })
 
 -- Safely load the necessary user-defined Lua modules meant to customise Neovim.
-for _, module in ipairs({ "options", "autocmds", "keymaps", "extras" }) do
+for _, module in ipairs({ "options", "autocmds", "keymaps", "extras", "fetch_assets" }) do
 	local ok, error = pcall(require, module)
 
 	if not ok then

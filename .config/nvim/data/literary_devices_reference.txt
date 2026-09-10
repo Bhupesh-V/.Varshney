@@ -1,0 +1,414 @@
+================================================================================
+                    COMPREHENSIVE LIST OF LITERARY DEVICES
+================================================================================
+A reference guide containing figurative language, rhetorical strategies, 
+poetic elements, narrative devices, structural techniques, and characterization tools.
+Designed for creative writing, literary analysis, and text editor integration.
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1. Figurative Language & Imagery
+2. Rhetorical & Persuasive Devices
+3. Sound & Poetic Devices
+4. Narrative Structure & Plot Devices
+5. Characterization & Perspective
+6. Wordplay, Humor & Irony
+7. Dramatic & Stage Techniques
+8. Style, Syntax & Diction
+
+================================================================================
+1. FIGURATIVE LANGUAGE & IMAGERY
+================================================================================
+
+Allegory
+  Definition: A story where characters, setting, and events stand for bigger ideas or historical events.
+  Example: Animal Farm by George Orwell (a mirror for the Russian Revolution).
+
+Allusion
+  Definition: A quick reference to a well-known person, event, story, or myth without explaining it.
+  Example: "He had a Herculean task ahead of him."
+
+Analogy
+  Definition: A detailed comparison between two different things to make a tricky idea easier to grasp.
+  Example: "Explaining a joke is like dissecting a frog. You understand it better, but the frog dies."
+
+Anachronism
+  Definition: Dropping an object, person, or custom into a time period where it doesn't belong.
+  Example: A mechanical clock striking in Shakespeare's Julius Caesar.
+
+Anthropomorphism
+  Definition: Making non-human things literally act, talk, and behave like people.
+  Example: Mickey Mouse wearing clothes, driving a car, and paying taxes.
+
+Archetype
+  Definition: A classic, instantly recognizable character type, symbol, or story pattern.
+  Example: The reluctant hero, the wise mentor, or the grand quest.
+
+Connotation
+  Definition: The emotional baggage, vibe, or implied meaning a word carries beyond its dictionary definition.
+  Example: "Home" feels warm and safe, while "house" just sounds like a building.
+
+Denotation
+  Definition: The literal, plain dictionary definition of a word.
+  Example: "Snake" - a legless reptile.
+
+Euphemism
+  Definition: A polite or soft phrase used to avoid saying something harsh, sad, or awkward.
+  Example: "Passed away" instead of "died," or "letting someone go" instead of "firing them."
+
+Dysphemism
+  Definition: An intentionally crude or blunt phrase used instead of a normal one.
+  Example: "Snail mail" for regular post, or "worm food" for a dead body.
+
+Hyperbole
+  Definition: Wild exaggeration used to make a point or be funny.
+  Example: "I've told you a million times!"
+
+Imagery
+  Definition: Sensory details that help the reader see, hear, smell, taste, or feel what's happening.
+  Example: "The crisp autumn air smelled of burnt leaves and damp earth."
+
+Idiom
+  Definition: An established phrase that makes no sense if you translate the words literally.
+  Example: "Bite the bullet" or "break a leg."
+
+Juxtaposition
+  Definition: Putting two totally different things side by side to highlight their contrast.
+  Example: "It was the best of times, it was the worst of times."
+
+Metaphor
+  Definition: Stating that one thing *is* another thing to show a shared quality (no "like" or "as").
+  Example: "Time is a thief."
+
+Metonymy
+  Definition: Referring to something by using the name of something closely linked to it.
+  Example: "The White House" for the US President, or "Wall Street" for big finance.
+
+Oxymoron
+  Definition: A two-word phrase made of contradictory terms.
+  Example: "Deafening silence," "bittersweet," or "living dead."
+
+Paradox
+  Definition: A statement that sounds self-contradictory at first, but actually makes sense when you think about it.
+  Example: "I can resist everything except temptation." — Oscar Wilde
+
+Personification
+  Definition: Giving human actions or traits to objects or nature.
+  Example: "The wind whispered through the trees."
+
+Simile
+  Definition: Comparing two different things using "like" or "as."
+  Example: "He was as quiet as a mouse."
+
+Symbolism
+  Definition: Using a physical object, color, or action to represent an abstract idea.
+  Example: A red rose for love, or a dove for peace.
+
+Synecdoche
+  Definition: Using a part of something to refer to the whole thing (or vice versa).
+  Example: "All hands on deck" (hands = people), or "nice wheels" (wheels = car).
+
+Synesthesia
+  Definition: Mixing up sensory descriptions, like describing a sound with a color or a sight with a touch.
+  Example: "A loud yellow shirt," or "a sweet voice."
+
+
+================================================================================
+2. RHETORICAL & PERSUASIVE DEVICES
+================================================================================
+
+Anaphora
+  Definition: Repeating the same word or phrase at the start of back-to-back clauses or sentences.
+  Example: "We shall fight on the beaches, we shall fight on the landing grounds, we shall fight in the fields..."
+
+Antimetabole
+  Definition: Flipping the order of words in two matching clauses (A-B, B-A).
+  Example: "Ask not what your country can do for you — ask what you can do for your country."
+
+Antithesis
+  Definition: Pairing direct opposites together in balanced sentence structures.
+  Example: "To err is human; to forgive, divine."
+
+Apostrophe
+  Definition: When a speaker addresses someone absent, a dead person, an object, or an abstract idea directly.
+  Example: "O Death, where is thy sting?"
+
+Asyndeton
+  Definition: Cutting out conjunctions (and, but, or) between phrases to speed up the pace.
+  Example: "I came, I saw, I conquered."
+
+Polysyndeton
+  Definition: Cramming extra conjunctions between every item in a list for emphasis or weight.
+  Example: "We have ships and men and money and stores."
+
+Chiasmus
+  Definition: Reversing sentence structure in consecutive phrases so the grammar mirrors itself.
+  Example: "Despised by many, and by many praised."
+
+Ethos
+  Definition: Building trust by pointing to authority, credentials, or character.
+  Example: "As a doctor with 20 years of practice, I recommend this treatment."
+
+Logos
+  Definition: Using hard facts, numbers, and clear logic to back up an argument.
+  Example: "Studies show seatbelts reduce the risk of serious injury by 45%."
+
+Pathos
+  Definition: Tugging at the audience's heartstrings or triggering emotional responses to convince them.
+  Example: "If we don't adopt this puppy today, he spends another cold night alone in a cage."
+
+Epistrophe
+  Definition: Repeating the exact same word or phrase at the end of back-to-back sentences.
+  Example: "Government of the people, by the people, for the people."
+
+Hypophora
+  Definition: Asking a question and immediately answering it yourself.
+  Example: "Why is training essential? Because practice creates perfection."
+
+Litotes
+  Definition: Making a point by denying its opposite (usually a double negative).
+  Example: "She's not bad looking" (meaning she looks good).
+
+Parallelism
+  Definition: Matching sentence structures or phrasing to create rhythm and balance.
+  Example: "Easy come, easy go."
+
+Rhetorical Question
+  Definition: Asking something to make people think, not because you're expecting an answer.
+  Example: "Do you want to live forever?"
+
+Understatement
+  Definition: Playing something down so it sounds way smaller or less severe than it actually is.
+  Example: "It's a bit chilly today" (standing in a blizzard).
+
+
+================================================================================
+3. SOUND & POETIC DEVICES
+================================================================================
+
+Alliteration
+  Definition: Repeating the same starting consonant sound across nearby words.
+  Example: "Peter Piper picked a peck of pickled peppers."
+
+Assonance
+  Definition: Repeating vowel sounds inside neighboring words without matching the consonants.
+  Example: "The rain in Spain stays mainly in the plain."
+
+Consonance
+  Definition: Repeating consonant sounds near or at the end of words close together.
+  Example: "The lumpy, bumpy road."
+
+Cacophony
+  Definition: Using harsh, clashing, or noisy sounds on purpose to make reading feel rough.
+  Example: "Kicking, cracking, clack of sticks and rocks."
+
+Euphony
+  Definition: Choosing smooth, soft, melodic sounds that roll off the tongue.
+  Example: "Cellar door," "slumber," "silken, soft, serene."
+
+Onomatopoeia
+  Definition: Words that spell out the exact sound they make.
+  Example: "Buzz," "hiss," "clang," "pop," "sizzle."
+
+Repetition
+  Definition: Using a word, line, or phrase multiple times to hammer home an idea or build rhythm.
+  Example: "Never, never, never give up."
+
+Rhyme
+  Definition: Matching sounds at the ends of lines, inside lines, or near-matches.
+  Example: Cat / Hat (end rhyme); "Once upon a midnight dreary, while I pondered, weak and weary" (internal).
+
+Rhythm & Meter
+  Definition: The underlying beat of stressed and unstressed syllables in a line of verse.
+  Example: "To BE or NOT to BE, THAT is the QUES-tion."
+
+
+================================================================================
+4. NARRATIVE STRUCTURE & PLOT DEVICES
+================================================================================
+
+Chekhov's Gun
+  Definition: The rule that if you point out a detail early on, it needs to pay off later in the story.
+  Example: If a shotgun hangs above the fireplace in Act 1, someone better shoot it by Act 3.
+
+Cliffhanger
+  Definition: Ending a scene or chapter right at the climax of tension so the reader can't put the book down.
+  Example: A character slipping off a ledge right as the chapter ends.
+
+Deus Ex Machina
+  Definition: A lazy or sudden fix that magically solves an unwinnable problem out of nowhere.
+  Example: An unmentioned army randomly arriving to win the battle at the last second.
+
+Epiphany
+  Definition: A sudden "aha!" moment when a character finally gets the truth about themselves or the plot.
+  Example: Realizing the person helping you was the villain all along.
+
+Flashback
+  Definition: Cutting away from the current timeline to show something that happened in the past.
+  Example: Pausing a fight scene to show the childhood event that started the feud.
+
+Foreshadowing
+  Definition: Leaving small clues early on about what's going to go down later.
+  Example: A stray comment about bad brakes right before a road trip.
+
+Frame Narrative
+  Definition: A main story that acts as the shell for another story told inside it.
+  Example: Frankenstein (letters from a sea captain host Victor's tale).
+
+In Media Res
+  Definition: Dropping the reader straight into the middle of the action instead of setting things up slowly.
+  Example: Opening the book mid-car chase.
+
+MacGuffin
+  Definition: An object or goal that drives the entire plot forward, even if the object itself isn't what matters.
+  Example: The briefcase in Pulp Fiction or the ring in Lord of the Rings.
+
+Plot Twist
+  Definition: A sudden pivot in the plot that flips what the audience thought was happening on its head.
+  Example: Learning the narrator was dead the whole time.
+
+Red Herring
+  Definition: A fake clue or suspicious character meant to throw readers off the real track.
+  Example: A shady butler who looks guilty but had nothing to do with the murder.
+
+Ticking Clock
+  Definition: A hard deadline hanging over the characters that amps up the pressure.
+  Example: A bomb timer set for ten minutes.
+
+
+================================================================================
+5. CHARACTERIZATION & PERSPECTIVE
+================================================================================
+
+Antagonist
+  Definition: The main character, system, or force working against the protagonist.
+  Example: Darth Vader in Star Wars.
+
+Anti-Hero
+  Definition: A lead character who lacks traditional heroic virtues like honesty, selflessness, or noble motives.
+  Example: Walter White, Deadpool, or Jay Gatsby.
+
+Dynamic Character
+  Definition: A character who changes, grows, or turns worse over the course of the narrative.
+  Example: Ebenezer Scrooge in A Christmas Carol.
+
+Static Character
+  Definition: A character who stays pretty much the exact same from start to finish.
+  Example: Sherlock Holmes.
+
+Foil
+  Definition: A character whose personality directly contrasts another's to make their traits stand out more.
+  Example: Dr. Watson's plain pragmatism vs. Sherlock Holmes' erratic genius.
+
+First-Person POV
+  Definition: Telling the story directly through the eyes of a character using "I" or "we."
+  Example: "I walked down the dark street."
+
+Second-Person POV
+  Definition: Writing directly to the reader using "you."
+  Example: "You walk into a dark room and see a door."
+
+Third-Person Limited POV
+  Definition: Telling the story through "he," "she," or "they," but stuck inside one character's head at a time.
+
+Third-Person Omniscient POV
+  Definition: An all-knowing narrator who can jump into any character's mind and see everything happening.
+
+Unreliable Narrator
+  Definition: A narrator you can't fully trust because they're lying, confused, biased, or insane.
+  Example: The narrator in Poe's The Tell-Tale Heart.
+
+Protagonist
+  Definition: The main character driving the story forward.
+  Example: Elizabeth Bennet in Pride and Prejudice.
+
+
+================================================================================
+6. WORDPLAY, HUMOR & IRONY
+================================================================================
+
+Dramatic Irony
+  Definition: When the audience knows something crucial that the characters on page or stage don't know yet.
+  Example: We know Juliet is just asleep from a potion, but Romeo thinks she's actually dead.
+
+Situational Irony
+  Definition: When what actually happens is the complete opposite of what was expected.
+  Example: A fire station burning to the ground.
+
+Verbal Irony
+  Definition: Saying one thing when you mean the exact opposite (sarcasm fits here).
+  Example: Looking out at a storm and saying, "Lovely weather today."
+
+Malapropism
+  Definition: Mixing up two words that sound similar with hilarious results.
+  Example: "He is the very pineapple of politeness" (meaning pinnacle).
+
+Parody
+  Definition: Spoofing a specific work or genre by exaggerating its tropes for laughs.
+  Example: Don Quixote poking fun at knight romances.
+
+Pun
+  Definition: Playing on different meanings of a word or words that sound the same for humor.
+  Example: "I used to be a banker, but I lost interest."
+
+Satire
+  Definition: Using humor, exaggeration, or irony to mock real-world stupidity, politics, or social flaws.
+  Example: Jonathan Swift's A Modest Proposal.
+
+
+================================================================================
+7. DRAMATIC & STAGE TECHNIQUES
+================================================================================
+
+Aside
+  Definition: A quick line spoken directly to the audience that the other characters on stage can't hear.
+  Example: Characters turning to the crowd in Shakespeare plays.
+
+Catharsis
+  Definition: The heavy emotional release or relief the audience feels at the end of a intense drama.
+  Example: The mix of sadness and relief when Hamlet ends.
+
+Hamartia
+  Definition: The fatal flaw or terrible mistake that triggers a tragic hero's downfall.
+  Example: Excessive pride (hubris) in Oedipus Rex.
+
+Hubris
+  Definition: Blind, dangerous overconfidence or pride that usually ends in disaster.
+  Example: Icarus flying too close to the sun.
+
+Monologue
+  Definition: A long speech by one character delivered to other characters present in the scene.
+
+Soliloquy
+  Definition: A character talking out loud to themselves on stage, letting the audience hear their raw thoughts.
+  Example: Hamlet's "To be or not to be" speech.
+
+
+================================================================================
+8. STYLE, SYNTAX & DICTION
+================================================================================
+
+Archaism
+  Definition: Intentionally using old-fashioned or outdated words to sound old-school.
+  Example: Throwing in "thou," "thee," or "wherefore."
+
+Colloquialism
+  Definition: Slang, informal words, or everyday speech patterns used instead of formal language.
+  Example: "Gonna," "y'all," or "out of the blue."
+
+Diction
+  Definition: The specific word choices an author makes to set a tone or style.
+  Example: Choosing raw, street-level words versus formal, academic vocabulary.
+
+Inversion
+  Definition: Flipping standard word order around to make a line fit a rhythm or sound punchier.
+  Example: "Glowed the fire bright" instead of "The fire glowed bright."
+
+Tone
+  Definition: The writer's overall attitude toward the subject matter.
+  Example: Bitter, playful, serious, or cynical.
+
+Mood
+  Definition: The vibe or emotional atmosphere a scene creates for the reader.
+  Example: Spooky, tense, upbeat, or dreary.
