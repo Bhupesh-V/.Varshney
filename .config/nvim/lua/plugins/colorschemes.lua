@@ -27,4 +27,13 @@ return {{
     "EdenEast/nightfox.nvim",
     priority = 1000,
     lazy = false
+}, {
+    "Ferouk/bearded-nvim",
+    priority = 1000,
+    lazy = false,
+    config = function()
+        require("bearded").setup({
+            flavor = "solarized-reversed"
+        })
+    end
 }}

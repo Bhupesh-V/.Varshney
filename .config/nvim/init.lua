@@ -85,7 +85,7 @@ require("lazy").setup("plugins", {
 })
 
 -- Safely load the necessary user-defined Lua modules meant to customise Neovim.
-for _, module in ipairs({ "options", "autocmds", "keymaps", "extras", "fetch_assets" }) do
+for _, module in ipairs({ "options", "autocmds", "keymaps", "extras", "fetch_assets", "zen_mode" }) do
 	local ok, error = pcall(require, module)
 
 	if not ok then
@@ -93,8 +93,9 @@ for _, module in ipairs({ "options", "autocmds", "keymaps", "extras", "fetch_ass
 	end
 end
 
---vim.cmd.colorscheme("ayu")
-vim.cmd.colorscheme("carbonfox")
+
+-- vim.cmd.colorscheme("carbonfox")
+vim.cmd.colorscheme("bearded-solarized-reversed")
 
 -- INFO: Enable an experimental fast module loader. See the PR for more information:
 -- https://github.com/neovim/neovim/pull/22668
