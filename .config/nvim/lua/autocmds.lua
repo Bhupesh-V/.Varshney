@@ -36,3 +36,23 @@ autocmd("VimResized", {
 	group = general,
 	command = "wincmd =",
 })
+
+-- cheatsheet-*.md files render with locked question headers (see
+-- cheatsheet_source.lua) whether opened via <leader>lc or a plain :e.
+local cheatsheet = augroup("CheatsheetSource", { clear = true })
+
+autocmd("BufReadCmd", {
+	group = cheatsheet,
+	pattern = "cheatsheet-*.md",
+	callback = function(args)
+		require("cheatsheet_source")._read(args.buf)
+	end,
+})
+
+autocmd("BufWriteCmd", {
+	group = cheatsheet,
+	pattern = "cheatsheet-*.md",
+	callback = function(args)
+		require("cheatsheet_source")._write(args.buf)
+	end,
+})

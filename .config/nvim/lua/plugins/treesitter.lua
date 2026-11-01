@@ -1,57 +1,52 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
-	branch = "master",
+	branch = "main",
 	lazy = false,
 	priority = 100,
 	build = ":TSUpdate",
 	config = function()
-		local ok, treesitter = pcall(require, "nvim-treesitter.configs")
-		if not ok then
-			return
-		end
+		local parsers = {
+			"bash",
+			"comment",
+			"css",
+			"diff",
+			"dockerfile",
+			"git_rebase",
+			"gitattributes",
+			"gitcommit",
+			"gitignore",
+			"go",
+			"gomod",
+			"gosum",
+			"hcl",
+			"html",
+			"javascript",
+			"jinja",
+			"jsdoc",
+			"json",
+			"lua",
+			"make",
+			"markdown",
+			"markdown_inline",
+			"mermaid",
+			"python",
+			"regex",
+			"rst",
+			"scss",
+			"terraform",
+			"toml",
+			"typescript",
+			"yaml",
+			"vim",
+			"vimdoc",
+		}
 
-		treesitter.setup({
-			ensure_installed = {
-				"bash",
-				"comment",
-				"css",
-				"diff",
-				"dockerfile",
-				"git_rebase",
-				"gitattributes",
-				"gitcommit",
-				"gitignore",
-				"go",
-				"gomod",
-				"gosum",
-				"hcl",
-				"html",
-				"javascript",
-				"jinja",
-				"jsdoc",
-				"json",
-				"lua",
-				"make",
-				"markdown",
-				"markdown_inline",
-				"mermaid",
-				"python",
-				"regex",
-				"rst",
-				"scss",
-				"terraform",
-				"toml",
-				"typescript",
-				"yaml",
-				"vim",
-				"vimdoc",
-			},
-			sync_install = false,
-			auto_install = true,
-			highlight = {
-				enable = true,
-				additional_vim_regex_highlighting = false,
-			},
+		require("nvim-treesitter").install(parsers)
+
+		vim.api.nvim_create_autocmd("FileType", {
+			callback = function()
+				pcall(vim.treesitter.start)
+			end,
 		})
 	end,
 }
