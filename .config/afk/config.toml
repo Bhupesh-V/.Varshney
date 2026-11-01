@@ -4,7 +4,7 @@ provider = 'slack'
 
 [presets]
 [presets.afk]
-text = 'AFK'
+text = 'AFK (Short break or Busy with Housework)'
 emojis = [
   'four_leaf_clover',
   'person_in_lotus_position',
@@ -68,6 +68,13 @@ emojis = [
   'mending_heart'
 ]
 duration = '3h'
+
+[presets.meet]
+text = 'In a meeting'
+emojis = [
+  'headphones'
+]
+duration = '1h'
 
 [presets.ooo]
 text = 'Out of Office'
