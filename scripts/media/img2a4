@@ -1,0 +1,330 @@
+#!/usr/bin/env bash
+#
+# img2a4.sh — fit images onto A4 pages and optionally bundle as PDF.
+#
+# Usage:
+#   ./img2a4.sh [options]
+#
+# Options:
+#   -i DIR        Input directory to scan for images (default: .)
+#   -o DIR        Output directory (default: <input dir>/a4_outputs)
+#   -q QUALITY    JPEG quality 1-100 (default: 90)
+#   -l            Landscape A4 instead of portrait
+#   -m PERCENT    White margin around the image, as % of page size (default: 0)
+#   -d DPI        Page resolution in DPI (default: 300)
+#   -g            Convert to grayscale (off by default)
+#   -n            Auto-contrast/normalize (off by default; helps unevenly lit photos)
+#   -p            Also write an individual single-page PDF per image
+#   -c NAME       Combine all processed pages into one PDF (e.g. -c combined.pdf)
+#   -V            Verbose: show magick warnings even on success
+#   -h            Show this help
+#
+# Exit codes: 0 = all images processed OK, 1 = one or more images failed,
+#             2 = fatal error (bad args, missing deps, nothing to do).
+
+set -euo pipefail
+
+INPUTDIR="."
+OUTDIR=""
+QUALITY=90
+LANDSCAPE=0
+MARGIN=0
+PER_IMAGE_PDF=0
+COMBINE_NAME=""
+VERBOSE=0
+DPI=300
+GRAYSCALE=0
+NORMALIZE=0
+
+usage() { sed -n '2,23p' "$0" | sed 's/^# \{0,1\}//'; }
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+COLOR=1
+[ -t 2 ] || COLOR=0
+[ -n "${NO_COLOR:-}" ] && COLOR=0
+
+c_red=""; c_yellow=""; c_green=""; c_blue=""; c_reset=""
+if [ "$COLOR" -eq 1 ]; then
+    c_red=$'\033[31m'; c_yellow=$'\033[33m'; c_green=$'\033[32m'; c_blue=$'\033[34m'; c_reset=$'\033[0m'
+fi
+
+_log() {
+    local level="$1" color="$2"
+    shift 2
+    printf '%s[%s]%s %s\n' "$color" "$level" "$c_reset" "$*" >&2
+}
+log_info()  { _log "INFO"  "$c_blue"   "$@"; }
+log_warn()  { _log "WARN"  "$c_yellow" "$@"; }
+log_error() { _log "ERROR" "$c_red"    "$@"; }
+log_ok()    { _log "OK"    "$c_green"  "$@"; }
+log_debug() { [ "$VERBOSE" -eq 1 ] && _log "DEBUG" "$c_reset" "$@"; return 0; }
+
+die() { log_error "$*"; exit 2; }
+
+human_size() {
+    awk -v b="$1" 'BEGIN {
+        split("B K M G T", units, " ")
+        i = 1
+        while (b >= 1024 && i < 5) { b /= 1024; i++ }
+        printf "%.1f%s", b, units[i]
+    }'
+}
+
+# ---------------------------------------------------------------------------
+# Cleanup / unexpected-error safety net
+# ---------------------------------------------------------------------------
+ERR_TMP=""
+cleanup() {
+    local ec=$?
+    [ -n "$ERR_TMP" ] && rm -f "$ERR_TMP"
+    exit "$ec"
+}
+trap cleanup EXIT
+trap 'log_error "Unexpected error (exit $?) at line $LINENO. Aborting."' ERR
+
+# ---------------------------------------------------------------------------
+# Args
+# ---------------------------------------------------------------------------
+while getopts ":i:o:q:lm:d:gnpc:Vh" opt; do
+    case "$opt" in
+        i) INPUTDIR="$OPTARG" ;;
+        o) OUTDIR="$OPTARG" ;;
+        q) QUALITY="$OPTARG" ;;
+        l) LANDSCAPE=1 ;;
+        m) MARGIN="$OPTARG" ;;
+        d) DPI="$OPTARG" ;;
+        g) GRAYSCALE=1 ;;
+        n) NORMALIZE=1 ;;
+        p) PER_IMAGE_PDF=1 ;;
+        c) COMBINE_NAME="$OPTARG" ;;
+        V) VERBOSE=1 ;;
+        h) usage; exit 0 ;;
+        \?) log_error "Unknown option: -$OPTARG"; usage; exit 2 ;;
+        :) log_error "Option -$OPTARG requires an argument"; exit 2 ;;
+    esac
+done
+
+# ---------------------------------------------------------------------------
+# Dependency check — report everything missing in one go, not one-by-one
+# ---------------------------------------------------------------------------
+REQUIRED_CMDS=(magick awk sort cut basename mktemp tr date wc)
+missing_cmds=()
+for cmd in "${REQUIRED_CMDS[@]}"; do
+    command -v "$cmd" >/dev/null 2>&1 || missing_cmds+=("$cmd")
+done
+
+if [ ${#missing_cmds[@]} -gt 0 ]; then
+    log_error "Missing required command(s): ${missing_cmds[*]}"
+    for cmd in "${missing_cmds[@]}"; do
+        case "$cmd" in
+            magick) log_error "  - magick: install ImageMagick, e.g. 'brew install imagemagick'" ;;
+            *)      log_error "  - $cmd: not found on PATH; install your platform's coreutils" ;;
+        esac
+    done
+    exit 2
+fi
+
+# ---------------------------------------------------------------------------
+# Validate environment & options
+# ---------------------------------------------------------------------------
+[[ "$QUALITY" =~ ^[0-9]+$ ]] && [ "$QUALITY" -ge 1 ] && [ "$QUALITY" -le 100 ] \
+    || die "Invalid -q QUALITY '$QUALITY': must be an integer between 1 and 100"
+
+[[ "$MARGIN" =~ ^[0-9]+(\.[0-9]+)?$ ]] || die "Invalid -m MARGIN '$MARGIN': must be a non-negative number"
+awk -v m="$MARGIN" 'BEGIN { exit !(m >= 0 && m < 100) }' \
+    || die "Invalid -m MARGIN '$MARGIN': must be in range [0, 100)"
+
+[[ "$DPI" =~ ^[0-9]+$ ]] && [ "$DPI" -ge 72 ] && [ "$DPI" -le 1200 ] \
+    || die "Invalid -d DPI '$DPI': must be an integer between 72 and 1200"
+
+INPUTDIR="${INPUTDIR%/}"
+[ -d "$INPUTDIR" ] || die "Input directory '$INPUTDIR' does not exist or is not a directory"
+[ -r "$INPUTDIR" ] || die "Input directory '$INPUTDIR' is not readable"
+
+[ -z "$OUTDIR" ] && OUTDIR="$INPUTDIR/a4_outputs"
+mkdir -p "$OUTDIR" || die "Could not create output directory '$OUTDIR'"
+[ -w "$OUTDIR" ] || die "Output directory '$OUTDIR' is not writable"
+
+ERR_TMP="$(mktemp)" || die "Could not create a temp file"
+
+# A4 is 8.2677x11.6929in (210x297mm); scale to pixels at the requested DPI.
+A4_SHORT=$(awk -v d="$DPI" 'BEGIN { printf "%.0f", 8.2677 * d }')
+A4_LONG=$(awk -v d="$DPI" 'BEGIN { printf "%.0f", 11.6929 * d }')
+if [ "$LANDSCAPE" -eq 1 ]; then
+    PAGE_W=$A4_LONG; PAGE_H=$A4_SHORT
+else
+    PAGE_W=$A4_SHORT; PAGE_H=$A4_LONG
+fi
+
+# Shrink the fit-box by the margin so -extent pads evenly on all sides.
+MARGIN_W=$(awk -v w="$PAGE_W" -v m="$MARGIN" 'BEGIN { printf "%d", w * (1 - m/100) }')
+MARGIN_H=$(awk -v h="$PAGE_H" -v m="$MARGIN" 'BEGIN { printf "%d", h * (1 - m/100) }')
+
+# Built as a plain string (not an array) so it stays safe to word-split
+# unquoted under `set -u` even on bash 3.2 (stock macOS), where expanding an
+# empty array under nounset throws "unbound variable".
+EXTRA_ARGS=""
+[ "$GRAYSCALE" -eq 1 ] && EXTRA_ARGS="$EXTRA_ARGS -colorspace Gray"
+[ "$NORMALIZE" -eq 1 ] && EXTRA_ARGS="$EXTRA_ARGS -normalize"
+
+# ---------------------------------------------------------------------------
+# Discover input images
+# ---------------------------------------------------------------------------
+# nocaseglob avoids double-matching the same file via separate case patterns
+# (the original script's *.jpg + *.JPG duplicated every file on macOS's
+# default case-insensitive filesystem). nullglob drops patterns with no match.
+shopt -s nullglob nocaseglob
+raw_images=("$INPUTDIR"/*.jpg "$INPUTDIR"/*.jpeg "$INPUTDIR"/*.png)
+shopt -u nullglob nocaseglob
+
+if [ ${#raw_images[@]} -eq 0 ]; then
+    die "No JPG/PNG images found in '$INPUTDIR'."
+fi
+
+# Skip this script's own previous outputs (e.g. if -o points inside -i, or
+# the script is re-run after a prior run), so reruns stay idempotent instead
+# of reprocessing "foo_a4_a4.jpg" chains.
+images=()
+for f in "${raw_images[@]}"; do
+    bn_lower="$(basename "$f" | tr '[:upper:]' '[:lower:]')"
+    case "$bn_lower" in
+        *_a4.jpg|*_a4.jpeg|*_a4.png)
+            log_debug "Skipping already-processed output file: $f" ;;
+        *) images+=("$f") ;;
+    esac
+done
+
+if [ ${#images[@]} -eq 0 ]; then
+    die "Found ${#raw_images[@]} file(s) in '$INPUTDIR', but all look like previous outputs (*_a4.*). Nothing to do."
+fi
+
+# Plain sort would order mcs-211_1, mcs-211_10, mcs-211_11, ..., mcs-211_2
+# lexicographically. Pad embedded digit runs to a fixed width first so sort
+# gives the natural (human) order instead. Avoids depending on GNU sort -V,
+# which stock BSD/macOS sort doesn't support.
+natural_sort() {
+    awk '{
+        orig = $0; rest = $0; out = ""
+        while (match(rest, /[0-9]+/)) {
+            out = out substr(rest, 1, RSTART-1) sprintf("%010d", substr(rest, RSTART, RLENGTH))
+            rest = substr(rest, RSTART+RLENGTH)
+        }
+        out = out rest
+        print out "\t" orig
+    }' | sort | cut -f2-
+}
+
+sorted_images=()
+while IFS= read -r line; do
+    sorted_images+=("$line")
+done < <(printf '%s\n' "${images[@]}" | natural_sort)
+images=("${sorted_images[@]}")
+
+# ---------------------------------------------------------------------------
+# Process images (continue past per-image failures; report at the end)
+# ---------------------------------------------------------------------------
+total=${#images[@]}
+processed=()
+failed=()
+conversion_failed=()
+skipped=()
+count=0
+total_in_bytes=0
+total_out_bytes=0
+start_ts=$(date +%s)
+
+for img in "${images[@]}"; do
+    count=$((count + 1))
+
+    if [ ! -s "$img" ]; then
+        log_warn "[$count/$total] $(basename "$img"): skipped (empty/unreadable file)"
+        skipped+=("$img")
+        continue
+    fi
+
+    base="$(basename "$img")"
+    base="${base%.*}"
+    out="$OUTDIR/${base}_a4.jpg"
+
+    src_dim="$(magick identify -format '%wx%h' "$img" 2>/dev/null || true)"
+    src_bytes=$(wc -c < "$img")
+
+    if magick "$img" \
+        -auto-orient \
+        -colorspace sRGB \
+        $EXTRA_ARGS \
+        -background white -alpha remove -alpha off \
+        -resize "${MARGIN_W}x${MARGIN_H}>" \
+        -gravity center \
+        -background white -extent "${PAGE_W}x${PAGE_H}" \
+        -density "$DPI" -units PixelsPerInch \
+        -quality "$QUALITY" \
+        "$out" 2>"$ERR_TMP"
+    then
+        out_bytes=$(wc -c < "$out")
+        total_in_bytes=$((total_in_bytes + src_bytes))
+        total_out_bytes=$((total_out_bytes + out_bytes))
+        log_ok "[$count/$total] $base: ${src_dim:-?} ($(human_size "$src_bytes")) -> ${PAGE_W}x${PAGE_H} ($(human_size "$out_bytes"))"
+        processed+=("$out")
+        if [ "$VERBOSE" -eq 1 ] && [ -s "$ERR_TMP" ]; then
+            log_warn "magick warning for '$img': $(tr '\n' ' ' < "$ERR_TMP")"
+        fi
+    else
+        log_error "[$count/$total] $base: failed to convert — $(tr '\n' ' ' < "$ERR_TMP")"
+        failed+=("$img")
+        conversion_failed+=("$img")
+        rm -f "$out" 2>/dev/null || true
+        continue
+    fi
+
+    if [ "$PER_IMAGE_PDF" -eq 1 ]; then
+        pdf_out="$OUTDIR/${base}_a4.pdf"
+        if ! magick "$out" -density "$DPI" -units PixelsPerInch "$pdf_out" 2>"$ERR_TMP"; then
+            log_error "Failed to create per-image PDF for '$img': $(tr '\n' ' ' < "$ERR_TMP")"
+            failed+=("$img (pdf)")
+        fi
+    fi
+done
+
+elapsed=$(( $(date +%s) - start_ts ))
+
+# ---------------------------------------------------------------------------
+# Combine
+# ---------------------------------------------------------------------------
+# The whole batch is processed first so every problem is reported in one run
+# (no whack-a-mole). But if ANY image failed to convert, refuse to build the
+# combined PDF — a silently incomplete/missing-page PDF is worse than no PDF.
+if [ -n "$COMBINE_NAME" ]; then
+    if [ ${#conversion_failed[@]} -gt 0 ]; then
+        log_error "Skipping combined PDF: ${#conversion_failed[@]} image(s) failed to convert. Fix or remove them, then rerun: ${conversion_failed[*]}"
+        failed+=("combine:$COMBINE_NAME (skipped due to conversion failures)")
+    elif [ ${#processed[@]} -eq 0 ]; then
+        log_warn "No successfully processed images to combine; skipping combined PDF."
+        failed+=("combine:$COMBINE_NAME (nothing to combine)")
+    else
+        log_info "Combining ${#processed[@]} page(s) into: $OUTDIR/$COMBINE_NAME"
+        if magick "${processed[@]}" -density "$DPI" -units PixelsPerInch "$OUTDIR/$COMBINE_NAME" 2>"$ERR_TMP"; then
+            combined_bytes=$(wc -c < "$OUTDIR/$COMBINE_NAME")
+            log_ok "Combined PDF written: $OUTDIR/$COMBINE_NAME ($(human_size "$combined_bytes"))"
+        else
+            log_error "Failed to combine pages into PDF: $(tr '\n' ' ' < "$ERR_TMP")"
+            failed+=("combine:$COMBINE_NAME")
+        fi
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# Summary
+# ---------------------------------------------------------------------------
+log_info "---- Summary ----"
+log_info "Found:     $total image(s) in '$INPUTDIR'"
+log_ok   "Succeeded: ${#processed[@]} ($(human_size "$total_in_bytes") -> $(human_size "$total_out_bytes")) in ${elapsed}s"
+[ ${#skipped[@]} -gt 0 ] && log_warn "Skipped:   ${#skipped[@]} -> ${skipped[*]}"
+[ ${#failed[@]}  -gt 0 ] && log_error "Failed:    ${#failed[@]} -> ${failed[*]}"
+log_info "Output dir: $OUTDIR"
+
+trap - ERR
+[ ${#failed[@]} -gt 0 ] && exit 1
+exit 0
