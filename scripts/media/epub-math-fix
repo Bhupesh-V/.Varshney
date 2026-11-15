@@ -1,0 +1,608 @@
+#!/usr/bin/env python3
+"""epub-math-fix -- convert LaTeX math in a Markdown file (destined for an
+EPUB) into Kindle-safe plain text/HTML + images, instead of pandoc's default
+MathML output.
+
+Background: pandoc's EPUB math output is presentation MathML. That renders
+fine in Apple Books (WebKit has native MathML support), but Calibre's
+`ebook-convert` carries MathML through its AZW3/KF8 container as inert markup
+-- the Kindle on-device renderer doesn't implement MathML at all, so formulas
+silently fail to display. A MathJax-based fix doesn't help either: Kindle
+doesn't execute JavaScript, and `ebook-convert` has no math-rasterization
+flag of its own. Verified by actually round-tripping an EPUB through
+`ebook-convert ... .azw3` then back to .htmlz and grepping for leftover
+<math> tags.
+
+The reliable fix is to never depend on MathML in the first place:
+  - Most formulas get flattened to plain text + Unicode symbols + <sub>/<sup>
+    HTML (e.g. "$T(n) = 2T(n/2) + n$" -> "T(n) = 2T(n/2) + n", "$n^2$" ->
+    "n<sup>2</sup>"). This works on any renderer and reflows with the
+    reader's font-size setting, unlike an image.
+  - Formulas with genuine 2-D layout that can't be flattened to a line of
+    text (matrices, \\begin{cases}, \\begin{array}) are rendered to a
+    standalone, auto-cropped PNG via a local pdflatex + pdftoppm pipeline
+    (texlive's `standalone`/`preview`/`varwidth` packages -- install with
+    `tlmgr --usermode install standalone preview varwidth` if missing; no
+    root needed) and embedded as a normal <img>.
+
+A second, unrelated Kindle-math gotcha this tool also cleans up: text
+copy/extracted from a LaTeX-typeset PDF (e.g. `pdftotext` on an exam paper)
+often contains Unicode "Mathematical Alphanumeric Symbols" (U+1D400-U+1D7FF,
+e.g. math-italic "p", "q" render as the *distinct* codepoints MATHEMATICAL
+ITALIC SMALL P/Q, not plain ASCII "p"/"q") sitting in plain prose, nowhere
+near a $...$ span -- so the LaTeX converter above never sees them. Many
+e-reader fonts (Kindle's built-in ones included) have poor glyph coverage for
+that block and render them as missing-glyph boxes. `--fix-unicode-math-letters`
+folds them back to plain ASCII via Unicode's own NFKD compatibility
+decomposition, touching only that specific codepoint range so nothing else
+in the file (em dashes, the Unicode math symbols this tool itself emits,
+etc.) is affected.
+
+Usage:
+    epub-math-fix <markdown-file> <image-output-dir> <image-relpath-in-markdown>
+    epub-math-fix --fix-unicode-math-letters <markdown-file> [<markdown-file> ...]
+    epub-math-fix --self-test <file-of-formulas>
+
+Example:
+    epub-math-fix papers/answers.md papers/images/math images/math
+    epub-math-fix --fix-unicode-math-letters papers/answers.md
+
+Edits the markdown file(s) in place (back up first if you want to diff).
+`--self-test` sanity-checks the LaTeX converter against a list of raw LaTeX
+snippets (one per line) without touching any markdown file or rendering any
+images; it just reports how many convert to text vs. would need an image.
+
+After running, rebuild + validate the EPUB as usual (pandoc, then
+`epubcheck`), and ideally round-trip it through Calibre's own
+`ebook-convert` to .azw3 -> .htmlz and grep for `<math` (and for stray
+U+1D400-U+1D7FF characters) to confirm nothing was missed -- that's the only
+verification that actually matches what a Kindle will do with the file.
+"""
+import hashlib
+import os
+import re
+import subprocess
+import sys
+import unicodedata
+
+# ---------------------------------------------------------------------------
+# LaTeX -> plain Markdown/HTML converter
+# ---------------------------------------------------------------------------
+
+SYMBOLS = {
+    'to': '→', 'times': '×', 'lor': '∨', 'land': '∧', 'Theta': 'Θ',
+    'infty': '∞', 'cdot': '·', 'cdots': '⋯', 'ldots': '…', 'dots': '…',
+    'lnot': '¬', 'neg': '¬', 'in': '∈', 'notin': '∉', 'geq': '≥', 'ge': '≥',
+    'leq': '≤', 'le': '≤', 'triangle': '△', 'phi': 'φ', 'varphi': 'φ',
+    'gcd': 'gcd', 'epsilon': 'ε', 'varepsilon': 'ε', 'bmod': 'mod', 'mod': 'mod',
+    'Sigma': 'Σ', 'sigma': 'σ', 'rceil': '⌉', 'lceil': '⌈', 'rfloor': '⌋', 'lfloor': '⌊',
+    'min': 'min', 'max': 'max', 'leftarrow': '←', 'rightarrow': '→',
+    'cup': '∪', 'cap': '∩', 'subseteq': '⊆', 'subset': '⊂', 'supseteq': '⊇',
+    'Rightarrow': '⇒', 'Leftarrow': '⇐', 'Leftrightarrow': '⇔', 'leftrightarrow': '↔',
+    'rho': 'ρ', 'Omega': 'Ω', 'omega': 'ω', 'forall': '∀', 'exists': '∃',
+    'emptyset': '∅', 'varnothing': '∅', 'neq': '≠', 'ne': '≠', 'mid': '∣',
+    'delta': 'δ', 'Delta': 'Δ', 'chi': 'χ', 'approx': '≈', 'equiv': '≡',
+    'preceq': '⪯', 'succeq': '⪰', 'll': '≪', 'gg': '≫', 'ell': 'ℓ',
+    'blacksquare': '∎', 'square': '□', 'qed': '∎', 'pm': '±', 'mp': '∓',
+    'alpha': 'α', 'beta': 'β', 'gamma': 'γ', 'Gamma': 'Γ', 'lambda': 'λ',
+    'Lambda': 'Λ', 'mu': 'μ', 'nu': 'ν', 'pi': 'π', 'Pi': 'Π', 'tau': 'τ',
+    'theta': 'θ', 'kappa': 'κ', 'xi': 'ξ', 'zeta': 'ζ', 'eta': 'η',
+    'top': '⊤', 'bot': '⊥', 'vdash': '⊢', 'models': '⊨', 'implies': '⇒',
+    'iff': '⇔', 'wedge': '∧', 'vee': '∨', 'oplus': '⊕', 'otimes': '⊗',
+    'setminus': '∖', 'star': '⋆', 'ast': '∗', 'propto': '∝', 'sim': '∼',
+    'partial': '∂', 'nabla': '∇', 'perp': '⊥', 'parallel': '∥',
+    'langle': '⟨', 'rangle': '⟩',
+    'log': 'log', 'ln': 'ln', 'exp': 'exp', 'sin': 'sin', 'cos': 'cos', 'tan': 'tan',
+    'det': 'det', 'arg': 'arg', 'deg': 'deg', 'hom': 'hom', 'ker': 'ker', 'dim': 'dim',
+    'lim': 'lim', 'sup': 'sup', 'inf': 'inf', 'sec': 'sec', 'csc': 'csc', 'cot': 'cot',
+    'sum': 'Σ', 'prod': 'Π', 'int': '∫', 'oint': '∮', 'bigcup': '⋃', 'bigcap': '⋂',
+    'bigvee': '⋁', 'bigwedge': '⋀', 'bigoplus': '⊕',
+    'vdots': '⋮', 'ddots': '⋱', 'checkmark': '✓',
+}
+
+# \left( \right) \left[ \right] \left\{ \right\} \left| \right| \left\| \right\|
+LEFT_RIGHT = {
+    '(': '(', ')': ')', '[': '[', ']': ']', '\\{': '{', '\\}': '}',
+    '|': '|', '\\|': '‖', '.': '',
+}
+
+MATHBB = {
+    'N': 'ℕ', 'Z': 'ℤ', 'Q': 'ℚ', 'R': 'ℝ', 'C': 'ℂ', 'P': 'ℙ', 'F': '𝔽',
+}
+
+NEEDS_IMAGE_MARKERS = [
+    r'\begin', r'\end', r'\array', r'\matrix', r'\pmatrix', r'\bmatrix',
+    r'\stackrel', r'\substack',
+]
+
+
+def extract_braced(s, start):
+    """s[start] == '{'; return (content, index_after_closing_brace)."""
+    assert s[start] == '{'
+    depth = 0
+    i = start
+    while i < len(s):
+        if s[i] == '{':
+            depth += 1
+        elif s[i] == '}':
+            depth -= 1
+            if depth == 0:
+                return s[start + 1:i], i + 1
+        i += 1
+    raise ValueError('unbalanced braces')
+
+
+def pad_if_needed(s, start, repl):
+    """If s[:start] ends in a bare, unterminated \\command (letters only, no
+    boundary char after it) and repl starts with an alnum char, the splice
+    would silently fuse them (e.g. "\\log" + "n/2" -> "\\logn/2", which a later
+    greedy \\command-name regex would misread as one unknown token "logn").
+    Insert a separating space in that case; this MUST happen at the splice
+    site, since only here is the true token boundary actually known -- trying
+    to reconstruct it from the final spliced string is ambiguous/unsafe."""
+    if repl and repl[0].isalnum() and re.search(r'\\[A-Za-z]+$', s[:start]):
+        return ' ' + repl
+    return repl
+
+
+def take_arg(s, i):
+    """Grab one LaTeX argument starting at s[i]: either {...} or a single token."""
+    if i >= len(s):
+        return '', i
+    if s[i] == '{':
+        return extract_braced(s, i)
+    if s[i] == '\\':
+        m = re.match(r'\\[a-zA-Z]+', s[i:])
+        if m:
+            return m.group(0), i + len(m.group(0))
+        return s[i:i + 2], i + 2
+    return s[i], i + 1
+
+
+def convert(tex):
+    """Return plain-markdown+HTML string, or None if this formula needs an image."""
+    for marker in NEEDS_IMAGE_MARKERS:
+        if marker in tex:
+            return None
+
+    s = tex.strip()
+
+    # literal set-notation braces \{ \} -> sentinel so they survive the later
+    # "strip leftover grouping braces" pass; restored to real {, } at the very end.
+    s = s.replace('\\{', '\x01').replace('\\}', '\x02')
+    # literal escaped underscore \_ (text mode) -> sentinel so the subscript
+    # scanner below doesn't mistake it for the subscript operator.
+    s = s.replace('\\_', '\x03')
+
+    # \big( \Big( \bigg( \Bigg( \bigl( \bigr) etc. -> just the delimiter char
+    # (negative lookahead keeps this from misfiring on \bigcup/\bigcap/\bigvee/...)
+    s = re.sub(r'\\[bB]igg?[lr]?(?![a-zA-Z])(\\\{|\\\}|.)',
+               lambda m: {'\\{': '\x01', '\\}': '\x02'}.get(m.group(1), m.group(1)), s)
+
+    # bare "A \choose B" without its own enclosing { } (e.g. inside a \frac arg)
+    if '\\choose' in s and not re.search(r'\{[^{}]*\\choose[^{}]*\}', s):
+        m = re.search(r'^(.*?)\\choose\s+(.*)$', s)
+        if m:
+            cn, ck = convert(m.group(1).strip()), convert(m.group(2).strip())
+            if cn is not None and ck is not None:
+                s = f'C({cn},{ck})'
+
+    # \text{...} / \mathbf{...} / \mathit{...} / \operatorname{...} -> unwrap (bold for mathbf)
+    def unwrap(pattern, wrap=None):
+        nonlocal s
+        out = []
+        i = 0
+        while i < len(s):
+            m = re.match(pattern, s[i:])
+            if m and i + len(m.group(0)) < len(s) and s[i + len(m.group(0))] == '{':
+                content, j = extract_braced(s, i + len(m.group(0)))
+                inner = convert(content)
+                if inner is None:
+                    return False
+                out.append(f'\x04{inner}\x04' if wrap == 'b' else inner)
+                i = j
+            else:
+                out.append(s[i])
+                i += 1
+        s = ''.join(out)
+        return True
+
+    for pat, wrap in [(r'\\text', None), (r'\\mathrm', None), (r'\\operatorname', None),
+                       (r'\\mathbf', 'b'), (r'\\boldsymbol', 'b'), (r'\\textbf', 'b')]:
+        if not unwrap(pat, wrap):
+            return None
+
+    # \mathbb{X}
+    def repl_mathbb(m):
+        return MATHBB.get(m.group(1), m.group(1))
+    s = re.sub(r'\\mathbb\{([A-Za-z])\}', repl_mathbb, s)
+
+    # \bar{X} -> X with combining overline (works for single char reasonably)
+    def repl_bar(m):
+        inner = convert(m.group(1))
+        return (inner or m.group(1)) + '̄'
+    s = re.sub(r'\\bar\{([^{}]*)\}', repl_bar, s)
+
+    # \sqrt{...} or \sqrt[n]{...}
+    while True:
+        m = re.search(r'\\sqrt(\[[^\]]*\])?\{', s)
+        if not m:
+            break
+        idx = m.end() - 1
+        content, j = extract_braced(s, idx)
+        inner = convert(content)
+        if inner is None:
+            return None
+        root = m.group(1)
+        prefix = f'{root[1:-1]}√' if root else '√'
+        repl = prefix + '(' + inner + ')'
+        s = s[:m.start()] + pad_if_needed(s, m.start(), repl) + s[j:]
+
+    # \frac{a}{b} and \dfrac{a}{b}
+    while True:
+        m = re.search(r'\\d?frac\{', s)
+        if not m:
+            break
+        a, j1 = extract_braced(s, m.end() - 1)
+        if j1 >= len(s) or s[j1] != '{':
+            return None
+        b, j2 = extract_braced(s, j1)
+        ca, cb = convert(a), convert(b)
+        if ca is None or cb is None:
+            return None
+        simple = re.match(r'^[A-Za-z0-9]+$', ca) and re.match(r'^[A-Za-z0-9]+$', cb)
+        frac = f'{ca}/{cb}' if simple else f'({ca})/({cb})'
+        s = s[:m.start()] + pad_if_needed(s, m.start(), frac) + s[j2:]
+
+    # \tag{N} -> trailing "(N)" (equation-numbering, amsmath)
+    s = re.sub(r'\\tag\{([^{}]*)\}', lambda m: f' ({m.group(1)})', s)
+
+    # \boxed{X} -> unwrap, bolded (closest plain-text equivalent of a boxed result)
+    while True:
+        m = re.search(r'\\boxed\{', s)
+        if not m:
+            break
+        content, j = extract_braced(s, m.end() - 1)
+        inner = convert(content)
+        if inner is None:
+            return None
+        s = s[:m.start()] + pad_if_needed(s, m.start(), f'\x04{inner}\x04') + s[j:]
+
+    # \underbrace{X}_{Y} / \overbrace{X}^{Y} -> "X (Y)" (drop the brace drawing, keep the label)
+    while True:
+        m = re.search(r'\\(underbrace|overbrace)\{', s)
+        if not m:
+            break
+        base, j1 = extract_braced(s, m.end() - 1)
+        label = ''
+        j2 = j1
+        if j1 < len(s) and s[j1] in '_^':
+            label, j2 = take_arg(s, j1 + 1)
+        cbase = convert(base)
+        clabel = convert(label) if label else None
+        if cbase is None or (label and clabel is None):
+            return None
+        repl = f'{cbase} ({clabel})' if clabel else cbase
+        s = s[:m.start()] + pad_if_needed(s, m.start(), repl) + s[j2:]
+
+    # \binom{n}{k} and {n \choose k}
+    while True:
+        m = re.search(r'\\binom\{', s)
+        if not m:
+            break
+        n, j1 = extract_braced(s, m.end() - 1)
+        k, j2 = extract_braced(s, j1)
+        cn, ck = convert(n), convert(k)
+        if cn is None or ck is None:
+            return None
+        s = s[:m.start()] + pad_if_needed(s, m.start(), f'C({cn},{ck})') + s[j2:]
+    while True:
+        m = re.search(r'\{([^{}]*?)\\choose\s+([^{}]*?)\}', s)
+        if not m:
+            break
+        repl = f'C({m.group(1).strip()},{m.group(2).strip()})'
+        s = s[:m.start()] + pad_if_needed(s, m.start(), repl) + s[m.end():]
+
+    # \left X ... \right Y  -> just the delimiters, recursively convert the middle.
+    # Depth-aware so nested \left...\left...\right...\right pairs match correctly
+    # (a naive "first \right after this \left" search mispairs nested delimiters).
+    LR_TOKEN = re.compile(r'\\(left|right)(?![a-zA-Z])(\\\{|\\\||.)')
+    while True:
+        m = re.search(r'\\left(?![a-zA-Z])(\\\{|\\\||\\\||.)', s)
+        if not m:
+            break
+        ld = m.group(1)
+        depth = 0
+        rm = None
+        for tok in LR_TOKEN.finditer(s, m.end()):
+            if tok.group(1) == 'left':
+                depth += 1
+            else:
+                if depth == 0:
+                    rm = tok
+                    break
+                depth -= 1
+        if rm is None:
+            return None
+        inner = s[m.end():rm.start()]
+        rd = rm.group(2)
+        cinner = convert(inner)
+        if cinner is None:
+            return None
+        lchar = LEFT_RIGHT.get(ld, ld)
+        rchar = LEFT_RIGHT.get(rd, rd)
+        repl = lchar + cinner + rchar
+        s = s[:m.start()] + pad_if_needed(s, m.start(), repl) + s[rm.end():]
+
+    # \xrightarrow{text} / \xrightarrow[sub]{text} -- keep the label, don't drop it
+    def repl_xrightarrow(m):
+        label = m.group(2) or ''
+        sub = m.group(1)
+        sub = sub[1:-1] if sub else ''
+        parts = [p for p in (sub, label) if p]
+        return f'--{",".join(parts)}-->' if parts else '→'
+    s = re.sub(r'\\xrightarrow(\[[^\]]*\])?\{([^{}]*)\}', repl_xrightarrow, s)
+    s = re.sub(r'\\xrightarrow', '→', s)
+
+    # sub/superscripts -> <sub>/<sup>, after structural commands are gone
+    def handle_scripts(s, cmd, tag):
+        out = []
+        i = 0
+        while i < len(s):
+            if s[i] == cmd:
+                arg, j = take_arg(s, i + 1)
+                inner = convert(arg) if (arg.startswith('\\') or '{' in arg) else arg
+                if inner is None:
+                    return None
+                out.append(f'<{tag}>{inner}</{tag}>')
+                i = j
+            else:
+                out.append(s[i])
+                i += 1
+        return ''.join(out)
+
+    s = handle_scripts(s, '_', 'sub')
+    if s is None:
+        return None
+    s = handle_scripts(s, '^', 'sup')
+    if s is None:
+        return None
+
+    # spacing commands
+    s = re.sub(r'\\[,;!]', ' ', s)
+    s = re.sub(r'\\ ', ' ', s)
+    s = s.replace('~', ' ')
+    s = s.replace('\\quad', '  ').replace('\\qquad', '    ')
+
+    # remaining bare symbol commands. Multi-letter "word" replacements (log,
+    # min, gcd, mod, ...) need a leading space if directly preceded by plain
+    # alnum text with no space -- valid in real LaTeX (e.g. "cn\log n", where
+    # the backslash itself is the boundary) but reads as one glued word
+    # ("cnlog") once flattened to plain text.
+    def repl_symbol(m):
+        name = m.group(1)
+        if name not in SYMBOLS:
+            return m.group(0)
+        val = SYMBOLS[name]
+        if len(val) > 1 and val[0].isalnum() and m.start() > 0 and s[m.start() - 1].isalnum():
+            return ' ' + val
+        return val
+    s = re.sub(r'\\([A-Za-z]+)', repl_symbol, s)
+
+    # drop now-meaningless leftover braces (grouping only)
+    s = s.replace('{', '').replace('}', '')
+    # restore literal set-notation braces and escaped underscore
+    s = s.replace('\x01', '{').replace('\x02', '}').replace('\x03', '_')
+    s = re.sub(r'\s+', ' ', s).strip()
+
+    # if anything LaTeX-ish remains, bail out to image rendering
+    if '\\' in s:
+        return None
+    return s
+
+
+def convert_formula(tex):
+    """Public entry point. Wraps convert() and performs markdown-escaping
+    exactly once, on the fully-assembled top-level result.
+
+    This MUST NOT happen inside convert() itself: convert() recurses into
+    its own sub-expressions (e.g. \\frac's two arguments), and if a nested
+    call escaped "*"/"_" into "\\*"/"\\_" before returning, that legitimate
+    escape backslash would still be sitting in the string by the time an
+    *enclosing* call reaches its own "if '\\' in s: return None" bail-check
+    -- which would then wrongly treat genuinely-finished content as
+    unhandled LaTeX and bail to image rendering. Escaping only once, after
+    all recursion/bail-checking is fully resolved, avoids that entirely.
+    """
+    s = convert(tex)
+    if s is None:
+        return None
+    # Escape stray markdown-special characters that are genuine formula
+    # content (e.g. a literal "*" from "C^*", or "_" restored earlier) so
+    # pandoc's markdown parser treats them as literal text instead of
+    # emphasis delimiters -- this bites even inside raw <sup>/<sub> spans,
+    # since pandoc still runs its inline markdown parser over that text.
+    # \x04 is a sentinel for OUR OWN intentional bold wrapper (from
+    # \mathbf/\boxed), inserted inside convert(); it must survive untouched
+    # through the escape step above and only becomes real ** right here.
+    s = s.replace('*', '\\*').replace('_', '\\_')
+    s = s.replace('\x04', '**')
+    return s
+
+
+# ---------------------------------------------------------------------------
+# Markdown-file pipeline: find $...$/$$...$$ spans, convert or render-to-image
+# ---------------------------------------------------------------------------
+
+# Inline math is usually single-line, but a long formula can get soft-wrapped
+# across one line break in the source (no blank line) -- allow crossing a
+# single newline, but never a paragraph break (blank line), which bounds the
+# match safely instead of risking a runaway match on a stray unmatched "$".
+DISPLAY_OR_INLINE = re.compile(r'\$\$(.+?)\$\$|\$(?!\$)((?:[^$]|\n(?!\n))+?)\$(?!\$)', re.S)
+
+TEX_TEMPLATE = r"""\documentclass[preview,border=2pt,varwidth]{standalone}
+\usepackage{amsmath,amssymb,amsfonts}
+\begin{document}
+%s
+\end{document}
+"""
+
+LATEX = '/Library/TeX/texbin/pdflatex'
+PDFTOPPM = 'pdftoppm'
+
+
+def code_fence_ranges(content):
+    """Return list of (start, end) char offsets for fenced ``` code blocks."""
+    ranges = []
+    lines = content.split('\n')
+    offset = 0
+    in_code = False
+    start = None
+    for line in lines:
+        line_start = offset
+        if line.strip().startswith('```'):
+            if not in_code:
+                in_code = True
+                start = line_start
+            else:
+                in_code = False
+                ranges.append((start, line_start + len(line)))
+        offset += len(line) + 1
+    return ranges
+
+
+def in_ranges(pos, ranges):
+    return any(a <= pos < b for a, b in ranges)
+
+
+def render_formula(formula, display, imgdir):
+    """Render one LaTeX formula to a cropped PNG via pdflatex + pdftoppm.
+    Content-hashed filename so identical formulas (e.g. a matrix reused in
+    two questions) are only ever rendered once."""
+    h = hashlib.sha1((('D' if display else 'I') + formula).encode()).hexdigest()[:12]
+    png_path = os.path.join(imgdir, f'm_{h}.png')
+    if os.path.exists(png_path):
+        return png_path
+    wrapped = f'$${formula}$$' if display else f'${formula}$'
+    tex_src = TEX_TEMPLATE % wrapped
+    workdir = os.path.join(imgdir, '_tex_work')
+    os.makedirs(workdir, exist_ok=True)
+    tex_path = os.path.join(workdir, f'm_{h}.tex')
+    with open(tex_path, 'w') as f:
+        f.write(tex_src)
+    r = subprocess.run(
+        [LATEX, '-interaction=nonstopmode', '-output-directory', workdir, tex_path],
+        capture_output=True, text=True, timeout=30,
+    )
+    pdf_path = os.path.join(workdir, f'm_{h}.pdf')
+    if not os.path.exists(pdf_path):
+        raise RuntimeError(f'pdflatex failed for formula: {formula!r}\n{r.stdout[-2000:]}')
+    base = os.path.join(imgdir, f'm_{h}')
+    subprocess.run([PDFTOPPM, '-r', '200', '-png', '-singlefile', pdf_path, base],
+                    capture_output=True, text=True, timeout=30, check=True)
+    return png_path
+
+
+def process_file(md_path, imgdir, images_relpath):
+    with open(md_path) as f:
+        content = f.read()
+    ranges = code_fence_ranges(content)
+
+    pieces = []
+    last = 0
+    n_text, n_image = 0, 0
+    image_formulas = []
+    for m in DISPLAY_OR_INLINE.finditer(content):
+        if in_ranges(m.start(), ranges):
+            continue
+        display = m.group(1) is not None
+        formula = (m.group(1) if display else m.group(2))
+        formula = re.sub(r'\s+', ' ', formula).strip()
+        converted = convert_formula(formula)
+        pieces.append(content[last:m.start()])
+        if converted is not None:
+            pieces.append(converted)
+            n_text += 1
+        else:
+            png_path = render_formula(formula, display, imgdir)
+            rel = images_relpath + '/' + os.path.basename(png_path)
+            if display:
+                pieces.append(f'\n\n![Formula]({rel})\n\n')
+            else:
+                pieces.append(f'![Formula]({rel})')
+            n_image += 1
+            image_formulas.append((display, formula, png_path))
+        last = m.end()
+    pieces.append(content[last:])
+    new_content = ''.join(pieces)
+    return new_content, n_text, n_image, image_formulas
+
+
+def fix_unicode_math_letters(path):
+    """Fold Unicode Mathematical Alphanumeric Symbols (U+1D400-U+1D7FF --
+    math-italic/bold/script/fraktur/double-struck/sans-serif/monospace
+    variants of plain letters and digits) back to plain ASCII, in place.
+
+    Scoped to exactly that codepoint range via NFKD compatibility
+    decomposition -- deliberately narrower than normalizing the whole file,
+    which would also mangle unrelated Unicode this tool (or the surrounding
+    document) legitimately relies on elsewhere (em dashes, the math symbols
+    convert_formula() itself emits, etc.).
+    """
+    with open(path) as f:
+        content = f.read()
+    out = []
+    n = 0
+    for ch in content:
+        if 0x1D400 <= ord(ch) <= 0x1D7FF:
+            out.append(unicodedata.normalize('NFKD', ch))
+            n += 1
+        else:
+            out.append(ch)
+    if n:
+        with open(path, 'w') as f:
+            f.write(''.join(out))
+    print(f'{path}: {n} Unicode math-alphanumeric characters normalized to plain ASCII')
+
+
+def self_test(formulas_path):
+    with open(formulas_path) as f:
+        formulas = [l.rstrip('\n') for l in f if l.strip()]
+    ok, fails = 0, []
+    for formula in formulas:
+        r = convert_formula(formula)
+        if r is None:
+            fails.append(formula)
+        else:
+            ok += 1
+    print(f'OK: {ok}  FAIL (needs image): {len(fails)}  total: {len(formulas)}')
+    if fails:
+        print()
+        print('=== formulas needing image fallback ===')
+        for f in fails:
+            print('  ', f)
+
+
+def main():
+    if len(sys.argv) >= 2 and sys.argv[1] == '--self-test':
+        self_test(sys.argv[2])
+        return
+    if len(sys.argv) >= 3 and sys.argv[1] == '--fix-unicode-math-letters':
+        for path in sys.argv[2:]:
+            fix_unicode_math_letters(path)
+        return
+    if len(sys.argv) != 4 or sys.argv[1] in ('-h', '--help'):
+        print(__doc__)
+        sys.exit(0 if sys.argv[1:] and sys.argv[1] in ('-h', '--help') else 1)
+    md_path, imgdir, images_relpath = sys.argv[1], sys.argv[2], sys.argv[3]
+    os.makedirs(imgdir, exist_ok=True)
+    new_content, n_text, n_image, image_formulas = process_file(md_path, imgdir, images_relpath)
+    with open(md_path, 'w') as f:
+        f.write(new_content)
+    print(f'{md_path}: {n_text} converted to text, {n_image} rendered as images')
+    for display, formula, png in image_formulas:
+        print(f'   [{"display" if display else "inline"}] {formula[:80]!r} -> {png}')
+
+
+if __name__ == '__main__':
+    main()
